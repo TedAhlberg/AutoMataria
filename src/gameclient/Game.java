@@ -13,12 +13,14 @@ import java.util.concurrent.*;
  * @author Johannes Blüml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
+    public static final int WIDTH = 960, HEIGHT = WIDTH / 12 * 9;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
-    private String serverIP = "127.0.0.1";
+    private String serverIP = "localhost";
     private int serverPort = 32000;
+
+    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/splashscreen.jpg").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
 
     public Game() {
         new Window(WIDTH, HEIGHT, TITLE, this);
@@ -55,8 +57,10 @@ public class Game extends Canvas {
         }
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+//        g.setColor(Color.BLACK);
+//        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        g.drawImage(splashscreen, 0, 0, this);
 
         gameObjects.forEach(gameObject -> gameObject.render(g));
 

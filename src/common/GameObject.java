@@ -8,7 +8,8 @@ import java.io.*;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
-    protected int x, y, speedX, speedY;
+    protected int x, y, speed, width = 16, height = 16;
+    protected Direction direction = Direction.Static;
     protected String name;
 
     public GameObject(int x, int y, String name) {
@@ -22,7 +23,24 @@ public abstract class GameObject implements Serializable {
     }
 
     public abstract void tick();
+
     public abstract void render(Graphics g);
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
 
     public int getX() {
         return x;
@@ -40,24 +58,20 @@ public abstract class GameObject implements Serializable {
         this.y = y;
     }
 
-    public int getSpeedX() {
-        return speedX;
+    public int getSpeed() {
+        return speed;
     }
 
-    public void setSpeedX(int speedX) {
-        this.speedX = speedX;
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
-    public int getSpeedY() {
-        return speedY;
+    public int getHeight() {
+        return height;
     }
 
-    public void setSpeedY(int speedY) {
-        this.speedY = speedY;
-    }
-
-    public String getName() {
-        return name;
+    public int getWidth() {
+        return width;
     }
 
     public boolean equals(Object o) {
