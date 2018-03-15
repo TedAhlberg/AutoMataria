@@ -29,29 +29,5 @@ public class KeyInput extends KeyAdapter {
         } else if (key == KeyEvent.VK_DOWN) {
             client.send(Direction.Down);
         }
-/*
-        int speed = client.getSpeedX() + client.getSpeedY();
-        if (speed < 0) speed = -speed;
-        if (key == KeyEvent.VK_LEFT) {
-            synchronized (client) {
-                client.setSpeedX(-speed);
-                client.setSpeedY(0);
-            }
-        } else if (key == KeyEvent.VK_RIGHT) {
-            synchronized (client) {
-                client.setSpeedX(speed);
-                client.setSpeedY(0);
-            }
-        } else if (key == KeyEvent.VK_UP) {
-            synchronized (client) {
-                client.setSpeedX(0);
-                client.setSpeedY(-speed);
-            }
-        } else if (key == KeyEvent.VK_DOWN) {
-            synchronized (client) {
-                client.setSpeedX(0);
-                client.setSpeedY(speed);
-            }
-        }*/
     }
 }
