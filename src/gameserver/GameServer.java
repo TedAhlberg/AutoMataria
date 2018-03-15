@@ -2,6 +2,8 @@ package gameserver;
 
 import common.*;
 
+import java.awt.*;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -10,9 +12,13 @@ import java.util.concurrent.*;
 public class GameServer implements ClientListener {
     private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
-    private int tickRate = 40;
+
+    private int fps = 60;
+    private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 7;
+    private int playerSpeed = 4;
+
+    private Random random = new Random();
 
     public GameServer() {
         ServerConnection server = new ServerConnection();
@@ -43,27 +49,16 @@ public class GameServer implements ClientListener {
 
     @Override
     public void onData(Client client, Object value) {
-        if (value instanceof String) {
-            Player player = new Player(0, 0, (String) value);
+        if (value instanceof String && !players.containsKey(client)) {
+            Player player = new Player(random.nextInt(400), random.nextInt(400), (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
+            player.setSpeed(playerSpeed);
             gameObjects.add(player);
             players.put(client, player);
             System.out.println(players);
         } else if (value instanceof Direction && players.containsKey(client)) {
             Direction direction = (Direction) value;
             Player player = players.get(client);
-            if (direction == Direction.Left) {
-                player.setSpeedX(-playerSpeed);
-                player.setSpeedY(0);
-            } else if (direction == Direction.Right) {
-                player.setSpeedX(playerSpeed);
-                player.setSpeedY(0);
-            } else if (direction == Direction.Up) {
-                player.setSpeedX(0);
-                player.setSpeedY(-playerSpeed);
-            } else if (direction == Direction.Down) {
-                player.setSpeedX(0);
-                player.setSpeedY(playerSpeed);
-            }
+            player.setDirection(direction);
         }
     }
 
