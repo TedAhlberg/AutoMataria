@@ -64,8 +64,8 @@ public class Player extends GameObject implements Serializable {
     public void render(Graphics g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
-        g.setFont(new Font("SansSerif", Font.BOLD, 10));
-        g.drawString(this.getName(), x, y - 14);
+        g.setFont(new Font("Orbitron", Font.BOLD, 20));
+        g.drawString(this.getName().toUpperCase(), x, y - 14);
     }
 
     public String toString() {

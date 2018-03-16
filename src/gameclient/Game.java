@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * @author Johannes Blüml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 960, HEIGHT = WIDTH / 12 * 9;
+    public static final int WIDTH = 1024, HEIGHT = WIDTH / 12 * 9;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
@@ -46,6 +46,12 @@ public class Game extends Canvas {
     }
 
     public static void main(String[] args) {
+        // Load ORBITRON font
+        try {
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
+        } catch (IOException|FontFormatException e) {
+            e.printStackTrace();
+        }
         new Game();
     }
 
