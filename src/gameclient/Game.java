@@ -17,7 +17,7 @@ public class Game extends Canvas {
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
-    private String serverIP = "localhost";
+    private String serverIP = "10.2.27.148";
     private int serverPort = 32000;
 
     private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/splashscreen.jpg").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
