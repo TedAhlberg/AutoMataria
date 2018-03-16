@@ -17,14 +17,14 @@ public class Game extends Canvas {
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
-    private String serverIP = "10.2.27.148";
+    private String serverIP = "localhost";
     private int serverPort = 32000;
 
-    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/splashscreen.jpg").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
+    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
 
     public Game() {
         new Window(WIDTH, HEIGHT, TITLE, this);
-        String playerName = JOptionPane.showInputDialog("Enter your username:");
+        String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
 
         try {
             Socket socket = new Socket(serverIP, serverPort);
