@@ -37,6 +37,7 @@ public class Client {
             outputStream.writeObject(object);
             outputStream.reset();
         } catch (IOException e) {
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
     }

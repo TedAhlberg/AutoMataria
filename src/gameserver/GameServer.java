@@ -4,19 +4,21 @@ import common.*;
 
 import java.awt.*;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Johannes Blüml
  */
 public class GameServer implements ClientListener {
+    private Timer timer;
     private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
     private int fps = 60;
     private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 4;
+    private int playerSpeed = 2;
 
     private Random random = new Random();
 
@@ -25,21 +27,21 @@ public class GameServer implements ClientListener {
         server.start(serverPort);
         server.addListener(this);
 
-        new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                gameObjects.forEach(gameObject -> gameObject.tick());
-                players.keySet().forEach(client -> client.send(gameObjects));
-                try {
-                    Thread.sleep(tickRate);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                tick();
             }
-        }).start();
+        }, 0, tickRate);
     }
 
     public static void main(String[] args) {
         new GameServer();
+    }
+
+    private void tick() {
+        gameObjects.forEach(gameObject -> gameObject.tick());
+        players.keySet().forEach(client -> client.send(gameObjects));
     }
 
     @Override

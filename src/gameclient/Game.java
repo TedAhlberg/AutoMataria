@@ -63,8 +63,8 @@ public class Game extends Canvas {
         }
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 
-//        g.setColor(Color.BLACK);
-//        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
 
         g.drawImage(splashscreen, 0, 0, this);
 
