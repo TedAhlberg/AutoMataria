@@ -13,18 +13,18 @@ import java.util.concurrent.*;
  * @author Johannes Bluml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 960, HEIGHT = WIDTH / 12 * 9;
+    public static final int WIDTH = 1024, HEIGHT = WIDTH / 12 * 9;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
-    private String serverIP = "10.2.27.148";
+    private String serverIP = "localhost";
     private int serverPort = 32000;
 
-    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/splashscreen.jpg").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
+    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
 
     public Game() {
         new Window(WIDTH, HEIGHT, TITLE, this);
-        String playerName = JOptionPane.showInputDialog("Enter your username:");
+        String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
 
         try {
             Socket socket = new Socket(serverIP, serverPort);
@@ -46,6 +46,12 @@ public class Game extends Canvas {
     }
 
     public static void main(String[] args) {
+        // Load ORBITRON font
+        try {
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
+        } catch (IOException|FontFormatException e) {
+            e.printStackTrace();
+        }
         new Game();
     }
 
@@ -57,8 +63,8 @@ public class Game extends Canvas {
         }
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 
-//        g.setColor(Color.BLACK);
-//        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
 
         g.drawImage(splashscreen, 0, 0, this);
 

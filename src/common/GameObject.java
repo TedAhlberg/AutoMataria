@@ -1,14 +1,14 @@
 package common;
 
 import java.awt.*;
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * @author Johannes Blüml
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
-    protected int x, y, speed, width = 16, height = 16;
+    protected int x, y, speed, width = 8, height = 8;
     protected Direction direction = Direction.Static;
     protected String name;
 
@@ -70,8 +70,16 @@ public abstract class GameObject implements Serializable {
         return height;
     }
 
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public int getWidth() {
         return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     public boolean equals(Object o) {
