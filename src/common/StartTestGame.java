@@ -4,7 +4,7 @@ import gameclient.*;
 import gameserver.*;
 
 /**
- * @author Johannes Blüml
+ * @author Johannes Bluml
  */
 public class StartTestGame {
     public static void main(String[] args) {

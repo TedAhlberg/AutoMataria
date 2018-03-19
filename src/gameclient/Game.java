@@ -10,7 +10,7 @@ import java.net.*;
 import java.util.concurrent.*;
 
 /**
- * @author Johannes Blüml
+ * @author Johannes Bluml
  */
 public class Game extends Canvas {
     public static final int WIDTH = 960, HEIGHT = WIDTH / 12 * 9;
@@ -34,7 +34,7 @@ public class Game extends Canvas {
             this.requestFocus();
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Sorry. I don't seem to be able to connect the server.");
+            JOptionPane.showMessageDialog(null, "Unable to connect server.");
             System.exit(1);
         }
     }
