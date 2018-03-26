@@ -13,14 +13,14 @@ import java.util.concurrent.*;
  * @author Johannes Bluml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 1000, HEIGHT = 1000;
+    public static final int WIDTH = 10000, HEIGHT = 10000;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
     private String serverIP = "localhost";
     private int serverPort = 32000;
 
-    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
+    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
 
     public Game() {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
@@ -67,8 +67,8 @@ public class Game extends Canvas {
         double scale = Math.min(bounds.getWidth() / WIDTH, bounds.getHeight() / HEIGHT);
         g.scale(scale,scale);
 
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        // g.setColor(Color.BLACK);
+        // g.fillRect(0, 0, WIDTH, HEIGHT);
 
         g.drawImage(splashscreen, 0, 0, this);
 

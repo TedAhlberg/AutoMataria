@@ -19,7 +19,7 @@ public class GameServer implements ClientListener {
     private int fps = 30;
     private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 4;
+    private int playerSpeed = 50;
 
     private Random random = new Random();
 
@@ -53,7 +53,7 @@ public class GameServer implements ClientListener {
     @Override
     public void onData(Client client, Object value) {
         if (value instanceof String && !players.containsKey(client)) {
-            Player player = new Player(random.nextInt(Game.WIDTH), random.nextInt(Game.HEIGHT), (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
+            Player player = new Player(random.nextInt(Game.WIDTH / 10000) * 10000, random.nextInt(Game.HEIGHT / 10000) * 10000, (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
             player.setSpeed(playerSpeed);
             gameObjects.add(player);
             players.put(client, player);

@@ -17,7 +17,7 @@ public class Player extends GameObject implements Serializable {
 
     private Color color;
     private boolean dead;
-    private boolean teleported;
+    private boolean hasTeleported;
 
     public Player(int x, int y, String name, Color color, CopyOnWriteArrayList<GameObject> gameObjects) {
         super(x, y, name);
@@ -29,10 +29,10 @@ public class Player extends GameObject implements Serializable {
     public void render(Graphics g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
-        g.setFont(new Font("Orbitron", Font.BOLD, 10));
+        g.setFont(new Font("Orbitron", Font.BOLD, 100));
         String name = this.getName().toUpperCase();
         if (dead) name += " (DEAD)";
-        g.drawString(name, x, y - 4);
+        g.drawString(name, x, y - 50);
     }
 
     public void tick() {
@@ -49,16 +49,16 @@ public class Player extends GameObject implements Serializable {
     private void teleportIfOutsideMap() {
         if (x < 0) {
             x = Game.WIDTH;
-            teleported = true;
+            hasTeleported = true;
         } else if (x > Game.WIDTH) {
             x = 0;
-            teleported = true;
+            hasTeleported = true;
         } else if (y < 0) {
             y = Game.HEIGHT;
-            teleported = true;
+            hasTeleported = true;
         } else if (y > Game.HEIGHT) {
             y = 0;
-            teleported = true;
+            hasTeleported = true;
         }
     }
 
@@ -81,10 +81,10 @@ public class Player extends GameObject implements Serializable {
     }
 
     private void growTail() {
-        if (previousDirection != direction || teleported) {
-            if (teleported) {
+        if (previousDirection != direction || hasTeleported) {
+            if (hasTeleported) {
                 lastTail.grow(direction, width);
-                teleported = false;
+                hasTeleported = false;
             }
             lastTail = new Tail(this);
             gameObjects.add(lastTail);
