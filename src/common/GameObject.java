@@ -1,5 +1,7 @@
 package common;
 
+import gameserver.GameServer;
+
 import java.awt.*;
 import java.io.Serializable;
 
@@ -8,7 +10,7 @@ import java.io.Serializable;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
-    protected int x, y, speed, width = 100, height = 100;
+    protected int x, y, speed, width = GameServer.GRIDSIZE, height = GameServer.GRIDSIZE;
     protected Direction direction = Direction.Static;
     protected String name;
 

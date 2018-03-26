@@ -1,9 +1,10 @@
 package common;
 
-import gameclient.Game;
+import gameserver.GameServer;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -13,6 +14,7 @@ public class Player extends GameObject implements Serializable {
     private static final long serialVersionUID = 1;
     private Direction previousDirection;
     private CopyOnWriteArrayList<GameObject> gameObjects;
+    private ConcurrentLinkedQueue<Direction> inputQueue;
     private Tail lastTail;
 
     private Color color;
@@ -24,6 +26,7 @@ public class Player extends GameObject implements Serializable {
         this.color = color;
         this.gameObjects = gameObjects;
         this.previousDirection = direction;
+        this.inputQueue = new ConcurrentLinkedQueue<>();
     }
 
     public void render(Graphics g) {
@@ -38,31 +41,38 @@ public class Player extends GameObject implements Serializable {
     public void tick() {
         if (dead) return;
 
-        movePlayer();
-        teleportIfOutsideMap();
-        growTail();
+        if (inputQueue.isEmpty()) {
+            move(direction, speed);
+        } else if (inputQueue.peek() == direction) {
+            inputQueue.remove();
+            move(direction, speed);
+        } else if (x % GameServer.GRIDSIZE == 0 && y % GameServer.GRIDSIZE == 0) {
+            previousDirection = direction;
+            direction = inputQueue.remove();
+            move(direction, width);
+        } else {
+            move(direction, speed);
+        }
         checkCollisions();
-
-        previousDirection = direction;
     }
 
     private void teleportIfOutsideMap() {
         if (x < 0) {
-            x = Game.WIDTH;
+            x = GameServer.WIDTH;
             hasTeleported = true;
-        } else if (x > Game.WIDTH) {
+        } else if (x > GameServer.WIDTH) {
             x = 0;
             hasTeleported = true;
         } else if (y < 0) {
-            y = Game.HEIGHT;
+            y = GameServer.HEIGHT;
             hasTeleported = true;
-        } else if (y > Game.HEIGHT) {
+        } else if (y > GameServer.HEIGHT) {
             y = 0;
             hasTeleported = true;
         }
     }
 
-    private void move(int amount) {
+    private void move(Direction direction, int amount) {
         switch (direction) {
             case Up: y -= amount;
                 break;
@@ -72,24 +82,22 @@ public class Player extends GameObject implements Serializable {
                 break;
             case Right: x += amount;
                 break;
+            default: return;
         }
+        teleportIfOutsideMap();
+        growTail(direction, amount);
     }
 
-    private void movePlayer() {
-        if (previousDirection == direction) move(speed);
-        else move(width);
-    }
-
-    private void growTail() {
+    private void growTail(Direction direction, int amount) {
         if (previousDirection != direction || hasTeleported) {
             if (hasTeleported) {
-                lastTail.grow(direction, width);
+                lastTail.grow(direction, amount);
                 hasTeleported = false;
             }
             lastTail = new Tail(this);
             gameObjects.add(lastTail);
         } else if (lastTail != null) {
-            lastTail.grow(direction, speed);
+            lastTail.grow(direction, amount);
         }
     }
 
@@ -105,6 +113,10 @@ public class Player extends GameObject implements Serializable {
 
     public String toString() {
         return "Player: " + name + " Position: x=" + x + ", y=" + y + " Speed: " + speed + " Direction: " + direction;
+    }
+
+    public void setDirection(Direction direction) {
+        inputQueue.add(direction);
     }
 
     public Color getColor() {
