@@ -46,6 +46,8 @@ public class Game extends Canvas {
         g.setPaint(new Color(1, 1, 1, 0.2f));
         for (int i = 0; i <= GameServer.WIDTH; i += GameServer.GRIDSIZE) {
             g.drawLine(i, 0, i, GameServer.HEIGHT);
+        }
+        for (int i = 0; i <= GameServer.HEIGHT; i += GameServer.GRIDSIZE) {
             g.drawLine(0, i, GameServer.WIDTH, i);
         }
         g.dispose();

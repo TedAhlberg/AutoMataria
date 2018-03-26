@@ -11,8 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Johannes Blüml
  */
 public class GameServer implements ClientListener {
-    public static final int WIDTH = 10000, HEIGHT = 10000;
-    public static final int GRIDSIZE = 100;
+    public static final int GRIDSIZE = 100, WIDTH = 50 * GRIDSIZE, HEIGHT = 50 * GRIDSIZE;
 
     private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
@@ -55,7 +54,7 @@ public class GameServer implements ClientListener {
     public void onData(Client client, Object value) {
         if (value instanceof String && !players.containsKey(client)) {
             int startPositionX = random.nextInt(GameServer.WIDTH / GameServer.GRIDSIZE) * GameServer.GRIDSIZE;
-            int startPositionY = random.nextInt(GameServer.WIDTH / GameServer.GRIDSIZE) * GameServer.GRIDSIZE;
+            int startPositionY = random.nextInt(GameServer.HEIGHT / GameServer.GRIDSIZE) * GameServer.GRIDSIZE;
             Player player = new Player(startPositionX, startPositionY, (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
             player.setSpeed(playerSpeed);
             gameObjects.add(player);
