@@ -11,9 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Johannes Bluml
@@ -45,8 +43,8 @@ public class Game extends Canvas {
 
         Graphics2D g = (Graphics2D) background.getGraphics();
         g.scale(scale, scale);
-        g.setPaint(new Color(1,1,1,0.2f));
-        for (int i = 0; i <= GameServer.WIDTH; i+=100) {
+        g.setPaint(new Color(1, 1, 1, 0.2f));
+        for (int i = 0; i <= GameServer.WIDTH; i += GameServer.GRIDSIZE) {
             g.drawLine(i, 0, i, GameServer.HEIGHT);
             g.drawLine(0, i, GameServer.WIDTH, i);
         }
