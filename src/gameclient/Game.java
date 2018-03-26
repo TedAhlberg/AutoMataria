@@ -25,9 +25,7 @@ public class Game extends Canvas {
     private ClientConnection client;
     private String serverIP = "localhost";
     private int serverPort = 32000;
-
     private BufferedImage background;
-    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(GameServer.WIDTH, GameServer.HEIGHT, Image.SCALE_SMOOTH);
 
     public Game() {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
