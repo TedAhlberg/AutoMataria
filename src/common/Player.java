@@ -15,7 +15,7 @@ public class Player extends GameObject implements Serializable {
     private Direction previousDirection;
     private CopyOnWriteArrayList<GameObject> gameObjects;
     private ConcurrentLinkedQueue<Direction> inputQueue;
-    private Tail lastTail;
+    private Trail lastTrail;
 
     private Color color;
     private boolean dead;
@@ -91,20 +91,20 @@ public class Player extends GameObject implements Serializable {
     private void growTail(Direction direction, int amount) {
         if (previousDirection != direction || hasTeleported) {
             if (hasTeleported) {
-                lastTail.grow(direction, amount);
+                lastTrail.grow(direction, amount);
                 hasTeleported = false;
             }
-            lastTail = new Tail(this);
-            gameObjects.add(lastTail);
-        } else if (lastTail != null) {
-            lastTail.grow(direction, amount);
+            lastTrail = new Trail(this);
+            gameObjects.add(lastTrail);
+        } else if (lastTrail != null) {
+            lastTrail.grow(direction, amount);
         }
     }
 
     private void checkCollisions() {
         gameObjects.forEach(object -> {
             if (this.equals(object)) return;
-            if ((object instanceof Player || object instanceof Tail) && this.getBounds().intersects(object.getBounds())) {
+            if ((object instanceof Player || object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 this.dead = true;
                 System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());
             }

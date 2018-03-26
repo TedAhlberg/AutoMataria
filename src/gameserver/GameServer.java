@@ -3,7 +3,7 @@ package gameserver;
 import common.*;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -27,6 +27,11 @@ public class GameServer implements ClientListener {
         ServerConnection server = new ServerConnection();
         server.start(serverPort);
         server.addListener(this);
+
+        gameObjects.add(new Wall(0, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN));
+        gameObjects.add(new Wall(HEIGHT - GRIDSIZE, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN));
+        gameObjects.add(new Wall(0, 0, HEIGHT, GRIDSIZE, "WALL", Color.CYAN));
+        gameObjects.add(new Wall(0, HEIGHT - GRIDSIZE, HEIGHT, GRIDSIZE, "WALL", Color.CYAN));
 
         new Thread(() -> {
             while (true) {

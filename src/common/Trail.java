@@ -6,14 +6,10 @@ import java.io.Serializable;
 /**
  * @author Johannes Blüml
  */
-public class Tail extends GameObject implements Serializable {
-    private final Color color;
+public class Trail extends Wall implements Serializable {
 
-    public Tail(Player player) {
-        super(player.getX(), player.getY(), player.getName() + "'s tail");
-        width = player.getWidth();
-        height = player.getHeight();
-        color = player.getColor().darker().darker();
+    public Trail(Player player) {
+        super(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getName() + "'s tail", player.getColor().darker().darker());
 
         if (player.getDirection() == Direction.Up) {
             y += height;
@@ -38,12 +34,5 @@ public class Tail extends GameObject implements Serializable {
         } else if (direction == Direction.Right) {
             width += size;
         }
-    }
-
-    public void tick() {}
-
-    public void render(Graphics g) {
-        g.setColor(color);
-        g.fillRect(x, y, width, height);
     }
 }
