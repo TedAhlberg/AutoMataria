@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * @author Johannes Blüml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 1024, HEIGHT = WIDTH / 12 * 9;
+    public static final int WIDTH = 1000, HEIGHT = 1000;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;
@@ -23,8 +23,8 @@ public class Game extends Canvas {
     private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_AREA_AVERAGING);
 
     public Game() {
-        new Window(WIDTH, HEIGHT, TITLE, this);
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
+        new Window(TITLE, this);
 
         try {
             Socket socket = new Socket(serverIP, serverPort);
@@ -61,7 +61,11 @@ public class Game extends Canvas {
             this.createBufferStrategy(2);
             return;
         }
+
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+        Rectangle bounds = g.getDeviceConfiguration().getBounds();
+        double scale = Math.min(bounds.getWidth() / WIDTH, bounds.getHeight() / HEIGHT);
+        g.scale(scale,scale);
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);

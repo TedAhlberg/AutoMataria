@@ -48,15 +48,15 @@ public class Player extends GameObject implements Serializable {
 
     private void teleportIfOutsideMap() {
         if (x < 0) {
-            x = Game.WIDTH - width - 5;
+            x = Game.WIDTH;
             teleported = true;
-        } else if (x > (Game.WIDTH - width - 5)) {
+        } else if (x > Game.WIDTH) {
             x = 0;
             teleported = true;
         } else if (y < 0) {
-            y = Game.HEIGHT - height - 31;
+            y = Game.HEIGHT;
             teleported = true;
-        } else if (y > (Game.HEIGHT - height - 31)) {
+        } else if (y > Game.HEIGHT) {
             y = 0;
             teleported = true;
         }
