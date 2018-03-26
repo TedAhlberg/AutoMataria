@@ -11,10 +11,8 @@ public class Window extends Frame implements WindowListener {
     public Window(String title, Game game) {
         this.setTitle(title);
         this.add(game);
-        this.pack();
         this.setResizable(false);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        this.setUndecorated(true);
         this.addWindowListener(this);
         this.setBackground(Color.BLACK);
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);

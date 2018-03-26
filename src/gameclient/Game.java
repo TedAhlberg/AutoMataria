@@ -43,6 +43,15 @@ public class Game extends Canvas {
         Rectangle bounds = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
         scale = Math.min(bounds.getWidth() / GameServer.WIDTH, bounds.getHeight() / GameServer.HEIGHT);
 
+        Graphics2D g = (Graphics2D) background.getGraphics();
+        g.scale(scale, scale);
+        g.setPaint(new Color(1,1,1,0.2f));
+        for (int i = 0; i <= GameServer.WIDTH; i+=100) {
+            g.drawLine(i, 0, i, GameServer.HEIGHT);
+            g.drawLine(0, i, GameServer.WIDTH, i);
+        }
+        g.dispose();
+
         try {
             Socket socket = new Socket(serverIP, serverPort);
             client = new ClientConnection(socket, gameObjects -> render((Collection<GameObject>) gameObjects));
