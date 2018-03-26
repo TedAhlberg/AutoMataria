@@ -1,6 +1,7 @@
 package gameserver;
 
 import common.*;
+import gameclient.Game;
 
 import java.awt.*;
 import java.util.*;
@@ -18,7 +19,7 @@ public class GameServer implements ClientListener {
     private int fps = 60;
     private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 2;
+    private int playerSpeed = 1;
 
     private Random random = new Random();
 
@@ -52,7 +53,7 @@ public class GameServer implements ClientListener {
     @Override
     public void onData(Client client, Object value) {
         if (value instanceof String && !players.containsKey(client)) {
-            Player player = new Player(random.nextInt(400), random.nextInt(400), (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
+            Player player = new Player(random.nextInt(Game.WIDTH), random.nextInt(Game.HEIGHT), (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
             player.setSpeed(playerSpeed);
             gameObjects.add(player);
             players.put(client, player);

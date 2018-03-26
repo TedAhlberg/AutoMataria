@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * @author Johannes Bluml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 1000, HEIGHT = 1000;
+    public static final int WIDTH = 100, HEIGHT = 100;
     public static final String TITLE = "Auto-Mataria";
 
     private ClientConnection client;

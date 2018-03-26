@@ -29,10 +29,10 @@ public class Player extends GameObject implements Serializable {
     public void render(Graphics g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
-        g.setFont(new Font("Orbitron", Font.BOLD, 20));
+        g.setFont(new Font("Orbitron", Font.BOLD, 2));
         String name = this.getName().toUpperCase();
         if (dead) name += " (DEAD)";
-        g.drawString(name, x, y - 12);
+        g.drawString(name, x, y - 2);
     }
 
     public void tick() {
