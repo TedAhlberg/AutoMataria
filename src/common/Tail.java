@@ -13,7 +13,7 @@ public class Tail extends GameObject implements Serializable {
         super(player.getX(), player.getY(), player.getName() + "'s tail");
         width = player.getWidth();
         height = player.getHeight();
-        color = player.getColor();
+        color = player.getColor().darker().darker();
 
         if (player.getDirection() == Direction.Up) {
             y += height;
