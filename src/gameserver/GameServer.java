@@ -16,10 +16,10 @@ public class GameServer implements ClientListener {
     private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
-    private int fps = 60;
+    private int fps = 30;
     private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 1;
+    private int playerSpeed = 4;
 
     private Random random = new Random();
 

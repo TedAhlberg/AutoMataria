@@ -8,7 +8,7 @@ import java.io.Serializable;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
-    protected int x, y, speed, width = 1, height = 1;
+    protected int x, y, speed, width = 10, height = 10;
     protected Direction direction = Direction.Static;
     protected String name;
 
