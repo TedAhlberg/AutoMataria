@@ -1,34 +1,60 @@
 package gameclient;
 
-import common.*;
+import common.GameObject;
+import gameserver.GameServer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import java.net.*;
-import java.util.concurrent.*;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Collection;
 
 /**
  * @author Johannes Bluml
  */
 public class Game extends Canvas {
-    public static final int WIDTH = 10000, HEIGHT = 10000;
     public static final String TITLE = "Auto-Mataria";
+    private final double scale;
 
     private ClientConnection client;
     private String serverIP = "localhost";
     private int serverPort = 32000;
-
-    private Image splashscreen = Toolkit.getDefaultToolkit().getImage("resources/Stars.png").getScaledInstance(WIDTH, HEIGHT, Image.SCALE_SMOOTH);
+    private BufferedImage background;
 
     public Game() {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
         new Window(TITLE, this);
 
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        try {
+            env.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
+            background = ImageIO.read(new File("resources/Stars.png"));
+        } catch (IOException | FontFormatException e) {
+            System.out.println("Failed to load resources.");
+            e.printStackTrace();
+        }
+
+        Rectangle bounds = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+        scale = Math.min(bounds.getWidth() / GameServer.WIDTH, bounds.getHeight() / GameServer.HEIGHT);
+
+        Graphics2D g = (Graphics2D) background.getGraphics();
+        g.scale(scale, scale);
+        g.setPaint(new Color(1, 1, 1, 0.2f));
+        for (int i = 0; i <= GameServer.WIDTH; i += GameServer.GRIDSIZE) {
+            g.drawLine(i, 0, i, GameServer.HEIGHT);
+        }
+        for (int i = 0; i <= GameServer.HEIGHT; i += GameServer.GRIDSIZE) {
+            g.drawLine(0, i, GameServer.WIDTH, i);
+        }
+        g.dispose();
+
         try {
             Socket socket = new Socket(serverIP, serverPort);
-            client = new ClientConnection(socket, gameObjects -> render((CopyOnWriteArrayList<GameObject>) gameObjects));
+            client = new ClientConnection(socket, gameObjects -> render((Collection<GameObject>) gameObjects));
             client.send(playerName);
             this.addKeyListener(new KeyInput(client));
             this.requestFocus();
@@ -46,38 +72,23 @@ public class Game extends Canvas {
     }
 
     public static void main(String[] args) {
-        // Load ORBITRON font
-        try {
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
-        } catch (IOException|FontFormatException e) {
-            e.printStackTrace();
-        }
         new Game();
     }
 
-    private void render(CopyOnWriteArrayList<GameObject> gameObjects) {
+    private void render(Collection<GameObject> gameObjects) {
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null) {
             this.createBufferStrategy(2);
             return;
         }
-
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-        Rectangle bounds = g.getDeviceConfiguration().getBounds();
-        double scale = Math.min(bounds.getWidth() / WIDTH, bounds.getHeight() / HEIGHT);
-        g.scale(scale,scale);
 
-        // g.setColor(Color.BLACK);
-        // g.fillRect(0, 0, WIDTH, HEIGHT);
-
-        g.drawImage(splashscreen, 0, 0, this);
-
+        g.drawImage(background, 0, 0, this);
+        g.scale(scale, scale);
         gameObjects.forEach(gameObject -> gameObject.render(g));
 
         g.dispose();
-
         bs.show();
-
         Toolkit.getDefaultToolkit().sync();
     }
 }

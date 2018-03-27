@@ -1,28 +1,25 @@
 package common;
 
-import java.awt.*;
-import java.io.Serializable;
-
 /**
  * @author Johannes Blüml
  */
-public class Tail extends GameObject implements Serializable {
-    private final Color color;
+public class Trail extends Wall {
 
-    public Tail(Player player) {
-        super(player.getX(), player.getY(), player.getName() + "'s tail");
-        width = player.getWidth();
-        height = player.getHeight();
-        color = player.getColor();
+    public Trail(Player player) {
+        super(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getName() + "'s tail", player.getColor().darker().darker());
 
         if (player.getDirection() == Direction.Up) {
             y += height;
+            height = player.getSpeed();
         } else if (player.getDirection() == Direction.Down) {
-            y -= height;
+            y -= player.getSpeed();
+            height = player.getSpeed();
         } else if (player.getDirection() == Direction.Left) {
             x += width;
+            width = player.getSpeed();
         } else if (player.getDirection() == Direction.Right) {
-            x -= width;
+            x -= player.getSpeed();
+            width = player.getSpeed();
         }
     }
 
@@ -38,12 +35,5 @@ public class Tail extends GameObject implements Serializable {
         } else if (direction == Direction.Right) {
             width += size;
         }
-    }
-
-    public void tick() {}
-
-    public void render(Graphics g) {
-        g.setColor(color);
-        g.fillRect(x, y, width, height);
     }
 }

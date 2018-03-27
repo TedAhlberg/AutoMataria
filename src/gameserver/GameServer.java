@@ -1,10 +1,9 @@
 package gameserver;
 
 import common.*;
-import gameclient.Game;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -12,14 +11,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Johannes Blüml
  */
 public class GameServer implements ClientListener {
-    private Timer timer;
+    public static final int GRIDSIZE = 100, WIDTH = 50 * GRIDSIZE, HEIGHT = 50 * GRIDSIZE;
+
     private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
 
     private int fps = 30;
     private int tickRate = 1000 / fps;
     private int serverPort = 32000;
-    private int playerSpeed = 50;
+    private int playerSpeed = GRIDSIZE / 4;
 
     private Random random = new Random();
 
@@ -28,21 +28,26 @@ public class GameServer implements ClientListener {
         server.start(serverPort);
         server.addListener(this);
 
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            public void run() {
-                tick();
+        gameObjects.add(new Wall(0, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(HEIGHT - GRIDSIZE, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(0, 0, HEIGHT, GRIDSIZE, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(0, HEIGHT - GRIDSIZE, HEIGHT, GRIDSIZE, "WALL", Color.CYAN.darker().darker()));
+
+        new Thread(() -> {
+            while (true) {
+                gameObjects.forEach(gameObject -> gameObject.tick());
+                players.keySet().forEach(client -> client.send(gameObjects));
+                try {
+                    Thread.sleep(tickRate);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 0, tickRate);
+        }).start();
     }
 
     public static void main(String[] args) {
         new GameServer();
-    }
-
-    private void tick() {
-        gameObjects.forEach(gameObject -> gameObject.tick());
-        players.keySet().forEach(client -> client.send(gameObjects));
     }
 
     @Override
@@ -53,7 +58,9 @@ public class GameServer implements ClientListener {
     @Override
     public void onData(Client client, Object value) {
         if (value instanceof String && !players.containsKey(client)) {
-            Player player = new Player(random.nextInt(Game.WIDTH / 10000) * 10000, random.nextInt(Game.HEIGHT / 10000) * 10000, (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
+            int startPositionX = random.nextInt(GameServer.WIDTH / GameServer.GRIDSIZE) * GameServer.GRIDSIZE;
+            int startPositionY = random.nextInt(GameServer.HEIGHT / GameServer.GRIDSIZE) * GameServer.GRIDSIZE;
+            Player player = new Player(startPositionX, startPositionY, (String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)), gameObjects);
             player.setSpeed(playerSpeed);
             gameObjects.add(player);
             players.put(client, player);
