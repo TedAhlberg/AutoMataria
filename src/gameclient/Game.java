@@ -1,7 +1,7 @@
 package gameclient;
 
+import common.GameMap;
 import common.GameObject;
-import gameserver.GameServer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,7 +18,8 @@ import java.util.Collection;
  */
 public class Game extends Canvas {
     public static final String TITLE = "Auto-Mataria";
-    private final double scale;
+    private double scale;
+    private GameMap map;
 
     private ClientConnection client;
     private String serverIP = "localhost";
@@ -32,29 +33,20 @@ public class Game extends Canvas {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
             env.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
-            background = ImageIO.read(new File("resources/Stars.png"));
         } catch (IOException | FontFormatException e) {
             System.out.println("Failed to load resources.");
             e.printStackTrace();
         }
 
-        Rectangle bounds = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
-        scale = Math.min(bounds.getWidth() / GameServer.WIDTH, bounds.getHeight() / GameServer.HEIGHT);
-
-        Graphics2D g = (Graphics2D) background.getGraphics();
-        g.scale(scale, scale);
-        g.setPaint(new Color(1, 1, 1, 0.2f));
-        for (int i = 0; i <= GameServer.WIDTH; i += GameServer.GRIDSIZE) {
-            g.drawLine(i, 0, i, GameServer.HEIGHT);
-        }
-        for (int i = 0; i <= GameServer.HEIGHT; i += GameServer.GRIDSIZE) {
-            g.drawLine(0, i, GameServer.WIDTH, i);
-        }
-        g.dispose();
-
         try {
             Socket socket = new Socket(serverIP, serverPort);
-            client = new ClientConnection(socket, gameObjects -> render((Collection<GameObject>) gameObjects));
+            client = new ClientConnection(socket, data -> {
+                if (data instanceof GameMap) {
+                    changeGameMap((GameMap) data);
+                } else if (data instanceof Collection) {
+                    render((Collection<GameObject>) data);
+                }
+            });
             client.send(playerName);
             this.addKeyListener(new KeyInput(client));
             this.requestFocus();
@@ -63,6 +55,31 @@ public class Game extends Canvas {
             JOptionPane.showMessageDialog(null, "Unable to connect server.");
             System.exit(1);
         }
+    }
+
+    private void changeGameMap(GameMap map) {
+        this.map = map;
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        try {
+            background = ImageIO.read(new File(map.getBackground()));
+        } catch (IOException e) {
+            System.out.println("Failed to load resources.");
+            e.printStackTrace();
+        }
+
+        Rectangle screen = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+        this.scale = Math.min(screen.getWidth() / map.getWidth(), screen.getHeight() / map.getHeight());
+
+        Graphics2D g = (Graphics2D) background.getGraphics();
+        g.scale(this.scale, this.scale);
+        g.setPaint(new Color(1, 1, 1, 0.2f));
+        for (int i = 0; i <= map.getWidth(); i += map.getGridSize()) {
+            g.drawLine(i, 0, i, map.getHeight());
+        }
+        for (int i = 0; i <= map.getHeight(); i += map.getGridSize()) {
+            g.drawLine(0, i, map.getWidth(), i);
+        }
+        g.dispose();
     }
 
     public static int clamp(int var, int min, int max) {
