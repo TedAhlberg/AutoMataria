@@ -28,10 +28,10 @@ public class GameServer implements ClientListener {
         server.start(serverPort);
         server.addListener(this);
 
-        gameObjects.add(new Wall(0, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN));
-        gameObjects.add(new Wall(HEIGHT - GRIDSIZE, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN));
-        gameObjects.add(new Wall(0, 0, HEIGHT, GRIDSIZE, "WALL", Color.CYAN));
-        gameObjects.add(new Wall(0, HEIGHT - GRIDSIZE, HEIGHT, GRIDSIZE, "WALL", Color.CYAN));
+        gameObjects.add(new Wall(0, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(HEIGHT - GRIDSIZE, 0, GRIDSIZE, WIDTH, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(0, 0, HEIGHT, GRIDSIZE, "WALL", Color.CYAN.darker().darker()));
+        gameObjects.add(new Wall(0, HEIGHT - GRIDSIZE, HEIGHT, GRIDSIZE, "WALL", Color.CYAN.darker().darker()));
 
         new Thread(() -> {
             while (true) {
