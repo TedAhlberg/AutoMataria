@@ -2,7 +2,7 @@ package common;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameMap implements Serializable {
     private String name = "default";
     private String musicTrack;
-    private int players = 4, gridSize = 100, width = 50 * gridSize, height = 50 * gridSize, playerSpeed = gridSize / 4;
+    private int players = 4, gridSize = 100, width = 50 * gridSize, height = 50 * gridSize, playerSpeed = gridSize / 5;
     private ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private String background = "resources/Stars.png";
     private int[][] startPositions;
@@ -29,16 +29,16 @@ public class GameMap implements Serializable {
     }
 
     public void generateStartPositions() {
-        int p1x = (width/2)/2;
-        int p1y = (height/2)/2;
+        int p1x = (width / 2) / 2;
+        int p1y = (height / 2) / 2;
 
         int p2x = p1x;
-        int p2y = (height/2)+p1y;
+        int p2y = (height / 2) + p1y;
 
-        int p3x = (width/2)+p1x;
+        int p3x = (width / 2) + p1x;
         int p3y = p1y;
 
-        int p4x = (width/2)+p1x;
+        int p4x = (width / 2) + p1x;
         int p4y = p2y;
 
         startPositions = new int[players][2];
@@ -65,6 +65,10 @@ public class GameMap implements Serializable {
 
     public int getPlayerSpeed() {
         return playerSpeed;
+    }
+
+    public void setPlayerSpeed(int playerSpeed) {
+        this.playerSpeed = playerSpeed;
     }
 
     public Player newPlayer(String name) {
@@ -95,5 +99,9 @@ public class GameMap implements Serializable {
 
     public String getBackground() {
         return background;
+    }
+
+    public void add(GameObject object) {
+        gameObjects.add(object);
     }
 }

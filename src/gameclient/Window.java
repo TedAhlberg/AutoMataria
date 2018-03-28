@@ -7,7 +7,7 @@ import java.awt.event.*;
 /**
  * @author Johannes Blüml
  */
-public class Window extends Frame implements WindowListener {
+public class Window extends JFrame implements WindowListener {
     public Window(String title, Game game) {
         this.setTitle(title);
         this.add(game);

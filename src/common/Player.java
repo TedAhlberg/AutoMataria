@@ -7,29 +7,38 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Johannes Blüml
  */
 public class Player extends GameObject {
-    private Direction previousDirection;
     private GameMap map;
     private ConcurrentLinkedQueue<Direction> inputQueue;
-    private Trail lastTrail;
+    private Trail trail;
     private Color color;
     private boolean dead;
-    private boolean hasTeleported;
+    private int lastGridPositionX;
+    private int lastGridPositionY;
+    private int gridPositionY;
+    private int gridPositionX;
 
     public Player(int x, int y, String name, Color color, GameMap map) {
         super(x, y, name);
+        lastGridPositionX = x;
+        lastGridPositionY = y;
         this.width = map.getGridSize();
         this.height = map.getGridSize();
         this.color = color;
         this.map = map;
-        this.previousDirection = direction;
         this.inputQueue = new ConcurrentLinkedQueue<>();
+        this.trail = new Trail(color, map);
+        map.add(trail);
     }
 
     public boolean isDead() {
         return dead;
     }
 
-    public void render(Graphics g) {
+    public void setDead() {
+        dead = true;
+    }
+
+    public void render(Graphics2D g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
         g.setFont(new Font("Orbitron", Font.BOLD, 100));
@@ -45,10 +54,17 @@ public class Player extends GameObject {
         } else if (inputQueue.peek() == direction) {
             inputQueue.remove();
         } else if (x % map.getGridSize() == 0 && y % map.getGridSize() == 0) {
-            previousDirection = direction;
             direction = inputQueue.remove();
         }
         move();
+
+        gridPositionX = x / map.getGridSize();
+        gridPositionY = y / map.getGridSize();
+        if (gridPositionX != lastGridPositionX || gridPositionY != lastGridPositionY) {
+            trail.add(lastGridPositionX, lastGridPositionY);
+            lastGridPositionX = gridPositionX;
+            lastGridPositionY = gridPositionY;
+        }
 
         checkCollisions();
     }
@@ -56,16 +72,12 @@ public class Player extends GameObject {
     private void teleportIfOutsideMap() {
         if (x < 0) {
             x += map.getWidth();
-            hasTeleported = true;
         } else if (x > map.getWidth()) {
             x -= map.getWidth();
-            hasTeleported = true;
         } else if (y < 0) {
             y += map.getHeight();
-            hasTeleported = true;
         } else if (y > map.getHeight()) {
             y -= map.getHeight();
-            hasTeleported = true;
         }
     }
 
@@ -82,35 +94,26 @@ public class Player extends GameObject {
             default: return;
         }
         teleportIfOutsideMap();
-        growTrail();
-    }
-
-    public Trail getLastTrail() {
-        return lastTrail;
-    }
-
-    private void growTrail() {
-        if (previousDirection != direction || hasTeleported) {
-            if (hasTeleported) {
-                lastTrail.grow(direction, width);
-                hasTeleported = false;
-            }
-            lastTrail = new Trail(this);
-            map.getGameObjects().add(lastTrail);
-        } else if (lastTrail != null) {
-            lastTrail.grow(direction, speed);
-        }
+        //growTrail();
     }
 
     private void checkCollisions() {
-        map.getGameObjects().forEach(object -> {
-            if (this.equals(object) || dead) return;
-            if ((object instanceof Player || object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
-                this.dead = true;
+        for (GameObject object : map.getGameObjects()) {
+            if (this.equals(object) || dead) continue;
+            if ((object instanceof Player) && this.getBounds().intersects(object.getBounds())) {
+                setDead();
+                ((Player) object).setDead();
                 System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());
-                System.out.println(this);
             }
-        });
+            else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
+                setDead();
+                System.out.println(this.getName() + " CRASHED INTO A WALL");
+            }
+            else if (object instanceof Trail && ((Trail) object).contains(gridPositionX, gridPositionY)) {
+                setDead();
+                System.out.println(this.getName() + " CRASHED INTO A TRAIL");
+            }
+        }
     }
 
     public String toString() {

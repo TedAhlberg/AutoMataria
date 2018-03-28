@@ -17,7 +17,7 @@ public class Wall extends GameObject {
 
     public void tick() {}
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
     }

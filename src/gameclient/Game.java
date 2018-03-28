@@ -1,39 +1,39 @@
 package gameclient;
 
-import com.sun.corba.se.impl.orbutil.graph.Graph;
 import common.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author Johannes Bluml
  */
-public class Game extends Canvas {
+public class Game extends JPanel {
     public static final String TITLE = "Auto-Mataria";
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArraySet<Point> paintedPositions = new CopyOnWriteArraySet<>();
     private double scale;
     private GameMap map;
+    private Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     private ClientConnection client;
     private String serverIP = "localhost";
     private int serverPort = 32000;
     private BufferedImage background;
-    private Audio backgroundMusic = new Audio("AM-trck1.mp3");
+    //private Audio backgroundMusic = new Audio("AM-trck1.mp3");
 
     public Game() {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
         new Window(TITLE, this);
-        backgroundMusic.play();
+        //backgroundMusic.play();
 
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
@@ -49,11 +49,8 @@ public class Game extends Canvas {
                 if (data instanceof GameMap) {
                     changeGameMap((GameMap) data);
                 } else if (data instanceof Collection) {
-                    gameObjects.clear();
+                    gameObjects = new CopyOnWriteArrayList<>();
                     gameObjects.addAll((Collection<GameObject>) data);
-//                    for (GameObject gameObject : ((Collection<GameObject>) data)) {
-//                        gameObjects.add(gameObject);
-//                    }
                 }
             });
             client.send(playerName);
@@ -97,40 +94,34 @@ public class Game extends Canvas {
         }
         g.dispose();
 
-        new Thread(() -> render()).start();
+        Timer t = new Timer(16, e -> this.repaint());
+        t.start();
     }
 
-    private void render() {
-        while (true) {
-            BufferStrategy bs = this.getBufferStrategy();
-            if (bs == null) {
-                this.createBufferStrategy(2);
-                continue;
-            }
-            Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-            Graphics2D gBackground = (Graphics2D) background.getGraphics();
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
-            g.drawImage(background, 0, 0, this);
-            g.scale(scale, scale);
-            gBackground.scale(scale, scale);
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject == null) continue;
-                if (gameObject instanceof Wall) {
-                    gameObject.render(gBackground);
-                } else {
-                    gameObject.render(g);
-                }
-            }
+        if (background == null) return;
 
-            g.dispose();
-            bs.show();
-            Toolkit.getDefaultToolkit().sync();
+        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D gBackground = (Graphics2D) background.getGraphics();
 
-            try {
-                Thread.sleep(16);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        g2.drawImage(background, 0, 0, this);
+        g2.scale(scale, scale);
+        gBackground.scale(scale, scale);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject == null) continue;
+            if (gameObject instanceof Trail) {
+                ((Trail) gameObject).removeAll(paintedPositions);
+                paintedPositions.addAll(((Trail) gameObject).getAll());
+                gameObject.render(gBackground);
+            } else if (gameObject instanceof Wall) {
+                gameObject.render(gBackground);
+            } else {
+                gameObject.render(g2);
             }
         }
+
+        toolkit.sync();
     }
 }

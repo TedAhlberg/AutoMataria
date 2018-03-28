@@ -1,39 +1,45 @@
 package common;
 
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * @author Johannes Blüml
  */
-public class Trail extends Wall {
+public class Trail extends GameObject {
+    HashSet<Point> positions = new HashSet<>();
+    private Color color;
+    private GameMap map;
 
-    public Trail(Player player) {
-        super(player.getX(), player.getY(), player.getWidth(), player.getHeight(), player.getName() + "'s tail", player.getColor().darker().darker());
-
-        if (player.getDirection() == Direction.Up) {
-            y += height;
-            height = player.getSpeed();
-        } else if (player.getDirection() == Direction.Down) {
-            y -= player.getSpeed();
-            height = player.getSpeed();
-        } else if (player.getDirection() == Direction.Left) {
-            x += width;
-            width = player.getSpeed();
-        } else if (player.getDirection() == Direction.Right) {
-            x -= player.getSpeed();
-            width = player.getSpeed();
-        }
+    Trail(Color color, GameMap map) {
+        super(0, 0, "trail");
+        this.color = color;
+        this.map = map;
     }
 
-    public void grow(Direction direction, int size) {
-        if (direction == Direction.Up) {
-            y -= size;
-            height += size;
-        } else if (direction == Direction.Down) {
-            height += size;
-        } else if (direction == Direction.Left) {
-            x -= size;
-            width += size;
-        } else if (direction == Direction.Right) {
-            width += size;
+    public void add(int x, int y) {
+        positions.add(new Point(x, y));
+    }
+
+    public boolean contains(int x, int y) {
+        return positions.contains(new Point(x, y));
+    }
+
+    public void removeAll(Collection<Point> points) {
+        positions.removeAll(points);
+    }
+
+    public Collection<Point> getAll() {
+        return positions;
+    }
+
+    public void tick() {}
+
+    public void render(Graphics2D g) {
+        g.setColor(color.brighter());
+        for (Point position : positions) {
+            g.drawRect(position.x * map.getGridSize(), position.y * map.getGridSize(), map.getGridSize(), map.getGridSize());
         }
     }
 }

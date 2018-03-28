@@ -15,7 +15,7 @@ public class StartTestGame {
         map.setEdgeWalls(Color.CYAN.darker().darker());
 
         // Start a game server
-        new GameServer(32000, 30, 4, map);
+        new GameServer(32000, 40, 100, 4, map);
 
         // Start a game client
         new Game();

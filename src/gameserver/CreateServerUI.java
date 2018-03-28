@@ -13,7 +13,7 @@ public class CreateServerUI {
     private static void start(int port, int updatesPerSecond, int players) {
         GameMap map = new GameMap("default");
         map.setEdgeWalls(Color.CYAN.darker().darker());
-        server = new GameServer(port, updatesPerSecond, players, map);
+        server = new GameServer(port, updatesPerSecond, updatesPerSecond, players, map);
     }
     private static void stop() {
         if (server != null) {

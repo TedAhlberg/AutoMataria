@@ -12,13 +12,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class GameServer implements ClientListener {
     private final ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
-    private final int tickRate, maxPlayers;
+    private final int tickRate;
+    private int updateRate;
+    private final int maxPlayers;
     private ServerConnection server;
     private boolean running = true;
     private final GameMap map;
 
-    public GameServer(int serverPort, int updatesPerSecond, int maxPlayers, GameMap map) {
-        this.tickRate = 1000 / updatesPerSecond;
+    public GameServer(int serverPort, int tickRate, int updateRate, int maxPlayers, GameMap map) {
+        this.tickRate = tickRate;
+        this.updateRate = (updateRate > tickRate) ? updateRate / tickRate : 1;
         this.maxPlayers = maxPlayers;
         this.map = map;
 
@@ -35,19 +38,16 @@ public class GameServer implements ClientListener {
     }
 
     private void gameLoop() {
+        int counter = 0;
         while (running) {
-            //map.getGameObjects().forEach(gameObject -> gameObject.tick());
-            Collection<GameObject> sendObjects = new LinkedList<>();
+            counter += 1;
             for (GameObject gameObject : map.getGameObjects()) {
-                if (gameObject instanceof Player) {
-                    gameObject.tick();
-                    sendObjects.add(((Player) gameObject).getLastTrail());
-                }
-                if (!(gameObject instanceof Wall)) {
-                    sendObjects.add(gameObject);
-                }
+                gameObject.tick();
             }
-            players.keySet().forEach(client -> client.send(sendObjects));
+            if (counter % updateRate == 0) {
+                players.keySet().forEach(client -> client.send(map.getGameObjects()));
+                counter = 0;
+            }
             try {
                 Thread.sleep(tickRate);
             } catch (InterruptedException e) {
