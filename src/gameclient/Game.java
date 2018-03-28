@@ -24,7 +24,7 @@ public class Game extends Canvas {
     private String serverIP = "localhost";
     private int serverPort = 32000;
     private BufferedImage background;
-    private AudioPlayer backgroundMusic = AudioPlayer.getSound("resources/Music/AM-track1.wav");
+    private Audio backgroundMusic = new Audio("AM-trck1.mp3");
 
     public Game() {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
