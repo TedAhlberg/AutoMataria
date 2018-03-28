@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
-    protected int x, y, speed, width = GameServer.GRIDSIZE, height = GameServer.GRIDSIZE;
+    protected int x, y, speed, width, height;
     protected Direction direction = Direction.Static;
     protected String name;
 

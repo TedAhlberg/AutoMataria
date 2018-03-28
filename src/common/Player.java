@@ -1,27 +1,26 @@
 package common;
 
-import gameserver.GameServer;
-
 import java.awt.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Johannes Blüml
  */
 public class Player extends GameObject {
     private Direction previousDirection;
-    private CopyOnWriteArrayList<GameObject> gameObjects;
+    private GameMap map;
     private ConcurrentLinkedQueue<Direction> inputQueue;
     private Trail lastTrail;
     private Color color;
     private boolean dead;
     private boolean hasTeleported;
 
-    public Player(int x, int y, String name, Color color, CopyOnWriteArrayList<GameObject> gameObjects) {
+    public Player(int x, int y, String name, Color color, GameMap map) {
         super(x, y, name);
+        this.width = map.getGridSize();
+        this.height = map.getGridSize();
         this.color = color;
-        this.gameObjects = gameObjects;
+        this.map = map;
         this.previousDirection = direction;
         this.inputQueue = new ConcurrentLinkedQueue<>();
     }
@@ -41,7 +40,7 @@ public class Player extends GameObject {
         if (inputQueue.isEmpty()) {
         } else if (inputQueue.peek() == direction) {
             inputQueue.remove();
-        } else if (x % GameServer.GRIDSIZE == 0 && y % GameServer.GRIDSIZE == 0) {
+        } else if (x % map.getGridSize() == 0 && y % map.getGridSize() == 0) {
             previousDirection = direction;
             direction = inputQueue.remove();
         }
@@ -52,16 +51,16 @@ public class Player extends GameObject {
 
     private void teleportIfOutsideMap() {
         if (x < 0) {
-            x += GameServer.WIDTH;
+            x += map.getWidth();
             hasTeleported = true;
-        } else if (x > GameServer.WIDTH) {
-            x -= GameServer.WIDTH;
+        } else if (x > map.getWidth()) {
+            x -= map.getWidth();
             hasTeleported = true;
         } else if (y < 0) {
-            y += GameServer.HEIGHT;
+            y += map.getHeight();
             hasTeleported = true;
-        } else if (y > GameServer.HEIGHT) {
-            y -= GameServer.HEIGHT;
+        } else if (y > map.getHeight()) {
+            y -= map.getHeight();
             hasTeleported = true;
         }
     }
@@ -89,15 +88,15 @@ public class Player extends GameObject {
                 hasTeleported = false;
             }
             lastTrail = new Trail(this);
-            gameObjects.add(lastTrail);
+            map.getGameObjects().add(lastTrail);
         } else if (lastTrail != null) {
             lastTrail.grow(direction, speed);
         }
     }
 
     private void checkCollisions() {
-        gameObjects.forEach(object -> {
-            if (this.equals(object)) return;
+        map.getGameObjects().forEach(object -> {
+            if (this.equals(object) || dead) return;
             if ((object instanceof Player || object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 this.dead = true;
                 System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());
