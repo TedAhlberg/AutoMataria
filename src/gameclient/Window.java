@@ -15,7 +15,6 @@ public class Window extends JFrame implements WindowListener {
         this.setUndecorated(true);
         this.addWindowListener(this);
         this.setBackground(Color.BLACK);
-        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
     }
 
     @Override

@@ -104,4 +104,12 @@ public class GameMap implements Serializable {
     public void add(GameObject object) {
         gameObjects.add(object);
     }
+
+    public void setWidth(int width) {
+        this.width = width * gridSize;
+    }
+
+    public void setHeight(int height) {
+        this.height = height * gridSize;
+    }
 }

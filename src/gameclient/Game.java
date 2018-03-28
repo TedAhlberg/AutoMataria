@@ -16,8 +16,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * @author Johannes Bluml
  */
-public class Game extends JPanel {
+public class Game extends JComponent {
     public static final String TITLE = "Auto-Mataria";
+    private Rectangle screen;
     private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
     private CopyOnWriteArraySet<Point> paintedPositions = new CopyOnWriteArraySet<>();
     private double scale;
@@ -25,15 +26,19 @@ public class Game extends JPanel {
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     private ClientConnection client;
-    private String serverIP = "localhost";
-    private int serverPort = 32000;
     private BufferedImage background;
-    //private Audio backgroundMusic = new Audio("AM-trck1.mp3");
+    private Audio backgroundMusic = new Audio("AM-trck1.mp3");
 
     public Game() {
+        this("localhost", 32000, null);
+    }
+    public Game(String serverIP, int serverPort) {
+        this(serverIP, serverPort, null);
+    }
+    public Game(String serverIP, int serverPort, Dimension windowSize) {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
-        new Window(TITLE, this);
-        //backgroundMusic.play();
+        Window window = new Window(TITLE, this);
+        backgroundMusic.play();
 
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
@@ -41,6 +46,18 @@ public class Game extends JPanel {
         } catch (IOException | FontFormatException e) {
             System.out.println("Failed to load resources.");
             e.printStackTrace();
+        }
+
+        if (windowSize == null) {
+            env.getDefaultScreenDevice().setFullScreenWindow(window);
+            screen = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+        } else {
+            window.setPreferredSize(windowSize);
+            window.setMinimumSize(windowSize);
+            window.setMaximumSize(windowSize);
+            window.pack();
+            window.setVisible(true);
+            screen = new Rectangle(windowSize);
         }
 
         try {
@@ -80,7 +97,6 @@ public class Game extends JPanel {
             // TODO: Set a default background when failed to load.
         }
 
-        Rectangle screen = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
         this.scale = Math.min(screen.getWidth() / map.getWidth(), screen.getHeight() / map.getHeight());
 
         Graphics2D g = (Graphics2D) background.getGraphics();
