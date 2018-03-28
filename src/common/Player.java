@@ -96,7 +96,7 @@ public class Player extends GameObject {
 
     private void checkCollisions() {
         map.getGameObjects().forEach(object -> {
-            if (this.equals(object)) return;
+            if (this.equals(object) || dead) return;
             if ((object instanceof Player || object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 this.dead = true;
                 System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());

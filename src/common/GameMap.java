@@ -15,6 +15,12 @@ public class GameMap implements Serializable {
     private ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private String background = "resources/Stars.png";
     private int[][] startPositions;
+    private Color[] playerColors = new Color[]{
+            new Color(0xff148c),
+            new Color(0xc8ff32),
+            new Color(0x1e96ff),
+            new Color(0xff6400)
+    };
     private int currentPlayers = 0;
 
     public GameMap(String name) {
@@ -46,7 +52,7 @@ public class GameMap implements Serializable {
         startPositions[3][1] = (p4y / gridSize) * gridSize;
     }
 
-    public void setWalls(Color color) {
+    public void setEdgeWalls(Color color) {
         gameObjects.add(new Wall(0, 0, gridSize, width, "WALL", color));
         gameObjects.add(new Wall(height - gridSize, 0, gridSize, width, "WALL", color));
         gameObjects.add(new Wall(0, 0, height, gridSize, "WALL", color));
@@ -61,10 +67,11 @@ public class GameMap implements Serializable {
         return playerSpeed;
     }
 
-    public Player newPlayer(String name, Color color) {
+    public Player newPlayer(String name) {
         if (currentPlayers >= players) return null;
-        int[] pos = startPositions[currentPlayers++];
-        Player player = new Player(pos[0], pos[1], name, color, this);
+        int[] pos = startPositions[currentPlayers];
+        Player player = new Player(pos[0], pos[1], name, playerColors[currentPlayers], this);
+        currentPlayers += 1;
         player.setSpeed(playerSpeed);
         gameObjects.add(player);
         return player;

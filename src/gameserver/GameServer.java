@@ -11,36 +11,40 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Johannes Blüml
  */
 public class GameServer implements ClientListener {
-    private ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
+    private final int tickRate, maxPlayers;
+    private ServerConnection server;
+    private boolean running = true;
+    private final GameMap map;
+    private final Random random = new Random();
 
-    private int fps = 30;
-    private int tickRate = 1000 / fps;
-    private int serverPort = 32000;
-    private GameMap map = new GameMap("default");
-    private Random random = new Random();
+    public GameServer(int serverPort, int updatesPerSecond, int maxPlayers, GameMap map) {
+        this.tickRate = 1000 / updatesPerSecond;
+        this.maxPlayers = maxPlayers;
+        this.map = map;
 
-    public GameServer() {
-        ServerConnection server = new ServerConnection();
-        server.start(serverPort);
+        server = new ServerConnection(serverPort);
+        new Thread(server).start();
         server.addListener(this);
 
-        map.setWalls(Color.CYAN.darker().darker());
-
-        new Thread(() -> {
-            while (true) {
-                map.getGameObjects().forEach(gameObject -> gameObject.tick());
-                players.keySet().forEach(client -> client.send(map.getGameObjects()));
-                try {
-                    Thread.sleep(tickRate);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        new Thread(() -> gameLoop()).start();
     }
 
-    public static void main(String[] args) {
-        new GameServer();
+    public void stop() {
+        running = false;
+        server.stop();
+    }
+
+    private void gameLoop() {
+        while (running) {
+            map.getGameObjects().forEach(gameObject -> gameObject.tick());
+            players.keySet().forEach(client -> client.send(map.getGameObjects()));
+            try {
+                Thread.sleep(tickRate);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -51,7 +55,7 @@ public class GameServer implements ClientListener {
     @Override
     public void onData(Client client, Object value) {
         if (value instanceof String && !players.containsKey(client)) {
-            Player player = map.newPlayer((String) value, new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+            Player player = map.newPlayer((String) value);
             if (player != null) {
                 System.out.println("Player connected: " + player);
                 client.send(map);
@@ -69,5 +73,6 @@ public class GameServer implements ClientListener {
     @Override
     public void onClose(Client client) {
         Player player = players.remove(client);
+        System.out.println("Player disconnected: " + player);
     }
 }

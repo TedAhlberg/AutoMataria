@@ -65,6 +65,7 @@ public class Game extends Canvas {
         } catch (IOException e) {
             System.out.println("Failed to load resources.");
             e.printStackTrace();
+            // TODO: Set a default background when failed to load.
         }
 
         Rectangle screen = env.getDefaultScreenDevice().getDefaultConfiguration().getBounds();
@@ -86,10 +87,6 @@ public class Game extends Canvas {
         if (var >= max) return max;
         if (var <= min) return min;
         return var;
-    }
-
-    public static void main(String[] args) {
-        new Game();
     }
 
     private void render(Collection<GameObject> gameObjects) {

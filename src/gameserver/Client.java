@@ -1,28 +1,32 @@
 package gameserver;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.Socket;
+import java.util.LinkedList;
 
 /**
  * @author Johannes Blüml
  */
 public class Client {
+    private boolean connected;
     private ObjectOutputStream outputStream;
+    private LinkedList<ClientListener> listeners;
 
     public Client(Socket socket, LinkedList<ClientListener> listeners) throws IOException {
+        this.listeners = listeners;
+        connected = true;
         outputStream = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
         listeners.forEach(listener -> listener.onConnect(this));
 
         new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (connected) {
                 try {
                     Object nextObject = inputStream.readObject();
                     listeners.forEach(listener -> listener.onData(this, nextObject));
                 } catch (IOException e) {
-                    Thread.currentThread().interrupt();
+                    connected = false;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -32,13 +36,12 @@ public class Client {
     }
 
     public void send(Object object) {
-        if (Thread.currentThread().isInterrupted()) return;
+        if (!connected) return;
         try {
             outputStream.writeObject(object);
             outputStream.reset();
         } catch (IOException e) {
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
+            connected = false;
         }
     }
 }
