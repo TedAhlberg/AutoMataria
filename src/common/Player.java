@@ -81,6 +81,10 @@ public class Player extends GameObject {
         growTrail();
     }
 
+    public Trail getLastTrail() {
+        return lastTrail;
+    }
+
     private void growTrail() {
         if (previousDirection != direction || hasTeleported) {
             if (hasTeleported) {

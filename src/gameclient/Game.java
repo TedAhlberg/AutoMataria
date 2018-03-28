@@ -1,7 +1,6 @@
 package gameclient;
 
-import common.GameMap;
-import common.GameObject;
+import common.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -57,6 +56,12 @@ public class Game extends Canvas {
         }
     }
 
+    public static int clamp(int var, int min, int max) {
+        if (var >= max) return max;
+        if (var <= min) return min;
+        return var;
+    }
+
     private void changeGameMap(GameMap map) {
         this.map = map;
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -83,23 +88,30 @@ public class Game extends Canvas {
         g.dispose();
     }
 
-    public static int clamp(int var, int min, int max) {
-        if (var >= max) return max;
-        if (var <= min) return min;
-        return var;
-    }
-
     private void render(Collection<GameObject> gameObjects) {
+        Graphics2D g = (Graphics2D) background.getGraphics();
+        g.scale(this.scale, this.scale);
+        for (GameObject object : gameObjects) {
+            if (object instanceof Wall) {
+                object.render(g);
+            }
+        }
+        g.dispose();
+
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null) {
             this.createBufferStrategy(2);
             return;
         }
-        Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+        g = (Graphics2D) bs.getDrawGraphics();
 
         g.drawImage(background, 0, 0, this);
         g.scale(scale, scale);
-        gameObjects.forEach(gameObject -> gameObject.render(g));
+        for (GameObject gameObject : gameObjects) {
+            if (!(gameObject instanceof Wall) && gameObject != null) {
+                gameObject.render(g);
+            }
+        }
 
         g.dispose();
         bs.show();

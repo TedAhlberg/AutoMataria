@@ -3,7 +3,7 @@ package gameserver;
 import common.*;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -16,7 +16,6 @@ public class GameServer implements ClientListener {
     private ServerConnection server;
     private boolean running = true;
     private final GameMap map;
-    private final Random random = new Random();
 
     public GameServer(int serverPort, int updatesPerSecond, int maxPlayers, GameMap map) {
         this.tickRate = 1000 / updatesPerSecond;
@@ -37,8 +36,18 @@ public class GameServer implements ClientListener {
 
     private void gameLoop() {
         while (running) {
-            map.getGameObjects().forEach(gameObject -> gameObject.tick());
-            players.keySet().forEach(client -> client.send(map.getGameObjects()));
+            //map.getGameObjects().forEach(gameObject -> gameObject.tick());
+            Collection<GameObject> sendObjects = new LinkedList<>();
+            for (GameObject gameObject : map.getGameObjects()) {
+                if (gameObject instanceof Player) {
+                    gameObject.tick();
+                    sendObjects.add(((Player) gameObject).getLastTrail());
+                }
+                if (!(gameObject instanceof Wall)) {
+                    sendObjects.add(gameObject);
+                }
+            }
+            players.keySet().forEach(client -> client.send(sendObjects));
             try {
                 Thread.sleep(tickRate);
             } catch (InterruptedException e) {
