@@ -1,5 +1,6 @@
 package gameclient;
 
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import common.*;
 
 import javax.imageio.ImageIO;
@@ -11,12 +12,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Johannes Bluml
  */
 public class Game extends Canvas {
     public static final String TITLE = "Auto-Mataria";
+    private CopyOnWriteArrayList<GameObject> gameObjects = new CopyOnWriteArrayList<>();
     private double scale;
     private GameMap map;
 
@@ -45,7 +49,11 @@ public class Game extends Canvas {
                 if (data instanceof GameMap) {
                     changeGameMap((GameMap) data);
                 } else if (data instanceof Collection) {
-                    render((Collection<GameObject>) data);
+                    gameObjects.clear();
+                    gameObjects.addAll((Collection<GameObject>) data);
+//                    for (GameObject gameObject : ((Collection<GameObject>) data)) {
+//                        gameObjects.add(gameObject);
+//                    }
                 }
             });
             client.send(playerName);
@@ -88,35 +96,41 @@ public class Game extends Canvas {
             g.drawLine(0, i, map.getWidth(), i);
         }
         g.dispose();
+
+        new Thread(() -> render()).start();
     }
 
-    private void render(Collection<GameObject> gameObjects) {
-        Graphics2D g = (Graphics2D) background.getGraphics();
-        g.scale(this.scale, this.scale);
-        for (GameObject object : gameObjects) {
-            if (object instanceof Wall) {
-                object.render(g);
+    private void render() {
+        while (true) {
+            BufferStrategy bs = this.getBufferStrategy();
+            if (bs == null) {
+                this.createBufferStrategy(2);
+                continue;
+            }
+            Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+            Graphics2D gBackground = (Graphics2D) background.getGraphics();
+
+            g.drawImage(background, 0, 0, this);
+            g.scale(scale, scale);
+            gBackground.scale(scale, scale);
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject == null) continue;
+                if (gameObject instanceof Wall) {
+                    gameObject.render(gBackground);
+                } else {
+                    gameObject.render(g);
+                }
+            }
+
+            g.dispose();
+            bs.show();
+            Toolkit.getDefaultToolkit().sync();
+
+            try {
+                Thread.sleep(16);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-        g.dispose();
-
-        BufferStrategy bs = this.getBufferStrategy();
-        if (bs == null) {
-            this.createBufferStrategy(2);
-            return;
-        }
-        g = (Graphics2D) bs.getDrawGraphics();
-
-        g.drawImage(background, 0, 0, this);
-        g.scale(scale, scale);
-        for (GameObject gameObject : gameObjects) {
-            if (!(gameObject instanceof Wall) && gameObject != null) {
-                gameObject.render(g);
-            }
-        }
-
-        g.dispose();
-        bs.show();
-        Toolkit.getDefaultToolkit().sync();
     }
 }

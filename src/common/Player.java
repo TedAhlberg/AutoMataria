@@ -25,6 +25,10 @@ public class Player extends GameObject {
         this.inputQueue = new ConcurrentLinkedQueue<>();
     }
 
+    public boolean isDead() {
+        return dead;
+    }
+
     public void render(Graphics g) {
         g.setColor(color);
         g.fillRect(x, y, width, height);
@@ -104,6 +108,7 @@ public class Player extends GameObject {
             if ((object instanceof Player || object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 this.dead = true;
                 System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());
+                System.out.println(this);
             }
         });
     }
