@@ -46,7 +46,6 @@ public class TestUI {
                 String[] parts = cbWindowSize.getSelectedItem().toString().split("x");
                 int width = Integer.parseInt(parts[0]);
                 int height = Integer.parseInt(parts[1]);
-                System.out.println(width + " " + height);
                 new Game(clientIP, clientPort, new Dimension(width, height));
             }
         });

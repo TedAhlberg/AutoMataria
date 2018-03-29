@@ -1,35 +1,40 @@
-package gameserver;
+package gameclient;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.LinkedList;
 
 /**
  * @author Johannes Blüml
  */
-public class Client {
-    private Thread thread;
+public class GameServerConnection {
     private ObjectOutputStream outputStream;
     private boolean connected;
-    private LinkedList<ClientListener> listeners;
+    private GameServerListener listener;
+    private Thread thread;
 
-    public Client(Socket socket, LinkedList<ClientListener> listeners) throws IOException {
-        this.listeners = listeners;
-        thread = new Thread(() -> listenForDataAndUpdateListeners(socket));
+    GameServerConnection(GameServerListener listener) {
+        this.listener = listener;
+    }
+
+    public void connect(String serverIP, int serverPort) {
+        if (thread != null) disconnect();
+
+        thread = new Thread(() -> startConnection(serverIP, serverPort));
         thread.start();
     }
 
-    private void listenForDataAndUpdateListeners(Socket socket) {
-        try (
-                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+    private void startConnection(String serverIP, int serverPort) {
+        try (Socket socket = new Socket(serverIP, serverPort);
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
             this.outputStream = outputStream;
             connected = true;
-            listeners.forEach(listener -> listener.onConnect(this));
+            listener.onConnect();
+
             while (connected) {
                 try {
                     Object nextObject = inputStream.readObject();
-                    listeners.forEach(listener -> listener.onData(this, nextObject));
+                    listener.onData(nextObject);
                 } catch (IOException e) {
                     e.printStackTrace();
                     connected = false;
@@ -39,11 +44,13 @@ public class Client {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            listener.onDisconnect();
+            thread = null;
         }
     }
 
     synchronized public void send(Object object) {
-        if (!connected) return;
         try {
             outputStream.writeObject(object);
             outputStream.flush();
@@ -56,5 +63,9 @@ public class Client {
 
     synchronized public void disconnect() {
         connected = false;
+    }
+
+    synchronized public boolean isConnected() {
+        return connected;
     }
 }

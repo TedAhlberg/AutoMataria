@@ -10,6 +10,7 @@ import java.util.LinkedList;
  */
 public class ServerConnection implements Runnable {
     private final LinkedList<ClientListener> listeners = new LinkedList<>();
+    private LinkedList<Client> clients = new LinkedList<>();
     private int port;
     private ServerSocket serverSocket;
 
@@ -37,6 +38,7 @@ public class ServerConnection implements Runnable {
 
     public void stop() {
         if (serverSocket == null) return;
+        clients.forEach(client -> client.disconnect());
         try {
             serverSocket.close();
         } catch (IOException e) {

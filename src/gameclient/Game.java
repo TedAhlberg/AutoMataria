@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -25,9 +24,10 @@ public class Game extends JComponent {
     private GameMap map;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-    private ClientConnection client;
+    private GameServerConnection client;
     private BufferedImage background;
     private Audio backgroundMusic = new Audio("AM-trck1.mp3");
+    private Timer reRenderTimer;
 
     public Game() {
         this("localhost", 32000, null);
@@ -38,7 +38,6 @@ public class Game extends JComponent {
     public Game(String serverIP, int serverPort, Dimension windowSize) {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
         Window window = new Window(TITLE, this);
-        backgroundMusic.play();
 
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
@@ -60,24 +59,35 @@ public class Game extends JComponent {
             screen = new Rectangle(windowSize);
         }
 
-        try {
-            Socket socket = new Socket(serverIP, serverPort);
-            client = new ClientConnection(socket, data -> {
+        client = new GameServerConnection(new GameServerListener() {
+            public void onConnect() {
+                System.out.println("Connected to server.");
+                client.send(playerName);
+            }
+            public void onDisconnect() {
+                System.out.println("Disconnected from server");
+                if (reRenderTimer != null && reRenderTimer.isRunning()) {
+                    reRenderTimer.stop();
+                }
+                backgroundMusic.stop();
+                window.dispose();
+            }
+            public void onData(Object data) {
                 if (data instanceof GameMap) {
                     changeGameMap((GameMap) data);
+                    reRenderTimer = new Timer(16, e -> Game.this.repaint());
+                    reRenderTimer.start();
+                    backgroundMusic.play();
                 } else if (data instanceof Collection) {
                     gameObjects = new CopyOnWriteArrayList<>();
                     gameObjects.addAll((Collection<GameObject>) data);
                 }
-            });
-            client.send(playerName);
-            this.addKeyListener(new KeyInput(client));
-            this.requestFocus();
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Unable to connect server.");
-            System.exit(1);
-        }
+            }
+        });
+        this.addKeyListener(new KeyInput(client));
+        this.requestFocus();
+
+        client.connect(serverIP, serverPort);
     }
 
     public static int clamp(int var, int min, int max) {
@@ -88,7 +98,6 @@ public class Game extends JComponent {
 
     private void changeGameMap(GameMap map) {
         this.map = map;
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
             background = ImageIO.read(new File(map.getBackground()));
         } catch (IOException e) {
@@ -109,9 +118,6 @@ public class Game extends JComponent {
             g.drawLine(0, i, map.getWidth(), i);
         }
         g.dispose();
-
-        Timer t = new Timer(16, e -> this.repaint());
-        t.start();
     }
 
     protected void paintComponent(Graphics g) {
