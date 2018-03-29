@@ -10,18 +10,18 @@ import java.io.Serializable;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 1;
+    protected final int id;
     protected int x, y, speed, width, height;
     protected Direction direction = Direction.Static;
-    protected String name;
 
-    public GameObject(int x, int y, String name) {
+    public GameObject(int x, int y) {
         this.x = x;
         this.y = y;
-        this.name = name;
+        this.id = ID.getNext();
     }
 
     public int hashCode() {
-        return name.hashCode();
+        return id;
     }
 
     public abstract void tick();
@@ -30,10 +30,6 @@ public abstract class GameObject implements Serializable {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Direction getDirection() {
@@ -84,7 +80,11 @@ public abstract class GameObject implements Serializable {
         this.width = width;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public boolean equals(Object o) {
-        return (o instanceof GameObject) && ((GameObject) o).getName().equals(this.getName());
+        return (o instanceof GameObject) && ((GameObject) o).id == this.id;
     }
 }

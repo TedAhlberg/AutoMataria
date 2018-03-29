@@ -13,7 +13,7 @@ public class Trail extends GameObject {
     private GameMap map;
 
     Trail(Color color, GameMap map) {
-        super(0, 0, "trail");
+        super(0, 0);
         this.color = color;
         this.map = map;
     }

@@ -14,13 +14,15 @@ public class Player extends GameObject {
     private boolean dead;
     private int lastGridPositionX;
     private int lastGridPositionY;
+    private String name;
     private int gridPositionY;
     private int gridPositionX;
 
     public Player(int x, int y, String name, Color color, GameMap map) {
-        super(x, y, name);
+        super(x, y);
         lastGridPositionX = x;
         lastGridPositionY = y;
+        this.name = name;
         this.width = map.getGridSize();
         this.height = map.getGridSize();
         this.color = color;
@@ -42,9 +44,9 @@ public class Player extends GameObject {
         g.setColor(color);
         g.fillRect(x, y, width, height);
         g.setFont(new Font("Orbitron", Font.BOLD, 100));
-        String name = this.getName().toUpperCase();
-        if (dead) name += " (DEAD)";
-        g.drawString(name, x, y - 50);
+        String displayName = name.toUpperCase();
+        if (dead) displayName += " (DEAD)";
+        g.drawString(displayName, x, y - 50);
     }
 
     public void tick() {
@@ -103,15 +105,15 @@ public class Player extends GameObject {
             if ((object instanceof Player) && this.getBounds().intersects(object.getBounds())) {
                 setDead();
                 ((Player) object).setDead();
-                System.out.println(this.getName() + " HAS CRASHED WITH " + object.getName());
+                System.out.println(name + " HAS CRASHED WITH " + ((Player) object).getName());
             }
             else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 setDead();
-                System.out.println(this.getName() + " CRASHED INTO A WALL");
+                System.out.println(name + " CRASHED INTO A WALL");
             }
             else if (object instanceof Trail && ((Trail) object).contains(gridPositionX, gridPositionY)) {
                 setDead();
-                System.out.println(this.getName() + " CRASHED INTO A TRAIL");
+                System.out.println(name + " CRASHED INTO A TRAIL");
             }
         }
     }
@@ -126,5 +128,9 @@ public class Player extends GameObject {
 
     public Color getColor() {
         return color;
+    }
+
+    public String getName() {
+        return name;
     }
 }

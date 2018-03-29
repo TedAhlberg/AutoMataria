@@ -8,8 +8,8 @@ import java.awt.*;
 public class Wall extends GameObject {
     private final Color color;
 
-    public Wall(int x, int y, int width, int height, String name, Color color) {
-        super(x, y, name);
+    public Wall(int x, int y, int width, int height, Color color) {
+        super(x, y);
         this.color = color;
         this.width = width;
         this.height = height;

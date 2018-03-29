@@ -53,10 +53,10 @@ public class GameMap implements Serializable {
     }
 
     public void setEdgeWalls(Color color) {
-        gameObjects.add(new Wall(0, 0, gridSize, width, "WALL", color));
-        gameObjects.add(new Wall(height - gridSize, 0, gridSize, width, "WALL", color));
-        gameObjects.add(new Wall(0, 0, height, gridSize, "WALL", color));
-        gameObjects.add(new Wall(0, height - gridSize, height, gridSize, "WALL", color));
+        gameObjects.add(new Wall(0, 0, gridSize, width, color));
+        gameObjects.add(new Wall(height - gridSize, 0, gridSize, width, color));
+        gameObjects.add(new Wall(0, 0, height, gridSize, color));
+        gameObjects.add(new Wall(0, height - gridSize, height, gridSize, color));
     }
 
     public Collection<GameObject> getGameObjects() {
