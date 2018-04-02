@@ -1,6 +1,7 @@
 package gameobjects;
 
-import common.*;
+import common.Direction;
+import common.GameMap;
 
 import java.awt.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,35 +13,23 @@ public class Player extends GameObject {
     private GameMap map;
     private ConcurrentLinkedQueue<Direction> inputQueue;
     private Trail trail;
+    private String name;
     private Color color;
     private boolean dead;
-    private int lastGridPositionX;
-    private int lastGridPositionY;
-    private String name;
-    private int gridPositionY;
-    private int gridPositionX;
+    private int gridPositionX, gridPositionY, previousGridPositionX, previousGridPositionY;
 
     public Player(int x, int y, String name, Color color, GameMap map) {
         super(x, y);
-        lastGridPositionX = x;
-        lastGridPositionY = y;
-        this.name = name;
+        previousGridPositionX = x;
+        previousGridPositionY = y;
         this.width = map.getGridMultiplier();
         this.height = map.getGridMultiplier();
+        this.name = name;
         this.color = color;
         this.map = map;
         this.inputQueue = new ConcurrentLinkedQueue<>();
         this.trail = new Trail(color, map);
         map.add(trail);
-    }
-
-    public boolean isDead() {
-        return dead;
-    }
-
-    public void setDead() {
-        direction = Direction.Static;
-        dead = true;
     }
 
     public void render(Graphics2D g) {
@@ -62,15 +51,17 @@ public class Player extends GameObject {
         checkCollisions();
     }
 
-    private void teleportIfOutsideMap() {
-        if (x < 0) {
-            x += map.getWidth();
-        } else if (x > map.getWidth()) {
-            x -= map.getWidth();
-        } else if (y < 0) {
-            y += map.getHeight();
-        } else if (y > map.getHeight()) {
-            y -= map.getHeight();
+    private void updateDirection() {
+        if (inputQueue.isEmpty()) return;
+
+        while (inputQueue.peek() == direction) {
+            inputQueue.remove();
+        }
+
+        if (inputQueue.isEmpty()) return;
+
+        if (x % map.getGridMultiplier() == 0 && y % map.getGridMultiplier() == 0) {
+            direction = inputQueue.remove();
         }
     }
 
@@ -86,16 +77,25 @@ public class Player extends GameObject {
                 break;
             default: return;
         }
-        teleportIfOutsideMap();
+        // Teleport to other side if player is outside the map
+        if (x < 0) {
+            x += map.getWidth();
+        } else if (x > map.getWidth()) {
+            x -= map.getWidth();
+        } else if (y < 0) {
+            y += map.getHeight();
+        } else if (y > map.getHeight()) {
+            y -= map.getHeight();
+        }
     }
 
     private void growTrail() {
         gridPositionX = x / map.getGridMultiplier();
         gridPositionY = y / map.getGridMultiplier();
-        if (gridPositionX != lastGridPositionX || gridPositionY != lastGridPositionY) {
-            trail.add(lastGridPositionX, lastGridPositionY);
-            lastGridPositionX = gridPositionX;
-            lastGridPositionY = gridPositionY;
+        if (gridPositionX != previousGridPositionX || gridPositionY != previousGridPositionY) {
+            trail.add(previousGridPositionX, previousGridPositionY);
+            previousGridPositionX = gridPositionX;
+            previousGridPositionY = gridPositionY;
         }
     }
 
@@ -116,33 +116,28 @@ public class Player extends GameObject {
         }
     }
 
-    public String toString() {
-        return "Player: " + name + " Position: x=" + x + ", y=" + y + " Speed: " + speed + " Direction: " + direction;
-    }
-
-    public void setDirection(Direction direction) {
-        inputQueue.add(direction);
-    }
-
-    private void updateDirection() {
-        if (inputQueue.isEmpty()) return;
-
-        while (inputQueue.peek() == direction) {
-            inputQueue.remove();
-        }
-
-        if (inputQueue.isEmpty()) return;
-
-        if (x % map.getGridMultiplier() == 0 && y % map.getGridMultiplier() == 0) {
-            direction = inputQueue.remove();
-        }
+    public String getName() {
+        return name;
     }
 
     public Color getColor() {
         return color;
     }
 
-    public String getName() {
-        return name;
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead() {
+        direction = Direction.Static;
+        dead = true;
+    }
+
+    public void setDirection(Direction direction) {
+        inputQueue.add(direction);
+    }
+
+    public String toString() {
+        return "Player: " + name + " Position: x=" + x + ", y=" + y + " Speed: " + speed + " Direction: " + direction;
     }
 }
