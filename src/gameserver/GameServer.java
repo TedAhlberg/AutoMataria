@@ -1,11 +1,10 @@
 package gameserver;
 
 import common.*;
+import gameobjects.GameObject;
+import gameobjects.Player;
 
-import java.awt.*;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Johannes Blüml
@@ -13,17 +12,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GameServer implements ClientListener {
     private final ConcurrentHashMap<Client, Player> players = new ConcurrentHashMap<>();
     private final int tickRate;
-    private int updateRate;
     private final int maxPlayers;
+    private final GameMap map;
+    private int updateRate;
     private ServerConnection server;
     private boolean running = true;
-    private final GameMap map;
 
     public GameServer(int serverPort, int tickRate, int updateRate, int maxPlayers, GameMap map) {
         this.tickRate = tickRate;
-        this.updateRate = (updateRate > tickRate) ? updateRate / tickRate : 1;
+        this.updateRate = updateRate;
         this.maxPlayers = maxPlayers;
         this.map = map;
+
+        map.setServerTickRate(tickRate);
 
         server = new ServerConnection(serverPort);
         new Thread(server).start();
@@ -38,20 +39,35 @@ public class GameServer implements ClientListener {
     }
 
     private void gameLoop() {
-        int counter = 0;
+        long tickRate = this.tickRate * 1000000;
+        long updateRate = this.updateRate * 1000000;
+        long previousTickTime = System.nanoTime();
+        long previousUpdateTime = System.nanoTime();
         while (running) {
-            counter += 1;
-            for (GameObject gameObject : map.getGameObjects()) {
-                gameObject.tick();
+            long nowTime = System.nanoTime();
+            long timeSinceLastTick = nowTime - previousTickTime;
+            long timeSinceLastUpdate = nowTime - previousUpdateTime;
+
+            if (timeSinceLastTick > tickRate) {
+                previousTickTime = System.nanoTime() - (timeSinceLastTick - tickRate);
+                for (GameObject gameObject : map.getGameObjects()) {
+                    gameObject.tick();
+                }
             }
-            if (counter % updateRate == 0) {
+
+            if (timeSinceLastUpdate > updateRate) {
+                previousUpdateTime = System.nanoTime() - (timeSinceLastUpdate - updateRate);
                 players.keySet().forEach(client -> client.send(map.getGameObjects()));
-                counter = 0;
             }
-            try {
-                Thread.sleep(tickRate);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            // WAIT BEFORE CONTINUING WITH THE GAMELOOP
+            while (nowTime - previousTickTime < tickRate) {
+                Thread.yield();
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {}
+
+                nowTime = System.nanoTime();
             }
         }
     }
@@ -67,6 +83,7 @@ public class GameServer implements ClientListener {
             Player player = map.newPlayer((String) value);
             if (player != null) {
                 System.out.println("Player connected: " + player);
+                client.send(player);
                 client.send(map);
                 players.put(client, player);
             } else {

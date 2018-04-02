@@ -1,4 +1,4 @@
-package common;
+package gameobjects;
 
 import java.awt.*;
 

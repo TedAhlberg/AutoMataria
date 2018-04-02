@@ -3,52 +3,44 @@ package gameclient;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Johannes Blüml
  */
-public class Window extends JFrame implements WindowListener {
-    public Window(String title, Game game) {
+public class Window extends JFrame {
+
+    public Window(String title) {
+        this(title, null);
+    }
+
+    public Window(String title, Dimension windowSize) {
         this.setTitle(title);
-        this.add(game);
         this.setResizable(false);
         this.setUndecorated(true);
-        this.addWindowListener(this);
-        this.setBackground(Color.BLACK);
-    }
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent) {
+                super.windowClosing(windowEvent);
+                System.exit(0);
+            }
+        });
 
-    @Override
-    public void windowOpened(WindowEvent windowEvent) {
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        try {
+            env.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
+        } catch (IOException | FontFormatException e) {
+            System.out.println("Failed to load font.");
+            e.printStackTrace();
+        }
 
-    }
-
-    @Override
-    public void windowClosing(WindowEvent windowEvent) {
-        System.exit(0);
-    }
-
-    @Override
-    public void windowClosed(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent windowEvent) {
-
+        if (windowSize == null) {
+            env.getDefaultScreenDevice().setFullScreenWindow(this);
+        } else {
+            this.setPreferredSize(windowSize);
+            this.setMinimumSize(windowSize);
+            this.setMaximumSize(windowSize);
+            this.setVisible(true);
+        }
     }
 }

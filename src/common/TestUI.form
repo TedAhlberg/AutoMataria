@@ -29,40 +29,7 @@
           <text value="4"/>
         </properties>
       </component>
-      <component id="8d9d" class="javax.swing.JTextField" binding="tfTickRate">
-        <constraints>
-          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="50"/>
-        </properties>
-      </component>
-      <component id="e49d6" class="javax.swing.JTextField" binding="tfUpdateRate">
-        <constraints>
-          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="100"/>
-        </properties>
-      </component>
       <component id="23ae7" class="javax.swing.JTextField" binding="tfMapWidth">
-        <constraints>
-          <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="50"/>
-        </properties>
-      </component>
-      <component id="10ca9" class="javax.swing.JTextField" binding="tfMapHeight">
         <constraints>
           <grid row="13" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -73,9 +40,20 @@
           <text value="50"/>
         </properties>
       </component>
+      <component id="10ca9" class="javax.swing.JTextField" binding="tfMapHeight">
+        <constraints>
+          <grid row="14" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="50"/>
+        </properties>
+      </component>
       <component id="3a1" class="javax.swing.JButton" binding="btnChangeWallColor">
         <constraints>
-          <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -126,7 +104,7 @@
       </component>
       <component id="c3a92" class="javax.swing.JLabel">
         <constraints>
-          <grid row="5" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -135,7 +113,7 @@
       </component>
       <component id="fa8b3" class="javax.swing.JLabel" binding="lblWindowSize">
         <constraints>
-          <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -167,21 +145,20 @@
       </component>
       <component id="cdf55" class="javax.swing.JComboBox" binding="cbWindowSize">
         <constraints>
-          <grid row="6" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
           <model>
-            <item value="640x400"/>
-            <item value="960x540"/>
-            <item value="1280x720"/>
-            <item value="1920x1080"/>
+            <item value="1000x1000"/>
+            <item value="750x750"/>
+            <item value="500x500"/>
           </model>
         </properties>
       </component>
       <component id="7c789" class="javax.swing.JCheckBox" binding="checkFullscreen">
         <constraints>
-          <grid row="5" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -192,7 +169,7 @@
       </component>
       <component id="37c20" class="javax.swing.JButton" binding="btnStartGame">
         <constraints>
-          <grid row="8" column="6" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="6" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -213,7 +190,7 @@
       </vspacer>
       <hspacer id="e0cfd">
         <constraints>
-          <grid row="7" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
         </constraints>
       </hspacer>
@@ -245,24 +222,6 @@
           <text value="Players"/>
         </properties>
       </component>
-      <component id="fa7de" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="Tick Rate (ms)"/>
-        </properties>
-      </component>
-      <component id="f58d8" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="Update Rate (ms)"/>
-        </properties>
-      </component>
       <vspacer id="9f60b">
         <constraints>
           <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -275,31 +234,9 @@
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
         </constraints>
       </hspacer>
-      <hspacer id="d1f4c">
-        <constraints>
-          <grid row="8" column="1" row-span="1" col-span="5" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
-        </constraints>
-      </hspacer>
-      <component id="8196" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="9" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <font style="1"/>
-          <text value="Map Settings"/>
-        </properties>
-      </component>
-      <hspacer id="17840">
-        <constraints>
-          <grid row="10" column="1" row-span="1" col-span="5" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
-        </constraints>
-      </hspacer>
       <component id="16d61" class="javax.swing.JLabel">
         <constraints>
-          <grid row="11" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -308,37 +245,37 @@
       </component>
       <component id="51b3e" class="javax.swing.JLabel">
         <constraints>
-          <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="Size Horizontal"/>
-        </properties>
-      </component>
-      <component id="be879" class="javax.swing.JLabel">
-        <constraints>
           <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
-          <text value="Size Vertical"/>
+          <text value="Horizontal Grids"/>
+        </properties>
+      </component>
+      <component id="be879" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="14" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="Vertical Grids"/>
         </properties>
       </component>
       <hspacer id="9ce04">
         <constraints>
-          <grid row="14" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="15" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
         </constraints>
       </hspacer>
       <hspacer id="5d9c8">
         <constraints>
-          <grid row="16" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="17" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
         </constraints>
       </hspacer>
       <hspacer id="b651e">
         <constraints>
-          <grid row="18" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="19" column="1" row-span="1" col-span="4" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
         </constraints>
       </hspacer>
@@ -350,7 +287,7 @@
       </hspacer>
       <component id="2c173" class="javax.swing.JButton" binding="btnStartServer">
         <constraints>
-          <grid row="15" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="16" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
@@ -359,11 +296,133 @@
       </component>
       <component id="b415a" class="javax.swing.JButton" binding="btnStopServer">
         <constraints>
-          <grid row="17" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="18" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties>
           <text value="Stop Server"/>
+        </properties>
+      </component>
+      <component id="ab729" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="PlayerSpeed (grids/sec)"/>
+        </properties>
+      </component>
+      <component id="751ea" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="5" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="Frame Rate (FPS)"/>
+        </properties>
+      </component>
+      <component id="1a0f3" class="javax.swing.JTextField" binding="tfFramesPerSecond">
+        <constraints>
+          <grid row="5" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="60"/>
+        </properties>
+      </component>
+      <component id="fa7de" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="Tick Rate (ms)"/>
+        </properties>
+      </component>
+      <component id="8d9d" class="javax.swing.JTextField" binding="tfTickRate">
+        <constraints>
+          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="50"/>
+        </properties>
+      </component>
+      <component id="f58d8" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="Update Rate (ms)"/>
+        </properties>
+      </component>
+      <component id="e49d6" class="javax.swing.JTextField" binding="tfUpdateRate">
+        <constraints>
+          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="150"/>
+        </properties>
+      </component>
+      <hspacer id="d1f4c">
+        <constraints>
+          <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
+        </constraints>
+      </hspacer>
+      <component id="8196" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="8" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <font style="1"/>
+          <text value="Map Settings"/>
+        </properties>
+      </component>
+      <hspacer id="17840">
+        <constraints>
+          <grid row="9" column="1" row-span="1" col-span="5" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0" ipady="10"/>
+        </constraints>
+      </hspacer>
+      <component id="f599d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="PlayerSpeed (grids/tick)"/>
+        </properties>
+      </component>
+      <component id="b865f" class="javax.swing.JTextField" binding="tfPlayerSpeedTick">
+        <constraints>
+          <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="0.25"/>
+        </properties>
+      </component>
+      <component id="1a110" class="javax.swing.JTextField" binding="tfPlayerSpeedSecond">
+        <constraints>
+          <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="5.0"/>
         </properties>
       </component>
     </children>

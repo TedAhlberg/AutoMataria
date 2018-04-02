@@ -1,14 +1,16 @@
-package common;
+package gameobjects;
+
+import common.GameMap;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Johannes Blüml
  */
 public class Trail extends GameObject {
-    HashSet<Point> positions = new HashSet<>();
+    private Random random = new Random();
+    private HashSet<Point> positions = new HashSet<>();
     private Color color;
     private GameMap map;
 
@@ -30,6 +32,10 @@ public class Trail extends GameObject {
         positions.removeAll(points);
     }
 
+    public void removeAll() {
+        positions.clear();
+    }
+
     public Collection<Point> getAll() {
         return positions;
     }
@@ -39,7 +45,7 @@ public class Trail extends GameObject {
     public void render(Graphics2D g) {
         g.setColor(color.brighter());
         for (Point position : positions) {
-            g.drawRect(position.x * map.getGridSize(), position.y * map.getGridSize(), map.getGridSize(), map.getGridSize());
+            g.drawRect(position.x * map.getGridMultiplier(), position.y * map.getGridMultiplier(), map.getGridMultiplier(), map.getGridMultiplier());
         }
     }
 }

@@ -1,6 +1,7 @@
-package common;
+package gameobjects;
 
-import gameserver.GameServer;
+import common.Direction;
+import common.ID;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -82,6 +83,10 @@ public abstract class GameObject implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isAtSamePositionAs(GameObject o) {
+        return x == o.getX() && y == o.getY();
     }
 
     public boolean equals(Object o) {

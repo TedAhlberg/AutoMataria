@@ -1,8 +1,12 @@
 package common;
 
+import gameclient.Game;
+import gameobjects.*;
+
 import java.awt.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -11,7 +15,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameMap implements Serializable {
     private String name = "default";
     private String musicTrack;
-    private int players = 4, gridSize = 100, width = 50 * gridSize, height = 50 * gridSize, playerSpeed = gridSize / 5;
+    private Dimension grid = new Dimension(50,50);
+    private int players = 4, gridMultiplier = Game.GRID_PIXEL_SIZE, playerSpeed = (grid.width * gridMultiplier) / 5;
     private ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private String background = "resources/Stars.png";
     private int[][] startPositions;
@@ -21,7 +26,7 @@ public class GameMap implements Serializable {
             new Color(0x1e96ff),
             new Color(0xff6400)
     };
-    private int currentPlayers = 0;
+    private int currentPlayers, serverTickrate;
 
     public GameMap(String name) {
         this.name = name;
@@ -29,52 +34,44 @@ public class GameMap implements Serializable {
     }
 
     public void generateStartPositions() {
-        int p1x = (width / 2) / 2;
-        int p1y = (height / 2) / 2;
+        int p1x = (grid.width / 2) / 2;
+        int p1y = (grid.height / 2) / 2;
 
         int p2x = p1x;
-        int p2y = (height / 2) + p1y;
+        int p2y = (grid.height / 2) + p1y;
 
-        int p3x = (width / 2) + p1x;
+        int p3x = (grid.width / 2) + p1x;
         int p3y = p1y;
 
-        int p4x = (width / 2) + p1x;
+        int p4x = (grid.width / 2) + p1x;
         int p4y = p2y;
 
         startPositions = new int[players][2];
-        startPositions[0][0] = (p1x / gridSize) * gridSize;
-        startPositions[0][1] = (p1y / gridSize) * gridSize;
-        startPositions[1][0] = (p2x / gridSize) * gridSize;
-        startPositions[1][1] = (p2y / gridSize) * gridSize;
-        startPositions[2][0] = (p3x / gridSize) * gridSize;
-        startPositions[2][1] = (p3y / gridSize) * gridSize;
-        startPositions[3][0] = (p4x / gridSize) * gridSize;
-        startPositions[3][1] = (p4y / gridSize) * gridSize;
+        startPositions[0][0] = p1x;
+        startPositions[0][1] = p1y;
+        startPositions[1][0] = p2x;
+        startPositions[1][1] = p2y;
+        startPositions[2][0] = p3x;
+        startPositions[2][1] = p3y;
+        startPositions[3][0] = p4x;
+        startPositions[3][1] = p4y;
     }
 
     public void setEdgeWalls(Color color) {
-        gameObjects.add(new Wall(0, 0, gridSize, width, color));
-        gameObjects.add(new Wall(height - gridSize, 0, gridSize, width, color));
-        gameObjects.add(new Wall(0, 0, height, gridSize, color));
-        gameObjects.add(new Wall(0, height - gridSize, height, gridSize, color));
+        gameObjects.add(new Wall(0, 0, gridMultiplier, getWidth(), color));
+        gameObjects.add(new Wall(getHeight() - gridMultiplier, 0, gridMultiplier, getWidth(), color));
+        gameObjects.add(new Wall(0, 0, getHeight(), gridMultiplier, color));
+        gameObjects.add(new Wall(0, getHeight() - gridMultiplier, getHeight(), gridMultiplier, color));
     }
 
     public Collection<GameObject> getGameObjects() {
         return gameObjects;
     }
 
-    public int getPlayerSpeed() {
-        return playerSpeed;
-    }
-
-    public void setPlayerSpeed(int playerSpeed) {
-        this.playerSpeed = playerSpeed;
-    }
-
     public Player newPlayer(String name) {
         if (currentPlayers >= players) return null;
         int[] pos = startPositions[currentPlayers];
-        Player player = new Player(pos[0], pos[1], name, playerColors[currentPlayers], this);
+        Player player = new Player(pos[0] * gridMultiplier, pos[1] * gridMultiplier, name, playerColors[currentPlayers], this);
         currentPlayers += 1;
         player.setSpeed(playerSpeed);
         gameObjects.add(player);
@@ -85,16 +82,20 @@ public class GameMap implements Serializable {
         return name;
     }
 
-    public int getGridSize() {
-        return gridSize;
+    public void setGrid(Dimension grid) {
+        this.grid = grid;
+    }
+
+    public Dimension getGrid() {
+        return grid;
     }
 
     public int getWidth() {
-        return width;
+        return grid.width * gridMultiplier;
     }
 
     public int getHeight() {
-        return height;
+        return grid.height * gridMultiplier;
     }
 
     public String getBackground() {
@@ -105,11 +106,26 @@ public class GameMap implements Serializable {
         gameObjects.add(object);
     }
 
-    public void setWidth(int width) {
-        this.width = width * gridSize;
+    /**
+     * @param playerSpeed How many grid-positions to move each tick
+     */
+    public void setPlayerSpeed(double playerSpeed) {
+        this.playerSpeed = (int) Math.round(gridMultiplier * playerSpeed);
     }
 
-    public void setHeight(int height) {
-        this.height = height * gridSize;
+    public void setServerTickRate(int tickRate) {
+        this.serverTickrate = tickRate;
+    }
+
+    public int getPlayerSpeedPerSecond() {
+        return (1000 / serverTickrate) * playerSpeed;
+    }
+
+    public int getPlayerSpeed() {
+        return playerSpeed;
+    }
+
+    public int getGridMultiplier() {
+        return gridMultiplier;
     }
 }

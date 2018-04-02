@@ -1,4 +1,6 @@
-package common;
+package gameobjects;
+
+import common.*;
 
 import java.awt.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -23,8 +25,8 @@ public class Player extends GameObject {
         lastGridPositionX = x;
         lastGridPositionY = y;
         this.name = name;
-        this.width = map.getGridSize();
-        this.height = map.getGridSize();
+        this.width = map.getGridMultiplier();
+        this.height = map.getGridMultiplier();
         this.color = color;
         this.map = map;
         this.inputQueue = new ConcurrentLinkedQueue<>();
@@ -37,6 +39,7 @@ public class Player extends GameObject {
     }
 
     public void setDead() {
+        direction = Direction.Static;
         dead = true;
     }
 
@@ -52,21 +55,9 @@ public class Player extends GameObject {
     public void tick() {
         if (dead) return;
 
-        if (inputQueue.isEmpty()) {
-        } else if (inputQueue.peek() == direction) {
-            inputQueue.remove();
-        } else if (x % map.getGridSize() == 0 && y % map.getGridSize() == 0) {
-            direction = inputQueue.remove();
-        }
+        updateDirection();
         move();
-
-        gridPositionX = x / map.getGridSize();
-        gridPositionY = y / map.getGridSize();
-        if (gridPositionX != lastGridPositionX || gridPositionY != lastGridPositionY) {
-            trail.add(lastGridPositionX, lastGridPositionY);
-            lastGridPositionX = gridPositionX;
-            lastGridPositionY = gridPositionY;
-        }
+        growTrail();
 
         checkCollisions();
     }
@@ -96,7 +87,16 @@ public class Player extends GameObject {
             default: return;
         }
         teleportIfOutsideMap();
-        //growTrail();
+    }
+
+    private void growTrail() {
+        gridPositionX = x / map.getGridMultiplier();
+        gridPositionY = y / map.getGridMultiplier();
+        if (gridPositionX != lastGridPositionX || gridPositionY != lastGridPositionY) {
+            trail.add(lastGridPositionX, lastGridPositionY);
+            lastGridPositionX = gridPositionX;
+            lastGridPositionY = gridPositionY;
+        }
     }
 
     private void checkCollisions() {
@@ -106,12 +106,10 @@ public class Player extends GameObject {
                 setDead();
                 ((Player) object).setDead();
                 System.out.println(name + " HAS CRASHED WITH " + ((Player) object).getName());
-            }
-            else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
+            } else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 setDead();
                 System.out.println(name + " CRASHED INTO A WALL");
-            }
-            else if (object instanceof Trail && ((Trail) object).contains(gridPositionX, gridPositionY)) {
+            } else if (object instanceof Trail && ((Trail) object).contains(gridPositionX, gridPositionY)) {
                 setDead();
                 System.out.println(name + " CRASHED INTO A TRAIL");
             }
@@ -124,6 +122,20 @@ public class Player extends GameObject {
 
     public void setDirection(Direction direction) {
         inputQueue.add(direction);
+    }
+
+    private void updateDirection() {
+        if (inputQueue.isEmpty()) return;
+
+        while (inputQueue.peek() == direction) {
+            inputQueue.remove();
+        }
+
+        if (inputQueue.isEmpty()) return;
+
+        if (x % map.getGridMultiplier() == 0 && y % map.getGridMultiplier() == 0) {
+            direction = inputQueue.remove();
+        }
     }
 
     public Color getColor() {
