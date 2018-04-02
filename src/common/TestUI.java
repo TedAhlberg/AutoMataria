@@ -76,7 +76,7 @@ public class TestUI {
             GameMap map = new GameMap("default");
             map.setPlayerSpeed(playerSpeedTick);
             map.setGrid(new Dimension(mapWidth, mapHeight));
-            map.setEdgeWalls(mapWallColor);
+            map.addEdgeWalls(mapWallColor);
             if (server == null) server = new GameServer(serverPort, tickRate, updateRate, players, map);
         });
         btnStopServer.addActionListener(e -> {

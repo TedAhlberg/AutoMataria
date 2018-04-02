@@ -5,28 +5,32 @@ import gameobjects.*;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 
 /**
  * @author Johannes Blüml
  */
 public class GameMap implements Serializable {
-    private String name = "default";
-    private String musicTrack;
-    private Dimension grid = new Dimension(50,50);
-    private int players = 4, gridMultiplier = Game.GRID_PIXEL_SIZE, playerSpeed = (grid.width * gridMultiplier) / 5;
-    private ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
-    private String background = "resources/Stars.png";
-    private int[][] startPositions;
+    private String name = "default", background = "resources/Stars.png", musicTrack = "AM-trck1.mp3";
+    private Dimension grid = new Dimension(50, 50);
+    private int players = 5, gridMultiplier = Game.GRID_PIXEL_SIZE, playerSpeed = (grid.width * gridMultiplier) / 5;
+    private LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private LinkedList<Point> startingPositions = new LinkedList<>();
     private Color[] playerColors = new Color[]{
             new Color(0xff148c),
             new Color(0xc8ff32),
             new Color(0x1e96ff),
-            new Color(0xff6400)
+            new Color(0xff6400),
+            new Color(0x1cb874),
+            new Color(0x8147ff),
+            new Color(0xd3d439),
+            new Color(0x23D820)
     };
     private int currentPlayers, serverTickrate;
+
+    public GameMap() {
+        generateStartPositions();
+    }
 
     public GameMap(String name) {
         this.name = name;
@@ -34,30 +38,39 @@ public class GameMap implements Serializable {
     }
 
     public void generateStartPositions() {
-        int p1x = (grid.width / 2) / 2;
-        int p1y = (grid.height / 2) / 2;
+        if (players > 5) {
+            generateRandomStartPositions();
+            return;
+        }
 
-        int p2x = p1x;
-        int p2y = (grid.height / 2) + p1y;
+        int xLeft = (grid.width / 2) / 2;
+        int xRight = (grid.width / 2) + xLeft;
+        int yTop = (grid.height / 2) / 2;
+        int yBottom = (grid.height / 2) + yTop;
+        int xCenter = grid.width / 2;
+        int yCenter = grid.height / 2;
 
-        int p3x = (grid.width / 2) + p1x;
-        int p3y = p1y;
-
-        int p4x = (grid.width / 2) + p1x;
-        int p4y = p2y;
-
-        startPositions = new int[players][2];
-        startPositions[0][0] = p1x;
-        startPositions[0][1] = p1y;
-        startPositions[1][0] = p2x;
-        startPositions[1][1] = p2y;
-        startPositions[2][0] = p3x;
-        startPositions[2][1] = p3y;
-        startPositions[3][0] = p4x;
-        startPositions[3][1] = p4y;
+        startingPositions.add(new Point(xLeft, yTop));
+        startingPositions.add(new Point(xRight, yBottom));
+        startingPositions.add(new Point(xRight, yTop));
+        startingPositions.add(new Point(xLeft, yBottom));
+        startingPositions.add(new Point(xCenter, yCenter));
     }
 
-    public void setEdgeWalls(Color color) {
+    public void generateRandomStartPositions() {
+        Random random = new Random();
+
+        while (startingPositions.size() < players) {
+            int x = random.nextInt(grid.width - 2) + 1;
+            int y = random.nextInt(grid.height - 2) + 1;
+            Point point = new Point(x, y);
+            if (!startingPositions.contains(point)) {
+                startingPositions.add(point);
+            }
+        }
+    }
+
+    public void addEdgeWalls(Color color) {
         gameObjects.add(new Wall(0, 0, gridMultiplier, getWidth(), color));
         gameObjects.add(new Wall(getHeight() - gridMultiplier, 0, gridMultiplier, getWidth(), color));
         gameObjects.add(new Wall(0, 0, getHeight(), gridMultiplier, color));
@@ -70,24 +83,28 @@ public class GameMap implements Serializable {
 
     public Player newPlayer(String name) {
         if (currentPlayers >= players) return null;
-        int[] pos = startPositions[currentPlayers];
-        Player player = new Player(pos[0] * gridMultiplier, pos[1] * gridMultiplier, name, playerColors[currentPlayers], this);
+        Point position = startingPositions.get(currentPlayers);
+        Player player = new Player(position.x * gridMultiplier, position.y * gridMultiplier, name, playerColors[currentPlayers], this);
         currentPlayers += 1;
         player.setSpeed(playerSpeed);
         gameObjects.add(player);
         return player;
     }
 
+    public void add(GameObject object) {
+        gameObjects.add(object);
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setGrid(Dimension grid) {
-        this.grid = grid;
-    }
-
     public Dimension getGrid() {
         return grid;
+    }
+
+    public void setGrid(Dimension grid) {
+        this.grid = grid;
     }
 
     public int getWidth() {
@@ -102,8 +119,15 @@ public class GameMap implements Serializable {
         return background;
     }
 
-    public void add(GameObject object) {
-        gameObjects.add(object);
+    public void setServerTickRate(int tickRate) {
+        this.serverTickrate = tickRate;
+    }
+
+    /**
+     * @return Player speed per second represented as pixels
+     */
+    public int getPlayerSpeedPerSecond() {
+        return (1000 / serverTickrate) * playerSpeed;
     }
 
     /**
@@ -111,18 +135,6 @@ public class GameMap implements Serializable {
      */
     public void setPlayerSpeed(double playerSpeed) {
         this.playerSpeed = (int) Math.round(gridMultiplier * playerSpeed);
-    }
-
-    public void setServerTickRate(int tickRate) {
-        this.serverTickrate = tickRate;
-    }
-
-    public int getPlayerSpeedPerSecond() {
-        return (1000 / serverTickrate) * playerSpeed;
-    }
-
-    public int getPlayerSpeed() {
-        return playerSpeed;
     }
 
     public int getGridMultiplier() {

@@ -13,7 +13,7 @@ public class StartTestGame {
         // Create a map
         GameMap map = new GameMap("default");
         map.setPlayerSpeed(0.25);
-        map.setEdgeWalls(Color.CYAN.darker().darker());
+        map.addEdgeWalls(Color.CYAN.darker().darker());
 
         // Start a game server
         new GameServer(32000, 50, 150, 4, map);
