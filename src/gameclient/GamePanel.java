@@ -19,8 +19,8 @@ public class GamePanel extends JComponent {
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
 
-    private CopyOnWriteArraySet<GameObject> gameUpdatesQueue = new CopyOnWriteArraySet<>();
-    private CopyOnWriteArraySet<GameObject> gameObjects = new CopyOnWriteArraySet<>();
+    private CopyOnWriteArraySet<GameObject> serverState = new CopyOnWriteArraySet<>();
+    private CopyOnWriteArraySet<GameObject> clientState = new CopyOnWriteArraySet<>();
     private Player player;
     private double scale = 1.0;
     private BufferedImage background, paintBuffer;
@@ -30,12 +30,12 @@ public class GamePanel extends JComponent {
     private boolean interpolateMovement;
 
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
-        if (gameObjects.size() == 0) {
-            gameObjects.addAll(updatedGameObjects);
+        if (clientState.size() == 0) {
+            clientState.addAll(updatedGameObjects);
         } else {
-            gameUpdatesQueue.clear();
-            gameUpdatesQueue.addAll(updatedGameObjects);
-            gameObjects.addAll(updatedGameObjects);
+            serverState.clear();
+            serverState.addAll(updatedGameObjects);
+            clientState.addAll(updatedGameObjects);
         }
     }
 
@@ -97,16 +97,15 @@ public class GamePanel extends JComponent {
         drawDebugInfo(g2);
         g2.scale(scale, scale);
 
-        if (gameObjects == null || gameUpdatesQueue.size() == 0) return;
-        Collection<GameObject> updatedGameObjects = new HashSet<>(gameUpdatesQueue);
+        if (clientState.size() == 0 || serverState.size() == 0) return;
 
-        for (GameObject target : updatedGameObjects) {
+        for (GameObject target : serverState) {
             if (target instanceof Trail || target instanceof Wall) {
                 // Trail cant be interpolated so render the last one from server
                 target.render(g2);
                 continue;
             }
-            for (GameObject current : gameObjects) {
+            for (GameObject current : clientState) {
                 if (current.equals(target)) {
                     if (interpolateMovement) {
                         interpolate(current, target, interpolation);

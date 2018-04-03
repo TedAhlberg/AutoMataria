@@ -5,31 +5,20 @@ import gameserver.GameServer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author Johannes Blüml
  */
 public class TestUI {
-    private JTextField tfClientIP;
-    private JTextField tfClientPort;
-    private JButton btnStartGame;
     private JPanel container;
-    private JButton btnStartServer;
-    private JButton btnStopServer;
-    private JTextField tfServerPort;
-    private JTextField tfPlayers;
-    private JTextField tfTickRate;
-    private JTextField tfUpdateRate;
-    private JTextField tfMapWidth;
-    private JTextField tfMapHeight;
-    private JButton btnChangeWallColor;
+    private JTextField tfClientIP, tfClientPort, tfPlayerSpeedTick, tfFramesPerSecond, tfPlayerSpeedSecond,
+            tfServerPort, tfPlayers, tfTickRate, tfUpdateRate, tfMapWidth, tfMapHeight;
+    private JButton btnStartGame, btnStartServer, btnStopServer, btnChangeWallColor;
     private JCheckBox checkFullscreen;
-    private JLabel lblWindowSize;
     private JComboBox cbWindowSize;
-    private JTextField tfPlayerSpeedTick;
-    private JTextField tfFramesPerSecond;
-    private JTextField tfPlayerSpeedSecond;
+    private JLabel lblWindowSize;
 
     private GameServer server;
     private Color mapWallColor = Color.CYAN;
@@ -93,6 +82,14 @@ public class TestUI {
         });
     }
 
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("TestUI2");
+        frame.setContentPane(new TestUI().container);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     private void updateAllTextFields() {
         // CLIENT
         cbWindowSize.setSelectedItem(clientWidth + " " + clientHeight);
@@ -148,38 +145,8 @@ public class TestUI {
                 this.playerSpeedTick = playerSpeedTick;
             }
 
-
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(null, "Please enter only numbers.");
         }
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("TestUI2");
-        frame.setContentPane(new TestUI().container);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    @Override
-    public String toString() {
-        return "TestUI{" +
-                "mapWallColor=" + mapWallColor +
-                ", clientIP='" + clientIP + '\'' +
-                ", serverPort=" + serverPort +
-                ", tickRate=" + tickRate +
-                ", updateRate=" + updateRate +
-                ", players=" + players +
-                ", mapWidth=" + mapWidth +
-                ", mapHeight=" + mapHeight +
-                ", clientPort=" + clientPort +
-                ", framesPerSecond=" + framesPerSecond +
-                ", clientWidth=" + clientWidth +
-                ", clientHeight=" + clientHeight +
-                ", playerSpeedTick=" + playerSpeedTick +
-                ", playerSpeedSecond=" + playerSpeedSecond +
-                ", fullscreen=" + fullscreen +
-                '}';
     }
 }
