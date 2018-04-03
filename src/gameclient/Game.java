@@ -17,7 +17,7 @@ public class Game {
     private final GamePanel gamePanel;
 
     private GameServerConnection client;
-    private Audio backgroundMusic = new Audio("AM-trck1.mp3");
+    private Audio backgroundMusic = Audio.getSound("resources/Music/AM-track1.wav");
 
     public Game() {
         this("127.0.0.1", 32000, null, 100);
