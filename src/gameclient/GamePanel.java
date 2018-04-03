@@ -109,7 +109,7 @@ public class GamePanel extends JComponent {
             for (GameObject current : gameObjects) {
                 if (current.equals(target)) {
                     if (interpolateMovement) {
-                        interpolate(current, target, (int) interpolation);
+                        interpolate(current, target, interpolation);
                         current.render(g2);
                     } else {
                         target.render(g2);
@@ -126,6 +126,7 @@ public class GamePanel extends JComponent {
     }
 
     private void drawDebugInfo(Graphics2D g2) {
+        g2.setColor(Color.WHITE);
         g2.setFont(new Font("Orbitron", Font.PLAIN, 25));
         if (interpolateMovement) {
             g2.drawString(fps + " FPS | Interpolation: " + interpolation, 40, 60);
