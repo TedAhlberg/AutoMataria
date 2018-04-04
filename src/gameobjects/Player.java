@@ -16,19 +16,18 @@ public class Player extends GameObject {
     private String name;
     private Color color;
     private boolean dead;
-    private int gridPositionX, gridPositionY, previousGridPositionX, previousGridPositionY;
+    private Direction previousDirection;
 
     public Player(int x, int y, String name, Color color, GameMap map) {
         super(x, y);
-        previousGridPositionX = x;
-        previousGridPositionY = y;
         this.width = map.getGridMultiplier();
         this.height = map.getGridMultiplier();
         this.name = name;
         this.color = color;
         this.map = map;
         this.inputQueue = new ConcurrentLinkedQueue<>();
-        this.trail = new Trail(color, map);
+        this.trail = new Trail(this);
+        this.previousDirection = direction;
         map.add(trail);
     }
 
@@ -44,14 +43,19 @@ public class Player extends GameObject {
     public void tick() {
         if (dead) return;
 
+        Point previousPosition = new Point(x, y);
+
         updateDirection();
         move();
-        growTrail();
+
+        Point newPosition = new Point(x, y);
+        trail.grow(previousPosition, newPosition);
 
         checkCollisions();
     }
 
     private void updateDirection() {
+        previousDirection = direction;
         if (inputQueue.isEmpty()) return;
 
         while (inputQueue.peek() == direction) {
@@ -61,6 +65,7 @@ public class Player extends GameObject {
         if (inputQueue.isEmpty()) return;
 
         if (x % map.getGridMultiplier() == 0 && y % map.getGridMultiplier() == 0) {
+            previousDirection = direction;
             direction = inputQueue.remove();
         }
     }
@@ -89,16 +94,6 @@ public class Player extends GameObject {
         }
     }
 
-    private void growTrail() {
-        gridPositionX = x / map.getGridMultiplier();
-        gridPositionY = y / map.getGridMultiplier();
-        if (gridPositionX != previousGridPositionX || gridPositionY != previousGridPositionY) {
-            trail.add(previousGridPositionX, previousGridPositionY);
-            previousGridPositionX = gridPositionX;
-            previousGridPositionY = gridPositionY;
-        }
-    }
-
     private void checkCollisions() {
         for (GameObject object : map.getGameObjects()) {
             if (this.equals(object) || dead) continue;
@@ -109,7 +104,7 @@ public class Player extends GameObject {
             } else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
                 setDead();
                 System.out.println(name + " CRASHED INTO A WALL");
-            } else if (object instanceof Trail && ((Trail) object).contains(gridPositionX, gridPositionY)) {
+            } else if ((object instanceof Trail) && ((Trail) object).intersects(this.getBounds())) {
                 setDead();
                 System.out.println(name + " CRASHED INTO A TRAIL");
             }
@@ -139,5 +134,9 @@ public class Player extends GameObject {
 
     public String toString() {
         return "Player: " + name + " Position: x=" + x + ", y=" + y + " Speed: " + speed + " Direction: " + direction;
+    }
+
+    public Direction getPreviousDirection() {
+        return previousDirection;
     }
 }
