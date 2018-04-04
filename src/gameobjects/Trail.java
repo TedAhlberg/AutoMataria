@@ -28,7 +28,7 @@ public class Trail extends GameObject {
         Color c = player.getColor();
         g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 50));
         g.fill(trail);
-        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
+        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 150));
         g.draw(trail);
     }
 
