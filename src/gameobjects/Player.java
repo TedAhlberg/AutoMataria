@@ -31,14 +31,18 @@ public class Player extends GameObject {
         map.add(trail);
     }
 
-    public void render(Graphics2D g) {
-        g.setColor(color);
-        g.fillRect(x, y, width, height);
-        g.setFont(new Font("Orbitron", Font.BOLD, 100));
-        String displayName = name.toUpperCase();
-        if (dead) displayName += " (DEAD)";
-        g.drawString(displayName, x, y - 50);
-    }
+	public void render(Graphics2D g) {
+		g.setColor(color);
+		g.fillRect(x, y, width, height);
+		g.setColor(color.darker());
+		Font font = new Font("Orbitron", Font.BOLD, 100);
+		g.setFont(font);
+		String displayName = name.toUpperCase();
+		FontMetrics fontMetrics = g.getFontMetrics(font);
+		int stringWidth = fontMetrics.stringWidth(displayName);
+		if (dead) displayName += " (DEAD)";
+		g.drawString(displayName, x + (map.getGridMultiplier() / 2) - (stringWidth / 2), y - 50);
+	}
 
     public void tick() {
         if (dead) return;

@@ -17,8 +17,8 @@ public class GameMap implements Serializable {
     private LinkedList<GameObject> gameObjects = new LinkedList<>();
     private LinkedList<Point> startingPositions = new LinkedList<>();
     private Color[] playerColors = new Color[]{
-            new Color(0xff148c),
             new Color(0xc8ff32),
+            new Color(0xff148c),
             new Color(0x1e96ff),
             new Color(0xff6400),
             new Color(0x1cb874),
