@@ -20,7 +20,7 @@ public class StartTestGame {
 
         // Start a game client
         new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
-        //new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
+//        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
         //new Game("127.0.0.1", 32000, 100);
     }
 }
