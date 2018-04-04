@@ -43,9 +43,9 @@ public class Trail extends GameObject {
     public void tick() {}
 
     public void render(Graphics2D g) {
-        g.setColor(color.brighter());
+        g.setColor(color);
         for (Point position : positions) {
-            g.drawRect(position.x * map.getGridMultiplier(), position.y * map.getGridMultiplier(), map.getGridMultiplier(), map.getGridMultiplier());
+            g.fillRect(position.x * map.getGridMultiplier(), position.y * map.getGridMultiplier(), map.getGridMultiplier(), map.getGridMultiplier());
         }
     }
 }
