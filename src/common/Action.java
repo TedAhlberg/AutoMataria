@@ -1,9 +1,16 @@
 package common;
 
 /**
- * @author Johannes Blüml
+ * @author Johannes Blüml & Ted Ahlberg
  */
 public enum Action {
     ExitGame,
-    ToggleInterpolation
+    ToggleInterpolation,
+    ToggleNames,
+    ToggleDebugText,
+    
+    GoLeft,
+    GoRight,
+    GoUp,
+    GoDown
 }
