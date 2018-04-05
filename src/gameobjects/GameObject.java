@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author Johannes Blüml
  */
 public abstract class GameObject implements Serializable {
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 2;
     protected final int id;
     protected int x, y, speed, width, height;
     protected Direction direction = Direction.Static;
