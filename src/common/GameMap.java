@@ -11,11 +11,12 @@ import java.util.*;
  * @author Johannes Blüml
  */
 public class GameMap implements Serializable {
-    private String name = "default", background = "resources/Stars.png", musicTrack = "AM-trck1.mp3";
+    private String name, background = "resources/Stars.png", musicTrack = "AM-trck1.mp3";
     private Dimension grid = new Dimension(50, 50);
     private int players = 5, gridMultiplier = Game.GRID_PIXEL_SIZE, playerSpeed = (grid.width * gridMultiplier) / 5;
     private LinkedList<GameObject> gameObjects = new LinkedList<>();
     private LinkedList<Point> startingPositions = new LinkedList<>();
+    private Wall walls;
     private Color[] playerColors = new Color[]{
             new Color(0xc8ff32),
             new Color(0xff148c),
@@ -29,12 +30,14 @@ public class GameMap implements Serializable {
     private int currentPlayers, serverTickrate;
 
     public GameMap() {
-        generateStartPositions();
+        this("default");
     }
 
     public GameMap(String name) {
         this.name = name;
         generateStartPositions();
+        walls = new Wall(new Color(200, 255, 50, 100), new Color(200, 255, 50, 200));
+        gameObjects.add(walls);
     }
 
     public void generateStartPositions() {
@@ -70,11 +73,11 @@ public class GameMap implements Serializable {
         }
     }
 
-    public void addEdgeWalls(Color color) {
-        gameObjects.add(new Wall(0, 0, gridMultiplier, getWidth(), color));
-        gameObjects.add(new Wall(getHeight() - gridMultiplier, 0, gridMultiplier, getWidth(), color));
-        gameObjects.add(new Wall(0, 0, getHeight(), gridMultiplier, color));
-        gameObjects.add(new Wall(0, getHeight() - gridMultiplier, getHeight(), gridMultiplier, color));
+    public void addEdgeWalls() {
+        walls.add(new Rectangle(0, 0, gridMultiplier, getWidth()));
+        walls.add(new Rectangle(getHeight() - gridMultiplier, 0, gridMultiplier, getWidth()));
+        walls.add(new Rectangle(0, 0, getHeight(), gridMultiplier));
+        walls.add(new Rectangle(0, getHeight() - gridMultiplier, getHeight(), gridMultiplier));
     }
 
     public Collection<GameObject> getGameObjects() {
@@ -139,5 +142,16 @@ public class GameMap implements Serializable {
 
     public int getGridMultiplier() {
         return gridMultiplier;
+    }
+
+    /**
+     * Changes the color of walls on the map
+     *
+     * @param mapWallColor Background color of the Wall
+     * @param mapWallBorderColor Border color of the Wall
+     */
+    public void setWallColors(Color mapWallColor, Color mapWallBorderColor) {
+        walls.setColor(mapWallColor);
+        walls.setBorderColor(mapWallBorderColor);
     }
 }

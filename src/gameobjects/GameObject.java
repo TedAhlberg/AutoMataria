@@ -15,6 +15,10 @@ public abstract class GameObject implements Serializable {
     protected int x, y, speed, width, height;
     protected Direction direction = Direction.Static;
 
+    public GameObject() {
+        this(0, 0);
+    }
+
     public GameObject(int x, int y) {
         this.x = x;
         this.y = y;

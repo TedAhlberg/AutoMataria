@@ -15,13 +15,14 @@ public class TestUI {
     private JPanel container;
     private JTextField tfClientIP, tfClientPort, tfPlayerSpeedTick, tfFramesPerSecond, tfPlayerSpeedSecond,
             tfServerPort, tfPlayers, tfTickRate, tfUpdateRate, tfMapWidth, tfMapHeight;
-    private JButton btnStartGame, btnStartServer, btnStopServer, btnChangeWallColor;
+    private JButton btnStartGame, btnStartServer, btnStopServer, btnChangeWallColor, btnChangeWallBorderColor;
     private JCheckBox checkFullscreen;
     private JComboBox cbWindowSize;
     private JLabel lblWindowSize;
 
     private GameServer server;
-    private Color mapWallColor = Color.CYAN;
+    private Color mapWallColor = Color.CYAN.darker().darker().darker();
+    private Color mapWallBorderColor = Color.CYAN.darker();
 
     private String clientIP;
     private int serverPort, tickRate, updateRate, players, mapWidth, mapHeight, clientPort, framesPerSecond, clientWidth, clientHeight;
@@ -65,7 +66,8 @@ public class TestUI {
             GameMap map = new GameMap("default");
             map.setPlayerSpeed(playerSpeedTick);
             map.setGrid(new Dimension(mapWidth, mapHeight));
-            map.addEdgeWalls(mapWallColor);
+            map.setWallColors(mapWallColor, mapWallBorderColor);
+            map.addEdgeWalls();
             if (server == null) server = new GameServer(serverPort, tickRate, updateRate, players, map);
         });
         btnStopServer.addActionListener(e -> {
@@ -77,8 +79,13 @@ public class TestUI {
 
         btnChangeWallColor.setForeground(mapWallColor);
         btnChangeWallColor.addActionListener(e -> {
-            mapWallColor = JColorChooser.showDialog(null, "Wall Color", Color.CYAN);
+            mapWallColor = JColorChooser.showDialog(null, "Wall Color", mapWallColor);
             btnChangeWallColor.setForeground(mapWallColor);
+        });
+        btnChangeWallBorderColor.setForeground(mapWallBorderColor);
+        btnChangeWallBorderColor.addActionListener(e -> {
+            mapWallBorderColor = JColorChooser.showDialog(null, "Wall Border Color", mapWallBorderColor);
+            btnChangeWallBorderColor.setForeground(mapWallBorderColor);
         });
     }
 

@@ -105,12 +105,9 @@ public class Player extends GameObject {
                 setDead();
                 ((Player) object).setDead();
                 System.out.println(name + " HAS CRASHED WITH " + ((Player) object).getName());
-            } else if ((object instanceof Wall) && this.getBounds().intersects(object.getBounds())) {
+            } else if ((object instanceof Wall) && ((Wall) object).intersects(this.getBounds())) {
                 setDead();
                 System.out.println(name + " CRASHED INTO A WALL");
-            } else if ((object instanceof Trail) && ((Trail) object).intersects(this.getBounds())) {
-                setDead();
-                System.out.println(name + " CRASHED INTO A TRAIL");
             }
         }
     }

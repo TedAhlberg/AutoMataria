@@ -3,33 +3,19 @@ package gameobjects;
 import common.Direction;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 
 /**
  * @author Johannes Blüml
  */
-public class Trail extends GameObject {
+public class Trail extends Wall {
     private Player player;
-    private Shape trail;
 
     Trail(Player player) {
-        super(player.getX(), player.getY());
+        super(new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50),
+                new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 150));
         this.player = player;
         width = player.getWidth();
         height = player.getHeight();
-    }
-
-    public void tick() {
-    }
-
-    public void render(Graphics2D g) {
-        if (trail == null) return;
-        Color c = player.getColor();
-        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 50));
-        g.fill(trail);
-        g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 150));
-        g.draw(trail);
     }
 
     public void grow(Point previousPosition, Point newPosition) {
@@ -94,16 +80,6 @@ public class Trail extends GameObject {
     }
 
     private void add(Polygon rectangle) {
-        Area area = new Area();
-        if (trail != null) {
-            area.add(new Area(trail));
-        }
-        area.add(new Area(rectangle));
-        trail = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
-    }
-
-    public boolean intersects(Rectangle thing) {
-        if (trail == null) return false;
-        return trail.intersects(thing);
+        add(new Rectangle(rectangle.getBounds()));
     }
 }
