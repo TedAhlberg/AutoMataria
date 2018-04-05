@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Johannes Blüml
  */
 public class Player extends GameObject {
+    private static final long serialVersionUID = 2;
     private GameMap map;
     private ConcurrentLinkedQueue<Direction> inputQueue;
     private Trail trail;

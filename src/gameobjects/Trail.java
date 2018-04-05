@@ -8,6 +8,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class Trail extends Wall {
+    private static final long serialVersionUID = 2;
     private Player player;
 
     Trail(Player player) {

@@ -25,10 +25,6 @@ public abstract class GameObject implements Serializable {
         this.id = ID.getNext();
     }
 
-    public int hashCode() {
-        return id;
-    }
-
     public abstract void tick();
 
     public abstract void render(Graphics2D g);

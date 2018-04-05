@@ -10,6 +10,7 @@ import java.awt.geom.Area;
  * @author Johannes Blüml
  */
 public class Wall extends GameObject {
+    private static final long serialVersionUID = 2;
     private Color color, borderColor;
     private Shape shape;
 
