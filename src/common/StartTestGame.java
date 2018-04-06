@@ -19,8 +19,9 @@ public class StartTestGame {
         new GameServer(32000, 50, 150, 4, map);
 
         // Start a game client
-        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
-//        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
-        //new Game("127.0.0.1", 32000, 100);
+//        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
+        new Game("127.0.0.1", 32000, new Dimension(500, 500), 30);
+        
+//        new Game("127.0.0.1", 32000, 100);
     }
 }
