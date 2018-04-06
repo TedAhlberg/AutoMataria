@@ -10,6 +10,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * @author eriklundow
@@ -18,34 +19,41 @@ import javax.swing.JPanel;
 public class SettingsScreen extends JPanel {
 	private BufferedImage backgroundImage;
 
-	private Dimension minimum = new Dimension(400, 400);
-	private Dimension maximum = new Dimension(800, 800);
-	private Font font = new Font("Orbitron", Font.BOLD, 100);
+	private JTextField tfName = new JTextField();
+	private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
+	private Font fontText = new Font("Orbitron", Font.BOLD, 20);
+
 	public SettingsScreen() {
-		
-		setMinimumSize(minimum);
-		setMaximumSize(maximum);
+
+		setPreferredSize(new Dimension(500, 500));
 
 		try {
 			backgroundImage = ImageIO.read(new File("resources/Stars.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		tfName.setPreferredSize(new Dimension(30,20));
+		add(tfName);
+//		tfName.setLocation(0	, 0);
+		
+		
 	}
 
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-		g.setFont(font);
+		g.setFont(fontHead);
 		g.setColor(Color.white);
-		g.drawString("SETTINGS", 100, 100);
+		g.drawString("SETTINGS", 30, 50);
+		g.setFont(fontText);
+		g.drawString("Change Username" , 30, 100);
 		
+
 	}
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		frame.setMinimumSize(new Dimension(400, 400));
-		frame.setPreferredSize(new Dimension(800, 800));
+		frame.setPreferredSize(new Dimension(500, 500));
 		frame.add(new SettingsScreen());
 		frame.pack();
 		frame.setLocationRelativeTo(null);
