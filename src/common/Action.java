@@ -5,5 +5,8 @@ package common;
  */
 public enum Action {
     ExitGame,
-    ToggleInterpolation
+    ToggleInterpolation,
+    ToggleReady,
+    ToggleDebugInfo,
+    TogglePlayerColor
 }
