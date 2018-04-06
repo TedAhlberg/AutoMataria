@@ -77,15 +77,6 @@ public class GameServer implements ClientListener {
         }
     }
 
-    public Point generateRandomStartingPosition() {
-        Random random = new Random();
-        int width = currentMap.getGrid().width;
-        int height = currentMap.getGrid().height;
-        int x = random.nextInt(width) * Game.GRID_PIXEL_SIZE;
-        int y = random.nextInt(height) * Game.GRID_PIXEL_SIZE;
-        return new Point(x, y);
-    }
-
     private boolean intersectsAnyGameObject(Rectangle rect) {
         for (GameObject object : gameObjects) {
             if ((object instanceof Player) && rect.getBounds().intersects(object.getBounds())) {
@@ -106,7 +97,7 @@ public class GameServer implements ClientListener {
         if (state == GameState.Warmup) {
             boolean hasFoundStartingPosition = false;
             while (!hasFoundStartingPosition) {
-                Rectangle point = new Rectangle(generateRandomStartingPosition());
+                Rectangle point = new Rectangle(startingPositions.getOneRandom(currentMap.getGrid()));
                 point.width = player.getWidth();
                 point.height = player.getHeight();
 
