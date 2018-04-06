@@ -1,8 +1,8 @@
 package gameclient;
 
 import common.Action;
-import gameclient.keyInput.KeyInput;
 import common.*;
+import gameclient.keyInput.KeyInput;
 import gameobjects.Player;
 
 import javax.swing.*;
@@ -18,7 +18,7 @@ public class Game {
     private final GamePanel gamePanel;
 
     private GameServerConnection client;
-    private Audio backgroundMusic = Audio.getSound("resources/Music/AM-trck1.mp3");
+    private Audio backgroundMusic;
 
     public Game() {
         this("127.0.0.1", 32000, null, 100);
@@ -53,15 +53,19 @@ public class Game {
             public void onData(Object data) {
                 if (data instanceof Player) {
                     gamePanel.setPlayer((Player) data);
+                    System.out.println("CLIENT: I am player: " + data);
                 } else if (data instanceof GameMap) {
                     GameMap map = (GameMap) data;
+                    System.out.println("CLIENT: Got MAP from server: " + map.getName());
                     gamePanel.setBackground(map.getBackground());
                     gamePanel.setGrid(map.getGrid());
-                    double scale = Math.min((double) gamePanel.getWidth() / map.getWidth(), (double) gamePanel.getHeight() / map.getHeight());
-                    gamePanel.start(scale, framesPerSecond, map.getPlayerSpeedPerSecond());
+                    int width = map.getGrid().width * Game.GRID_PIXEL_SIZE;
+                    int height = map.getGrid().height * Game.GRID_PIXEL_SIZE;
+                    double scale = Math.min((double) gamePanel.getWidth() / width, (double) gamePanel.getHeight() / height);
+                    gamePanel.start(scale, framesPerSecond);
+                    backgroundMusic = Audio.getSound(map.getMusicTrack());
                     backgroundMusic.play(99);
-                }
-                if (data instanceof Collection) {
+                } else if (data instanceof Collection) {
                     gamePanel.updateGameObjects((Collection) data);
                 }
             }
