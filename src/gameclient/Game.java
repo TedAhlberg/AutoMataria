@@ -1,8 +1,8 @@
 package gameclient;
 
 import common.Action;
+import gameclient.keyinput.KeyInput;
 import common.*;
-import gameclient.keyInput.KeyInput;
 import gameobjects.Player;
 
 import javax.swing.*;

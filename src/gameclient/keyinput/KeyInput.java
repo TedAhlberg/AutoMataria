@@ -1,4 +1,4 @@
-package gameclient.keyInput;
+package gameclient.keyinput;
 
 import common.Action;
 import common.Direction;
@@ -8,7 +8,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * @author Johannes Blüml & Ted Ahlberg
+ * @author Johannes Blüml
+ * @author Ted Ahlberg
  */
 public class KeyInput extends KeyAdapter {
     private Game game;

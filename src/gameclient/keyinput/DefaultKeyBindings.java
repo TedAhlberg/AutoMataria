@@ -1,12 +1,15 @@
-package gameclient.keyInput;
+package gameclient.keyinput;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 import common.Action;
 
+/**
+ * @author Ted Ahlberg
+ */
 public class DefaultKeyBindings {
-	private HashMap<Action, Integer> bindings = new HashMap();
+	private HashMap<Action, Integer> bindings = new HashMap<Action, Integer>();
 
 	public DefaultKeyBindings() {
 		bindings.put(Action.ExitGame, KeyEvent.VK_ESCAPE);
@@ -21,8 +24,8 @@ public class DefaultKeyBindings {
 		bindings.put(Action.GoUp, KeyEvent.VK_UP);
 		bindings.put(Action.GoDown, KeyEvent.VK_DOWN);
 	}
-	
-	public HashMap getHashMap() {
+
+	public HashMap<Action, Integer> getHashMap() {
 		return bindings;
 	}
 }
