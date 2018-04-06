@@ -18,7 +18,7 @@ public class Game {
     private final GamePanel gamePanel;
 
     private GameServerConnection client;
-    private Audio backgroundMusic = Audio.getSound("resources/Music/AM-track1.wav");
+    private Audio backgroundMusic = Audio.getSound("resources/Music/AM-trck1.mp3");
 
     public Game() {
         this("127.0.0.1", 32000, null, 100);
@@ -59,7 +59,7 @@ public class Game {
                     gamePanel.setGrid(map.getGrid());
                     double scale = Math.min((double) gamePanel.getWidth() / map.getWidth(), (double) gamePanel.getHeight() / map.getHeight());
                     gamePanel.start(scale, framesPerSecond, map.getPlayerSpeedPerSecond());
-                    backgroundMusic.play();
+                    backgroundMusic.play(99);
                 }
                 if (data instanceof Collection) {
                     gamePanel.updateGameObjects((Collection) data);
