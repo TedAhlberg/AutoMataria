@@ -42,7 +42,6 @@ public class GameColors {
 	}
 
 	public Color takeColor() {
-
 		return availableColors.remove(rand.nextInt(availableColors.size()));
 	}
 
