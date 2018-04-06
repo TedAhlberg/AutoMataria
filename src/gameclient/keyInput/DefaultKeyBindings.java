@@ -13,6 +13,8 @@ public class DefaultKeyBindings {
 		bindings.put(Action.ToggleInterpolation, KeyEvent.VK_I);
 		bindings.put(Action.ToggleNames, KeyEvent.VK_SHIFT);
 		bindings.put(Action.ToggleDebugText, KeyEvent.VK_F1);
+		bindings.put(Action.ToggleReady, KeyEvent.VK_R);
+		bindings.put(Action.TogglePlayerColor, KeyEvent.VK_C);
 
 		bindings.put(Action.GoLeft, KeyEvent.VK_LEFT);
 		bindings.put(Action.GoRight, KeyEvent.VK_RIGHT);
