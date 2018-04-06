@@ -9,8 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Function;
 
 /**
  * @author Johannes Blüml
@@ -26,8 +26,9 @@ public class GamePanel extends JComponent {
     private BufferedImage background, paintBuffer;
     private Color backgroundColor = Color.BLACK;
     private long timeBetweenRenders;
-    private int fps, frameCounter, playerMovementPerSecond, interpolation;
+    private int fps, frameCounter;
     private boolean interpolateMovement;
+    private Function<Integer, Integer> calculateInterpolation = x -> 0;
 
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
         if (clientState.size() == 0) {
@@ -43,8 +44,7 @@ public class GamePanel extends JComponent {
         this.player = player;
     }
 
-    public void start(double scale, int framesPerSecond, int playerMovementPerSecond) {
-        this.playerMovementPerSecond = playerMovementPerSecond;
+    public void start(double scale, int framesPerSecond) {
         this.scale = scale;
         timeBetweenRenders = (1000 / framesPerSecond) * 1000000;
         gameLoopRunning = true;
@@ -62,7 +62,7 @@ public class GamePanel extends JComponent {
 
             // CALCULATE INTERPOLATION
             long ratio = timeSinceLastRender / timeBetweenRenders;
-            interpolation = (int) Math.ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
+            calculateInterpolation = playerMovementPerSecond -> (int) Math.ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
             // RERENDER THE GAME
             paintImmediately(0, 0, getWidth(), getHeight());
 
@@ -98,16 +98,16 @@ public class GamePanel extends JComponent {
         g2.scale(scale, scale);
 
         if (clientState.size() == 0 || serverState.size() == 0) return;
-
         for (GameObject target : serverState) {
-            if (target instanceof Trail || target instanceof Wall) {
+            if (target instanceof Wall) {
                 // Trail cant be interpolated so render the last one from server
                 target.render(g2);
                 continue;
             }
             for (GameObject current : clientState) {
                 if (current.equals(target)) {
-                    if (interpolateMovement) {
+                    if (target instanceof Player && interpolateMovement) {
+                        int interpolation = calculateInterpolation.apply(((Player) target).getSpeedPerSecond());
                         interpolate(current, target, interpolation);
                         current.render(g2);
                     } else {
@@ -128,7 +128,7 @@ public class GamePanel extends JComponent {
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Orbitron", Font.PLAIN, 25));
         if (interpolateMovement) {
-            g2.drawString(fps + " FPS | Interpolation: " + interpolation, 40, 60);
+            g2.drawString(fps + " FPS | Interpolation enabled ", 40, 60);
         } else {
             g2.drawString(fps + " FPS | Press I to enable movement interpolation.", 40, 60);
         }

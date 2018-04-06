@@ -1,6 +1,8 @@
 package common;
 
 import gameclient.Game;
+import gameobjects.GameObject;
+import gameobjects.Wall;
 import gameserver.GameServer;
 
 import javax.swing.*;
@@ -63,12 +65,19 @@ public class TestUI {
         btnStartServer.addActionListener(e -> {
             updateAllVariables();
             System.out.println(toString());
-            GameMap map = new GameMap("default");
+            GameMap map = new GameMap();
             map.setPlayerSpeed(playerSpeedTick);
             map.setGrid(new Dimension(mapWidth, mapHeight));
-            map.setWallColors(mapWallColor, mapWallBorderColor);
-            map.addEdgeWalls();
-            if (server == null) server = new GameServer(serverPort, tickRate, updateRate, players, map);
+            Wall wall = new Wall(mapWallColor, mapWallBorderColor);
+            int width = mapWidth * Game.GRID_PIXEL_SIZE;
+            int height = mapHeight * Game.GRID_PIXEL_SIZE;
+            wall.add(new Rectangle(0, 0, Game.GRID_PIXEL_SIZE, width));
+            wall.add(new Rectangle(height - Game.GRID_PIXEL_SIZE, 0, Game.GRID_PIXEL_SIZE, width));
+            wall.add(new Rectangle(0, 0, height, Game.GRID_PIXEL_SIZE));
+            wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
+            GameObject[] startingObjects = {wall};
+            map.setStartingGameObjects(startingObjects);
+            if (server == null) server = new GameServer(serverPort, tickRate, updateRate, map);
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
