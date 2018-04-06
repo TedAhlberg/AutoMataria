@@ -1,7 +1,6 @@
 package gameserver;
 
-import common.Direction;
-import common.GameMap;
+import common.*;
 import gameclient.Game;
 import gameobjects.*;
 
@@ -98,6 +97,8 @@ public class GameServer implements ClientListener {
             boolean hasFoundStartingPosition = false;
             while (!hasFoundStartingPosition) {
                 Rectangle point = new Rectangle(startingPositions.getOneRandom(currentMap.getGrid()));
+                point.x *= Game.GRID_PIXEL_SIZE;
+                point.y *= Game.GRID_PIXEL_SIZE;
                 point.width = player.getWidth();
                 point.height = player.getHeight();
 
@@ -115,7 +116,7 @@ public class GameServer implements ClientListener {
 
     @Override
     public void onConnect(Client client) {
-
+        System.out.println("SERVER: Client connected.");
     }
 
     @Override
@@ -136,6 +137,13 @@ public class GameServer implements ClientListener {
             Direction direction = (Direction) value;
             Player player = connectedClients.get(client);
             player.setDirection(direction);
+        } else if (value instanceof Action) {
+            Player player = connectedClients.get(client);
+            if (value == Action.TogglePlayerColor) {
+                player.setColor(colors.exchangeColor(player.getColor()));
+            } else if (value == Action.ToggleReady) {
+                player.setReady(!player.isReady());
+            }
         }
     }
 

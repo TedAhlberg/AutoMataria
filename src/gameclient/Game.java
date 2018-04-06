@@ -53,8 +53,10 @@ public class Game {
             public void onData(Object data) {
                 if (data instanceof Player) {
                     gamePanel.setPlayer((Player) data);
+                    System.out.println("CLIENT: I am player: " + data);
                 } else if (data instanceof GameMap) {
                     GameMap map = (GameMap) data;
+                    System.out.println("CLIENT: Got MAP from server: " + map.getName());
                     gamePanel.setBackground(map.getBackground());
                     gamePanel.setGrid(map.getGrid());
                     int width = map.getGrid().width * Game.GRID_PIXEL_SIZE;

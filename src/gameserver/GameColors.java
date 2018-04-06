@@ -5,12 +5,9 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /**
- * 
  * @author eriklundow
- *
  */
 public class GameColors {
-
 	private LinkedList<Color> allColors = new LinkedList<Color>();
 	private LinkedList<Color> availableColors = new LinkedList<Color>();
 	private Random rand = new Random();
@@ -29,21 +26,18 @@ public class GameColors {
 		availableColors = allColors;
 	}
 
-	public Color exchangeColor(Color color) {
-
+	synchronized Color exchangeColor(Color color) {
 		colorSelect = availableColors.remove(rand.nextInt(availableColors.size()));
 		availableColors.add(color);
 
 		return colorSelect;
 	}
 
-	public void giveBackColor(Color color) {
+	synchronized void giveBackColor(Color color) {
 		availableColors.add(color);
 	}
 
-	public Color takeColor() {
-
+	synchronized public Color takeColor() {
 		return availableColors.remove(rand.nextInt(availableColors.size()));
 	}
-
 }

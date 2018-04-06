@@ -18,7 +18,7 @@ public class Player extends GameObject {
     private final String name;
     private final Trail trail;
     private Color color;
-    private boolean dead;
+    private boolean dead, ready;
     private Direction previousDirection;
     private int speedPerSecond;
 
@@ -186,5 +186,13 @@ public class Player extends GameObject {
                 ", height=" + height +
                 ", direction=" + direction +
                 '}';
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 }
