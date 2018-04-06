@@ -38,6 +38,7 @@ public class GameColors {
 	}
 
 	synchronized public Color takeColor() {
+
 		return availableColors.remove(rand.nextInt(availableColors.size()));
 	}
 }
