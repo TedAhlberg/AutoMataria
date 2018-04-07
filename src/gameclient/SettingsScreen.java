@@ -34,7 +34,10 @@ public class SettingsScreen extends JPanel {
 	private String fileChangePressed = "images/SetKeyBinding_Pressed.png";
 	private String fileChangeUnpressed = "images/SetKeyBinding_Unpressed.png";
 
-	private Buttons btnChange = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeUP = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeLEFT = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeRIGHT = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeDOWN = new Buttons(fileChangePressed, fileChangeUnpressed);
 
 	public SettingsScreen() {
 		JFrame frame = new JFrame();
@@ -75,15 +78,28 @@ public class SettingsScreen extends JPanel {
 		lblDown.setForeground(Color.white);
 		lblRight.setForeground(Color.white);
 
-		lblUp.setBounds(200, 150, 300, 20);
-		lblLeft.setBounds(200, 170, 300, 20);
-		lblDown.setBounds(200, 190, 300, 20);
-		lblRight.setBounds(200, 210, 300, 20);
+		lblUp.setBounds(30, 150, 300, 20);
+		lblLeft.setBounds(30, 175, 300, 20);
+		lblDown.setBounds(30, 200, 300, 20);
+		lblRight.setBounds(30, 225, 300, 20);
 
-//		btnChange.setPreferredSize(new Dimension(50, 20));
-//		btnChange.setBounds(100, 150, 500, 200);
-		add(btnChange);
-
+		btnChangeUP.setWidth(200);
+		btnChangeUP.setHeight(15);
+		btnChangeLEFT.setWidth(200);
+		btnChangeLEFT.setHeight(15);
+		btnChangeDOWN.setWidth(200);
+		btnChangeDOWN.setHeight(15);
+		btnChangeRIGHT.setWidth(200);
+		btnChangeRIGHT.setHeight(15);
+		
+		btnChangeUP.setBounds(275, 150, 200, 15);
+		btnChangeLEFT.setBounds(275, 175, 200, 15);
+		btnChangeDOWN.setBounds(275,200,200,15);
+		btnChangeRIGHT.setBounds(275,225,200,15);
+		add(btnChangeUP);
+		add(btnChangeLEFT);
+		add(btnChangeDOWN);
+		add(btnChangeRIGHT);
 		add(lblSettings);
 		add(lblUserName);
 		add(tfName);
