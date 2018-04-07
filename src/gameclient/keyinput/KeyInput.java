@@ -23,21 +23,6 @@ public class KeyInput extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
-        // ExitGame
-        if (key == KeyEvent.VK_ESCAPE) {
-            game.onKeyPress(Action.ExitGame);
-        }
-
-        // ToggleInterpolation
-        if (key == KeyEvent.VK_I) {
-            game.onKeyPress(Action.ToggleInterpolation);
-        }
-
-        // Toggle Player Color
-        if (key == KeyEvent.VK_C) {
-            game.onKeyPress(Action.TogglePlayerColor);
-        }
-
         // GoLeft
         if (key == KeyEvent.VK_LEFT && lastKey != KeyEvent.VK_RIGHT) {
             game.onKeyPress(Direction.Left);
@@ -54,6 +39,29 @@ public class KeyInput extends KeyAdapter {
         } else if (key == KeyEvent.VK_DOWN && lastKey != KeyEvent.VK_UP) {
             game.onKeyPress(Direction.Down);
             lastKey = KeyEvent.VK_DOWN;
+        }
+
+        // ExitGame
+        else if (key == KeyEvent.VK_ESCAPE) {
+            game.onKeyPress(Action.ExitGame);
+        }
+
+        // ToggleInterpolation
+        else if (key == KeyEvent.VK_I) {
+            game.onKeyPress(Action.ToggleInterpolation);
+        }
+
+        // Toggle Player Color
+        else if (key == KeyEvent.VK_C) {
+            game.onKeyPress(Action.TogglePlayerColor);
+        }
+
+        else if (key == KeyEvent.VK_R) {
+            game.onKeyPress(Action.ToggleReady);
+        }
+
+        else if (key == KeyEvent.VK_F1) {
+            game.onKeyPress(Action.ToggleDebugText);
         }
     }
 }

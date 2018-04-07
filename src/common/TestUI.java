@@ -521,7 +521,7 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         container.add(label15, gbc);
         tfPlayers = new JTextField();
-        tfPlayers.setText("4");
+        tfPlayers.setText("5");
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 10;

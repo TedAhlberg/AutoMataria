@@ -61,7 +61,10 @@ public class GameServer implements ClientListener {
 
             if (timeSinceLastUpdate > updateRate) {
                 previousUpdateTime = System.nanoTime() - (timeSinceLastUpdate - updateRate);
-                connectedClients.keySet().forEach(client -> client.send(gameObjects));
+                GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
+                for (Client client : connectedClients.keySet()) {
+                    client.send(update);
+                }
             }
 
             // WAIT BEFORE CONTINUING WITH THE GAMELOOP
@@ -85,6 +88,17 @@ public class GameServer implements ClientListener {
             }
         }
         return false;
+    }
+
+    private double getReadyPlayerPercentage() {
+        int players = connectedClients.size();
+        int readyPlayers = 0;
+        for (Player player : connectedClients.values()) {
+            if (player.isReady()) {
+                readyPlayers+=1;
+            }
+        }
+        return ((double) readyPlayers / (double) players);
     }
 
     private Player newPlayer(String name) {
@@ -150,6 +164,8 @@ public class GameServer implements ClientListener {
     @Override
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
+        player.setDead();
+        player.setReady(false);
         System.out.println("Player disconnected: " + player);
     }
 }

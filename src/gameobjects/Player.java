@@ -171,11 +171,21 @@ public class Player extends GameObject {
         return trail;
     }
 
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    @Override
     public String toString() {
         return "Player{" +
                 "name='" + name + '\'' +
                 ", color=" + color +
                 ", dead=" + dead +
+                ", ready=" + ready +
                 ", previousDirection=" + previousDirection +
                 ", speedPerSecond=" + speedPerSecond +
                 ", id=" + id +
@@ -186,13 +196,5 @@ public class Player extends GameObject {
                 ", height=" + height +
                 ", direction=" + direction +
                 '}';
-    }
-
-    public boolean isReady() {
-        return ready;
-    }
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
     }
 }

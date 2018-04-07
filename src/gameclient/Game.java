@@ -4,6 +4,7 @@ import common.Action;
 import gameclient.keyinput.KeyInput;
 import common.*;
 import gameobjects.Player;
+import gameserver.GameState;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,8 +66,12 @@ public class Game {
                     gamePanel.start(scale, framesPerSecond);
                     backgroundMusic = Audio.getSound(map.getMusicTrack());
                     backgroundMusic.play(99);
-                } else if (data instanceof Collection) {
-                    gamePanel.updateGameObjects((Collection) data);
+                } else if (data instanceof GameServerUpdate) {
+                    gamePanel.updateGameObjects(((GameServerUpdate) data).gameObjects);
+                    gamePanel.setGameState(((GameServerUpdate) data).state);
+                    if (((GameServerUpdate) data).state == GameState.Warmup) {
+                        gamePanel.setReadyPlayers(((GameServerUpdate) data).readyPercentage);
+                    }
                 }
             }
         });
@@ -92,6 +97,8 @@ public class Game {
             }
         } else if (action == Action.ToggleInterpolation) {
             gamePanel.toggleInterpolation();
+        } else if (action == Action.ToggleDebugText) {
+            gamePanel.toggleDebugInfo();
         } else {
             client.send(action);
         }
