@@ -155,19 +155,30 @@ public class GamePanel extends JComponent {
         int interpolation = calculateInterpolation.apply(((Player) gameObject).getSpeedPerSecond());
 
         // Get current position
-        Point current = currentPositions.get(gameObject.getId());
+        Point current = currentPositions.get(id);
         if (current == null) {
             // Set current position from the gameObject if there none available yet
-            currentPositions.put(gameObject.getId(), new Point(gameObject.getX(), gameObject.getY()));
-            current = currentPositions.get(gameObject.getId());
+            currentPositions.put(id, new Point(gameObject.getX(), gameObject.getY()));
+            current = currentPositions.get(id);
         }
 
         // Get target position
-        Point target = targetPositions.get(gameObject.getId());
+        Point target = targetPositions.get(id);
         if (target == null) {
-            // Set current position from the gameObject if there is none available yet
-            targetPositions.put(gameObject.getId(), new Point(gameObject.getX(), gameObject.getY()));
-            target = targetPositions.get(gameObject.getId());
+            // Set target position from the gameObject if there is none available yet
+            targetPositions.put(id, new Point(gameObject.getX(), gameObject.getY()));
+            target = targetPositions.get(id);
+        }
+
+        {
+            // Sets a limit for how far behind the current position can be from target
+            int limit = 3 * Game.GRID_PIXEL_SIZE;
+            int xDiff = target.x - current.x;
+            int yDiff = target.y - current.y;
+            if (xDiff > limit || xDiff < -limit || yDiff > limit || yDiff < -limit) {
+                current.x = target.x;
+                current.y = target.y;
+            }
         }
 
         // Interpolate current position towards target position
