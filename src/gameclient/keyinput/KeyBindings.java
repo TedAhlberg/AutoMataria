@@ -1,11 +1,7 @@
 package gameclient.keyinput;
 
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 
 import common.Action;
 
@@ -15,16 +11,12 @@ import common.Action;
 public class KeyBindings {
 	private DefaultKeyBindings defaultBindings = new DefaultKeyBindings();
 	private HashMap<Action, Integer> keyBindings = defaultBindings.getHashMap();
-	private Action action;
 
 	public KeyBindings() {
 	}
 	
-	public void setKeyBindingFor(Action action, KeyEvent e) {
-		keyBindings.replace(action, e.getKeyCode());
-	}
-
-	public void keyPressed(KeyEvent e) {
+	public void setKeyBindings(HashMap<Action, Integer> keyBindings) {
+		this.keyBindings = keyBindings;
 	}
 
 	public void setDefaultKeyBindings() {
