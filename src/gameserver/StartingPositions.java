@@ -52,6 +52,6 @@ public class StartingPositions {
     }
 
     synchronized public Point getNext() throws NoSuchElementException {
-        return availablePositions.removeFirst();
+        return availablePositions.remove(random.nextInt(availablePositions.size()));
     }
 }

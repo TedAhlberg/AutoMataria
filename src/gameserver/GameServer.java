@@ -82,7 +82,7 @@ public class GameServer implements ClientListener {
             gameObject.tick();
         }
 
-        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0) {
+        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0 && connectedClients.size() > 1) {
             players.clear();
             players.addAll(connectedClients.values());
             state = GameState.Countdown;
