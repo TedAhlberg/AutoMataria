@@ -4,14 +4,14 @@ import common.Action;
 import common.Direction;
 import gameclient.Game;
 
-import java.awt.event.KeyAdapter;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
  * @author Johannes Blüml
  * @author Ted Ahlberg
  */
-public class KeyInput extends KeyAdapter {
+public class KeyInput implements KeyEventDispatcher {
     private Game game;
     private KeyBindings bindings;
     private int lastKey = 0;
@@ -20,7 +20,9 @@ public class KeyInput extends KeyAdapter {
         this.game = game;
     }
 
-    public void keyPressed(KeyEvent e) {
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        if (e.getID() != KeyEvent.KEY_PRESSED) return false;
         int key = e.getKeyCode();
 
         // GoLeft
@@ -54,14 +56,12 @@ public class KeyInput extends KeyAdapter {
         // Toggle Player Color
         else if (key == KeyEvent.VK_C) {
             game.onKeyPress(Action.TogglePlayerColor);
-        }
-
-        else if (key == KeyEvent.VK_R) {
+        } else if (key == KeyEvent.VK_R) {
             game.onKeyPress(Action.ToggleReady);
-        }
-
-        else if (key == KeyEvent.VK_F1) {
+        } else if (key == KeyEvent.VK_F1) {
             game.onKeyPress(Action.ToggleDebugText);
         }
+
+        return false;
     }
 }

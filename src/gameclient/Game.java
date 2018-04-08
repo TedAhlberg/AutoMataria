@@ -1,14 +1,13 @@
 package gameclient;
 
 import common.Action;
-import gameclient.keyinput.KeyInput;
 import common.*;
+import gameclient.keyinput.KeyInput;
 import gameobjects.Player;
 import gameserver.GameState;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * @author Johannes Bluml
@@ -76,7 +75,8 @@ public class Game {
             }
         });
 
-        gamePanel.addKeyListener(new KeyInput(this));
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
+
         gamePanel.requestFocus();
 
         client.connect(serverIP, serverPort);
