@@ -18,12 +18,13 @@ public class Player extends GameObject {
     private final String name;
     private final Trail trail;
     private Color color;
-    private boolean dead, ready;
+    private boolean dead, ready, invincible;
     private Direction previousDirection;
     private int speedPerSecond;
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
+        this.invincible = true;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;
         this.color = Color.LIGHT_GRAY;
@@ -59,7 +60,7 @@ public class Player extends GameObject {
             trail.grow(previousPosition, newPosition);
         }
 
-        checkCollisions();
+        if (!invincible) checkCollisions();
     }
 
     private boolean teleportIfOutsideMap() {
@@ -135,6 +136,10 @@ public class Player extends GameObject {
     public void setDead() {
         direction = Direction.Static;
         dead = true;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
     }
 
     public void setDirection(Direction direction) {

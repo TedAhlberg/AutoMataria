@@ -6,7 +6,6 @@ import gameobjects.*;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -54,17 +53,12 @@ public class GameServer implements ClientListener {
 
             if (timeSinceLastTick > tickRate) {
                 previousTickTime = System.nanoTime() - (timeSinceLastTick - tickRate);
-                for (GameObject gameObject : gameObjects) {
-                    gameObject.tick();
-                }
+                tick();
             }
 
             if (timeSinceLastUpdate > updateRate) {
                 previousUpdateTime = System.nanoTime() - (timeSinceLastUpdate - updateRate);
-                GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
-                for (Client client : connectedClients.keySet()) {
-                    client.send(update);
-                }
+                update();
             }
 
             // WAIT BEFORE CONTINUING WITH THE GAMELOOP
@@ -76,6 +70,38 @@ public class GameServer implements ClientListener {
 
                 nowTime = System.nanoTime();
             }
+        }
+    }
+
+    private void tick() {
+        for (GameObject gameObject : gameObjects) {
+            gameObject.tick();
+        }
+
+        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0) {
+            state = GameState.Running;
+            startingPositions.generateFair(currentMap.getGrid(), connectedClients.size());
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject instanceof Player) {
+                    ((Player) gameObject).setInvincible(false);
+                    gameObject.setDirection(Direction.Static);
+                    Point nextPosition = startingPositions.getNext();
+                    gameObject.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
+                    gameObject.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+                } else if (gameObject instanceof Trail) {
+                    Dimension grid = currentMap.getGrid();
+                    grid.width *= Game.GRID_PIXEL_SIZE;
+                    grid.height *= Game.GRID_PIXEL_SIZE;
+                    ((Trail) gameObject).remove(new Rectangle(grid));
+                }
+            }
+        }
+    }
+
+    private void update() {
+        GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
+        for (Client client : connectedClients.keySet()) {
+            client.send(update);
         }
     }
 
@@ -95,7 +121,7 @@ public class GameServer implements ClientListener {
         int readyPlayers = 0;
         for (Player player : connectedClients.values()) {
             if (player.isReady()) {
-                readyPlayers+=1;
+                readyPlayers += 1;
             }
         }
         return ((double) readyPlayers / (double) players);
@@ -135,7 +161,20 @@ public class GameServer implements ClientListener {
 
     @Override
     public void onData(Client client, Object value) {
-        if (value instanceof String && !connectedClients.containsKey(client)) {
+        if (value instanceof Direction && connectedClients.containsKey(client)) {
+            Direction direction = (Direction) value;
+            Player player = connectedClients.get(client);
+            player.setDirection(direction);
+        } else if (value instanceof Action) {
+            if (state == GameState.Warmup) {
+                Player player = connectedClients.get(client);
+                if (value == Action.TogglePlayerColor) {
+                    player.setColor(colors.exchangeColor(player.getColor()));
+                } else if (value == Action.ToggleReady) {
+                    player.setReady(!player.isReady());
+                }
+            }
+        } else if (value instanceof String && !connectedClients.containsKey(client)) {
             Player player = newPlayer((String) value);
             if (player != null) {
                 player.setColor(colors.takeColor());
@@ -147,25 +186,18 @@ public class GameServer implements ClientListener {
             } else {
                 System.out.println("Client tried to connect but no slots are available.");
             }
-        } else if (value instanceof Direction && connectedClients.containsKey(client)) {
-            Direction direction = (Direction) value;
-            Player player = connectedClients.get(client);
-            player.setDirection(direction);
-        } else if (value instanceof Action) {
-            Player player = connectedClients.get(client);
-            if (value == Action.TogglePlayerColor) {
-                player.setColor(colors.exchangeColor(player.getColor()));
-            } else if (value == Action.ToggleReady) {
-                player.setReady(!player.isReady());
-            }
         }
     }
 
     @Override
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
-        player.setDead();
-        player.setReady(false);
+        if (state == GameState.Running) {
+            player.setDead();
+        } else {
+            gameObjects.remove(player.getTrail());
+            gameObjects.remove(player);
+        }
         System.out.println("Player disconnected: " + player);
     }
 }

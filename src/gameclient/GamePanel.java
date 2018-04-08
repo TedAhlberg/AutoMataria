@@ -51,6 +51,7 @@ public class GamePanel extends JComponent {
     }
 
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
+        gameObjects.clear();
         for (GameObject updated : updatedGameObjects) {
             gameObjects.put(updated.getId(), updated);
             if (interpolateMovement) {
