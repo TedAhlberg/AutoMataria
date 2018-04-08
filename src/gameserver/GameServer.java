@@ -5,7 +5,7 @@ import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,15 +17,19 @@ public class GameServer implements ClientListener {
     private final StartingPositions startingPositions = new StartingPositions();
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
-    private final int tickRate, updateRate;
+    private final int tickRate, updateRate, gameStartCountdown, gameOverCountDown;
     private GameState state = GameState.Warmup;
     private GameMap currentMap;
     private ServerConnection server;
     private boolean running = true;
+    private int currentCountdown;
+    private LinkedList<Player> players = new LinkedList<>();
 
     public GameServer(int serverPort, int tickRate, int updateRate, GameMap map) {
         this.tickRate = tickRate;
         this.updateRate = updateRate;
+        this.gameStartCountdown = 5000;
+        this.gameOverCountDown = 10000;
         this.currentMap = map;
         gameObjects.addAll(Arrays.asList(map.getStartingGameObjects()));
 
@@ -79,23 +83,97 @@ public class GameServer implements ClientListener {
         }
 
         if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0) {
-            state = GameState.Running;
-            startingPositions.generateFair(currentMap.getGrid(), connectedClients.size());
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Player) {
-                    ((Player) gameObject).setInvincible(false);
-                    gameObject.setDirection(Direction.Static);
-                    Point nextPosition = startingPositions.getNext();
-                    gameObject.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
-                    gameObject.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
-                } else if (gameObject instanceof Trail) {
-                    Dimension grid = currentMap.getGrid();
-                    grid.width *= Game.GRID_PIXEL_SIZE;
-                    grid.height *= Game.GRID_PIXEL_SIZE;
-                    ((Trail) gameObject).remove(new Rectangle(grid));
+            players.clear();
+            players.addAll(connectedClients.values());
+            state = GameState.Countdown;
+            currentCountdown = gameStartCountdown;
+        } else if (state == GameState.Countdown) {
+            if (currentCountdown <= 0) {
+                state = GameState.Running;
+                startNewGame();
+            } else {
+                currentCountdown -= tickRate;
+            }
+        } else if (state == GameState.Running) {
+            int alivePlayers = 0;
+            for (Player player : players) {
+                if (!player.isDead()) {
+                    alivePlayers += 1;
                 }
             }
+            if (alivePlayers <= 1) {
+                state = GameState.GameOver;
+                currentCountdown = gameOverCountDown;
+            }
+        } else if (state == GameState.GameOver) {
+            if (currentCountdown <= 0) {
+                state = GameState.Warmup;
+                startNewWarmup();
+            } else {
+                currentCountdown -= tickRate;
+            }
         }
+    }
+
+    private void startNewWarmup() {
+        Rectangle mapRectangle = getMapRectangle();
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject gameObject = iterator.next();
+            if (gameObject instanceof Player) {
+                Player player = (Player) gameObject;
+
+                player.setInvincible(true);
+                player.setReady(false);
+                player.setDead(false);
+                player.setDirection(Direction.Static);
+
+                Point nextPosition = startingPositions.getOneRandom(currentMap.getGrid());
+                System.out.println(nextPosition);
+                player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
+                player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+                System.out.println("WARMUP PLAYER: " + player);
+            } else if (gameObject instanceof Trail) {
+                ((Trail) gameObject).remove(mapRectangle);
+            } else {
+                iterator.remove();
+            }
+        }
+
+        gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
+    }
+
+    private void startNewGame() {
+        startingPositions.generateFair(currentMap.getGrid(), connectedClients.size());
+
+        Rectangle mapRectangle = getMapRectangle();
+        Iterator<GameObject> iterator = gameObjects.iterator();
+        while (iterator.hasNext()) {
+            GameObject gameObject = iterator.next();
+            if (gameObject instanceof Player) {
+                Player player = (Player) gameObject;
+
+                player.setInvincible(false);
+                player.setReady(false);
+                player.setDead(false);
+                player.setDirection(Direction.Static);
+
+                Point nextPosition = startingPositions.getNext();
+                player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
+                player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+            } else if (gameObject instanceof Trail) {
+                ((Trail) gameObject).remove(mapRectangle);
+            } else {
+                iterator.remove();
+            }
+        }
+
+        gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
+    }
+
+    private Rectangle getMapRectangle() {
+        Dimension grid = currentMap.getGrid();
+        return new Rectangle(grid.width * Game.GRID_PIXEL_SIZE, grid.height * Game.GRID_PIXEL_SIZE);
     }
 
     private void update() {
@@ -193,7 +271,7 @@ public class GameServer implements ClientListener {
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
         if (state == GameState.Running) {
-            player.setDead();
+            player.setDead(true);
         } else {
             gameObjects.remove(player.getTrail());
             gameObjects.remove(player);

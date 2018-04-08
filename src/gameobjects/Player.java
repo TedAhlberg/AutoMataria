@@ -117,12 +117,12 @@ public class Player extends GameObject {
                 Player otherPlayer = (Player) gameObject;
                 if (otherPlayer.equals(this)) continue;
                 if (otherPlayer.getBounds().intersects(this.getBounds())) {
-                    setDead();
+                    setDead(true);
                     System.out.println(name + " HAS CRASHED WITH " + otherPlayer.getName());
                 }
             } else if (gameObject instanceof Wall) {
                 if (((Wall) gameObject).intersects(this.getBounds())) {
-                    setDead();
+                    setDead(true);
                     System.out.println(name + " HAS CRASHED INTO A WALL");
                 }
             }
@@ -133,9 +133,9 @@ public class Player extends GameObject {
         return dead;
     }
 
-    public void setDead() {
+    public void setDead(boolean dead) {
         direction = Direction.Static;
-        dead = true;
+        this.dead = dead;
     }
 
     public void setInvincible(boolean invincible) {

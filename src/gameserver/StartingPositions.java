@@ -20,6 +20,7 @@ public class StartingPositions {
     synchronized public void generateRandom(Dimension grid, int amount) {
         Random random = new Random();
 
+        availablePositions.clear();
         while (availablePositions.size() < amount) {
             Point point = getOneRandom(grid);
             if (!availablePositions.contains(point)) {
@@ -42,6 +43,7 @@ public class StartingPositions {
         int xCenter = grid.width / 2;
         int yCenter = grid.height / 2;
 
+        availablePositions.clear();
         availablePositions.add(new Point(xLeft, yTop));
         availablePositions.add(new Point(xRight, yBottom));
         availablePositions.add(new Point(xRight, yTop));
