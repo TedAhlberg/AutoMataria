@@ -46,9 +46,13 @@ public class StartingPositions {
         availablePositions.clear();
         availablePositions.add(new Point(xLeft, yTop));
         availablePositions.add(new Point(xRight, yBottom));
-        availablePositions.add(new Point(xRight, yTop));
-        availablePositions.add(new Point(xLeft, yBottom));
-        availablePositions.add(new Point(xCenter, yCenter));
+        if (amount > 2) {
+            availablePositions.add(new Point(xRight, yTop));
+            availablePositions.add(new Point(xLeft, yBottom));
+        }
+        if (amount == 5) {
+            availablePositions.add(new Point(xCenter, yCenter));
+        }
     }
 
     synchronized public Point getNext() throws NoSuchElementException {
