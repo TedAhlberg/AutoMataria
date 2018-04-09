@@ -18,6 +18,8 @@ public class GameServer implements ClientListener {
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private final int tickRate, updateRate, gameStartCountdown, gameOverCountDown;
+    private final String serverName;
+    private final int serverPort;
     private GameState state = GameState.Warmup;
     private GameMap currentMap;
     private ServerConnection server;
@@ -25,7 +27,9 @@ public class GameServer implements ClientListener {
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
 
-    public GameServer(int serverPort, int tickRate, int updateRate, GameMap map) {
+    public GameServer(String serverName, int serverPort, int tickRate, int updateRate, GameMap map) {
+        this.serverName = serverName;
+        this.serverPort = serverPort;
         this.tickRate = tickRate;
         this.updateRate = updateRate;
         this.gameStartCountdown = 5000;
@@ -36,7 +40,7 @@ public class GameServer implements ClientListener {
         server = new ServerConnection(serverPort);
         new Thread(server).start();
         server.addListener(this);
-
+getServerAliveUpdateMessage();
         new Thread(() -> gameLoop()).start();
     }
 
@@ -129,10 +133,8 @@ public class GameServer implements ClientListener {
                 player.setDirection(Direction.Static);
 
                 Point nextPosition = startingPositions.getOneRandom(currentMap.getGrid());
-                System.out.println(nextPosition);
                 player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
                 player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
-                System.out.println("WARMUP PLAYER: " + player);
             } else if (gameObject instanceof Trail) {
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
@@ -277,5 +279,21 @@ public class GameServer implements ClientListener {
             gameObjects.remove(player);
         }
         System.out.println("Player disconnected: " + player);
+    }
+
+    /**
+     * Creates a byte array that conains info about this server that is used
+     * in clients to view active servers on the local network
+     *
+     * @return byte array that conains info about this server - maximum length is 76 bytes
+     */
+    public byte[] getServerAliveUpdateMessage() {
+        String string = serverName + "\n"
+                + currentMap.getName() + "\n"
+                + state + "\n"
+                + serverPort + "\n"
+                + connectedClients.size() + "\0";
+
+        return string.getBytes();
     }
 }
