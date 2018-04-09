@@ -17,6 +17,8 @@ public class GameServer implements ClientListener {
     private int updateRate;
     private ServerConnection server;
     private boolean running = true;
+    private String name;
+    private int connectedPlayers;
 
     public GameServer(int serverPort, int tickRate, int updateRate, int maxPlayers, GameMap map) {
         this.tickRate = tickRate;
@@ -100,5 +102,17 @@ public class GameServer implements ClientListener {
     public void onClose(Client client) {
         Player player = players.remove(client);
         System.out.println("Player disconnected: " + player);
+    }
+    
+    public String getServerName() {
+    	return name;
+    }
+    
+    public int getMaxPlayers() {
+    	return maxPlayers;
+    }
+    
+    public int getPlayers() {
+    	return connectedPlayers;
     }
 }
