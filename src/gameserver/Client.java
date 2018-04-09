@@ -37,6 +37,7 @@ public class Client {
                     e.printStackTrace();
                 }
             }
+            listeners.forEach(listener -> listener.onClose(this));
         } catch (IOException e) {
             e.printStackTrace();
         }

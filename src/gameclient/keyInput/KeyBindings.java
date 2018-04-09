@@ -1,50 +1,43 @@
-package gameclient.keyInput;
+package gameclient.keyinput;
 
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 
 import common.Action;
 
 /**
  * @author Ted Ahlberg
  */
-public class KeyBindings extends KeyAdapter implements Runnable{
-	private DefaultKeyBindings defaultBindings;
-	private HashMap<Action, Integer> bindings = new HashMap<Action, Integer>();
-	private boolean running;
-	private Thread thread;
-	
+public class KeyBindings {
+	private DefaultKeyBindings defaultBindings = new DefaultKeyBindings();
+	private HashMap<Action, Integer> keyBindings = defaultBindings.getHashMap();
+
 	public KeyBindings() {
-		
 	}
 	
-	public void setDefaultKeyBindings() {
-		defaultBindings = new DefaultKeyBindings();
-		bindings = defaultBindings.getHashMap();
-	}
-	
-	public void changeKeyFor(Action action) {
-		
-	}
-	
-	public void keyPressed(KeyEvent e) {
-		System.out.println(KeyEvent.getKeyText(e.getKeyCode()));
-	}
-		
-	public static void main(String[] args) {
-		KeyBindings test = new KeyBindings();
-		JFrame test2 = new JFrame();
-		test2.addKeyListener(test);
-		test2.setVisible(true);
-		test2.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	public void setKeyBindings(HashMap<Action, Integer> keyBindings) {
+		this.keyBindings = keyBindings;
 	}
 
-	public void run() {
-		// TODO Auto-generated method stub
-		
+	public void setDefaultKeyBindings() {
+		defaultBindings = new DefaultKeyBindings();
+		keyBindings = defaultBindings.getHashMap();
+	}
+	
+	public HashMap<Action, Integer> getKeyBindings(){
+		return keyBindings;
+	}
+	
+	public int getKeyFor(Action action) {
+		return keyBindings.get(action);
+	}
+	
+	public String toString() {
+		StringBuilder res = new StringBuilder();
+		Action[] actions = Action.values();
+		for (int i = 0; i < actions.length; i++) {
+			res.append((actions[i] + " -> " + KeyEvent.getKeyText(keyBindings.get(actions[i])) + " \n"));
+		}
+		return res.toString();
 	}
 }

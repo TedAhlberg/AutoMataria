@@ -9,7 +9,9 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * @author eriklundow
@@ -17,40 +19,112 @@ import javax.swing.JPanel;
 
 public class SettingsScreen extends JPanel {
 	private BufferedImage backgroundImage;
+	private JTextField tfName = new JTextField();
+	private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
+	private Font fontText = new Font("Orbitron", Font.BOLD, 20);
+	private Font fontTextSmall = new Font("Orbitron", Font.BOLD, 14);
+	private JLabel lblUserName = new JLabel("CHANGE USERNAME");
+	private JLabel lblSettings = new JLabel("SETTINGS");
+	private JLabel lblControls = new JLabel("CONTROLS");
+	private JLabel lblUp = new JLabel("UP : ARROWKEY_UP");
+	private JLabel lblLeft = new JLabel("LEFT : ARROWKEY_LEFT");
+	private JLabel lblDown = new JLabel("LEFT : ARROWKEY_DOWN");
+	private JLabel lblRight = new JLabel("RIGHT : ARROWKEY_RIGHT");
 
-	private Dimension minimum = new Dimension(400, 400);
-	private Dimension maximum = new Dimension(800, 800);
-	private Font font = new Font("Orbitron", Font.BOLD, 100);
+	private String fileChangePressed = "images/SetKeyBinding_Pressed.png";
+	private String fileChangeUnpressed = "images/SetKeyBinding_Unpressed.png";
+
+	private Buttons btnChangeUP = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeLEFT = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeRIGHT = new Buttons(fileChangePressed, fileChangeUnpressed);
+	private Buttons btnChangeDOWN = new Buttons(fileChangePressed, fileChangeUnpressed);
+
 	public SettingsScreen() {
-		
-		setMinimumSize(minimum);
-		setMaximumSize(maximum);
+		JFrame frame = new JFrame();
+		frame.setPreferredSize(new Dimension(500, 500));
+		frame.add(this);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setPreferredSize(new Dimension(500, 500));
 
 		try {
 			backgroundImage = ImageIO.read(new File("resources/Stars.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		lblSettings.setFont(fontHead);
+		lblSettings.setForeground(Color.white);
+		lblSettings.setBounds(10, 10, 300, 50);
+
+		lblUserName.setFont(fontText);
+		lblUserName.setForeground(Color.WHITE);
+		lblUserName.setBounds(30, 85, 300, 20);
+
+		tfName.setBounds(300, 85, 100, 20);
+
+		lblControls.setFont(fontText);
+		lblControls.setForeground(Color.WHITE);
+		lblControls.setBounds(30, 120, 300, 20);
+
+		lblUp.setFont(fontTextSmall);
+		lblDown.setFont(fontTextSmall);
+		lblLeft.setFont(fontTextSmall);
+		lblRight.setFont(fontTextSmall);
+
+		lblUp.setForeground(Color.white);
+		lblLeft.setForeground(Color.white);
+		lblDown.setForeground(Color.white);
+		lblRight.setForeground(Color.white);
+
+		lblUp.setBounds(30, 150, 300, 20);
+		lblLeft.setBounds(30, 175, 300, 20);
+		lblDown.setBounds(30, 200, 300, 20);
+		lblRight.setBounds(30, 225, 300, 20);
+
+		btnChangeUP.setWidth(200);
+		btnChangeUP.setHeight(15);
+		btnChangeLEFT.setWidth(200);
+		btnChangeLEFT.setHeight(15);
+		btnChangeDOWN.setWidth(200);
+		btnChangeDOWN.setHeight(15);
+		btnChangeRIGHT.setWidth(200);
+		btnChangeRIGHT.setHeight(15);
+		
+		btnChangeUP.setBounds(275, 150, 200, 15);
+		btnChangeLEFT.setBounds(275, 175, 200, 15);
+		btnChangeDOWN.setBounds(275,200,200,15);
+		btnChangeRIGHT.setBounds(275,225,200,15);
+		add(btnChangeUP);
+		add(btnChangeLEFT);
+		add(btnChangeDOWN);
+		add(btnChangeRIGHT);
+		add(lblSettings);
+		add(lblUserName);
+		add(tfName);
+		add(lblControls);
+		add(lblUp);
+		add(lblLeft);
+		add(lblDown);
+		add(lblRight);
+
+		repaint();
+
 	}
 
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-		g.setFont(font);
-		g.setColor(Color.white);
-		g.drawString("SETTINGS", 100, 100);
-		
+		// g.setFont(fontHead);
+		// g.setColor(Color.white);
+		// g.drawString("SETTINGS", 30, 50);
+		// g.setFont(fontText);
+		// g.drawString("Change Username" , 30, 100);
+
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setMinimumSize(new Dimension(400, 400));
-		frame.setPreferredSize(new Dimension(800, 800));
-		frame.add(new SettingsScreen());
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		new SettingsScreen();
 	}
 }

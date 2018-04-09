@@ -1,13 +1,13 @@
 package gameclient;
 
 import common.Action;
-import gameclient.keyInput.KeyInput;
 import common.*;
+import gameclient.keyinput.KeyInput;
 import gameobjects.Player;
+import gameserver.GameState;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * @author Johannes Bluml
@@ -18,7 +18,7 @@ public class Game {
     private final GamePanel gamePanel;
 
     private GameServerConnection client;
-    private Audio backgroundMusic = Audio.getSound("resources/Music/AM-track1.wav");
+    private Audio backgroundMusic;
 
     public Game() {
         this("127.0.0.1", 32000, null, 100);
@@ -53,21 +53,30 @@ public class Game {
             public void onData(Object data) {
                 if (data instanceof Player) {
                     gamePanel.setPlayer((Player) data);
+                    System.out.println("CLIENT: I am player: " + data);
                 } else if (data instanceof GameMap) {
                     GameMap map = (GameMap) data;
+                    System.out.println("CLIENT: Got MAP from server: " + map.getName());
                     gamePanel.setBackground(map.getBackground());
                     gamePanel.setGrid(map.getGrid());
-                    double scale = Math.min((double) gamePanel.getWidth() / map.getWidth(), (double) gamePanel.getHeight() / map.getHeight());
-                    gamePanel.start(scale, framesPerSecond, map.getPlayerSpeedPerSecond());
-                    backgroundMusic.play();
-                }
-                if (data instanceof Collection) {
-                    gamePanel.updateGameObjects((Collection) data);
+                    int width = map.getGrid().width * Game.GRID_PIXEL_SIZE;
+                    int height = map.getGrid().height * Game.GRID_PIXEL_SIZE;
+                    double scale = Math.min((double) gamePanel.getWidth() / width, (double) gamePanel.getHeight() / height);
+                    gamePanel.start(scale, framesPerSecond);
+                    backgroundMusic = Audio.getSound(map.getMusicTrack());
+                    backgroundMusic.play(99);
+                } else if (data instanceof GameServerUpdate) {
+                    gamePanel.updateGameObjects(((GameServerUpdate) data).gameObjects);
+                    gamePanel.setGameState(((GameServerUpdate) data).state);
+                    if (((GameServerUpdate) data).state == GameState.Warmup) {
+                        gamePanel.setReadyPlayers(((GameServerUpdate) data).readyPercentage);
+                    }
                 }
             }
         });
 
-        gamePanel.addKeyListener(new KeyInput(this));
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
+
         gamePanel.requestFocus();
 
         client.connect(serverIP, serverPort);
@@ -88,6 +97,8 @@ public class Game {
             }
         } else if (action == Action.ToggleInterpolation) {
             gamePanel.toggleInterpolation();
+        } else if (action == Action.ToggleDebugText) {
+            gamePanel.toggleDebugInfo();
         } else {
             client.send(action);
         }

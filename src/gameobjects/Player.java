@@ -2,6 +2,7 @@ package gameobjects;
 
 import common.Direction;
 import common.GameMap;
+import gameclient.Game;
 
 import java.awt.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -11,25 +12,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Player extends GameObject {
     private static final long serialVersionUID = 2;
-    private GameMap map;
-    private ConcurrentLinkedQueue<Direction> inputQueue;
-    private Trail trail;
-    private String name;
+    private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<GameObject> gameObjects;
+    private final GameMap currentMap;
+    private final String name;
+    private final Trail trail;
     private Color color;
-    private boolean dead;
+    private boolean dead, ready, invincible;
     private Direction previousDirection;
+    private int speedPerSecond;
 
-    public Player(int x, int y, String name, Color color, GameMap map) {
-        super(x, y);
-        this.width = map.getGridMultiplier();
-        this.height = map.getGridMultiplier();
+    public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
-        this.color = color;
-        this.map = map;
-        this.inputQueue = new ConcurrentLinkedQueue<>();
-        this.trail = new Trail(this);
+        this.invincible = true;
+        this.gameObjects = gameObjects;
+        this.currentMap = currentMap;
+        this.color = Color.LIGHT_GRAY;
+        this.width = Game.GRID_PIXEL_SIZE;
+        this.height = Game.GRID_PIXEL_SIZE;
         this.previousDirection = direction;
-        map.add(trail);
+        this.trail = new Trail(this);
     }
 
     public void render(Graphics2D g) {
@@ -42,7 +44,7 @@ public class Player extends GameObject {
         FontMetrics fontMetrics = g.getFontMetrics(font);
         int stringWidth = fontMetrics.stringWidth(displayName);
         if (dead) displayName += " (DEAD)";
-        g.drawString(displayName, x + (map.getGridMultiplier() / 2) - (stringWidth / 2), y - 50);
+        g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
     }
 
     public void tick() {
@@ -52,11 +54,32 @@ public class Player extends GameObject {
 
         updateDirection();
         move();
+        boolean hasTeleported = teleportIfOutsideMap();
+        if (!hasTeleported) {
+            Point newPosition = new Point(x, y);
+            trail.grow(previousPosition, newPosition);
+        }
 
-        Point newPosition = new Point(x, y);
-        trail.grow(previousPosition, newPosition);
+        if (!invincible) checkCollisions();
+    }
 
-        checkCollisions();
+    private boolean teleportIfOutsideMap() {
+        int width = currentMap.getGrid().width * Game.GRID_PIXEL_SIZE;
+        int height = currentMap.getGrid().height * Game.GRID_PIXEL_SIZE;
+        if (x < 0) {
+            x = width;
+            return true;
+        } else if (x > width) {
+            x = 0;
+            return true;
+        } else if (y < 0) {
+            y = height;
+            return true;
+        } else if (y > height) {
+            y = 0;
+            return true;
+        }
+        return false;
     }
 
     private void updateDirection() {
@@ -69,7 +92,7 @@ public class Player extends GameObject {
 
         if (inputQueue.isEmpty()) return;
 
-        if (x % map.getGridMultiplier() == 0 && y % map.getGridMultiplier() == 0) {
+        if (x % Game.GRID_PIXEL_SIZE == 0 && y % Game.GRID_PIXEL_SIZE == 0) {
             previousDirection = direction;
             direction = inputQueue.remove();
         }
@@ -85,32 +108,46 @@ public class Player extends GameObject {
                 break;
             case Right: x += speed;
                 break;
-            default: return;
-        }
-        // Teleport to other side if player is outside the map
-        if (x < 0) {
-            x += map.getWidth();
-        } else if (x > map.getWidth()) {
-            x -= map.getWidth();
-        } else if (y < 0) {
-            y += map.getHeight();
-        } else if (y > map.getHeight()) {
-            y -= map.getHeight();
         }
     }
 
     private void checkCollisions() {
-        for (GameObject object : map.getGameObjects()) {
-            if (this.equals(object) || dead) continue;
-            if ((object instanceof Player) && this.getBounds().intersects(object.getBounds())) {
-                setDead();
-                ((Player) object).setDead();
-                System.out.println(name + " HAS CRASHED WITH " + ((Player) object).getName());
-            } else if ((object instanceof Wall) && ((Wall) object).intersects(this.getBounds())) {
-                setDead();
-                System.out.println(name + " CRASHED INTO A WALL");
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Player) {
+                Player otherPlayer = (Player) gameObject;
+                if (otherPlayer.equals(this)) continue;
+                if (otherPlayer.getBounds().intersects(this.getBounds())) {
+                    setDead(true);
+                    System.out.println(name + " HAS CRASHED WITH " + otherPlayer.getName());
+                }
+            } else if (gameObject instanceof Wall) {
+                if (((Wall) gameObject).intersects(this.getBounds())) {
+                    setDead(true);
+                    System.out.println(name + " HAS CRASHED INTO A WALL");
+                }
             }
         }
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void setDead(boolean dead) {
+        direction = Direction.Static;
+        this.dead = dead;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
+    }
+
+    public void setDirection(Direction direction) {
+        inputQueue.add(direction);
+    }
+
+    public Direction getPreviousDirection() {
+        return previousDirection;
     }
 
     public String getName() {
@@ -121,24 +158,48 @@ public class Player extends GameObject {
         return color;
     }
 
-    public boolean isDead() {
-        return dead;
+    public void setColor(Color color) {
+        this.color = color;
+        trail.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 50));
+        trail.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 150));
     }
 
-    public void setDead() {
-        direction = Direction.Static;
-        dead = true;
+    public int getSpeedPerSecond() {
+        return speedPerSecond;
     }
 
-    public void setDirection(Direction direction) {
-        inputQueue.add(direction);
+    public void setSpeedPerSecond(int speedPerSecond) {
+        this.speedPerSecond = speedPerSecond;
     }
 
+    public Trail getTrail() {
+        return trail;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    @Override
     public String toString() {
-        return "Player: " + name + " Position: x=" + x + ", y=" + y + " Speed: " + speed + " Direction: " + direction;
-    }
-
-    public Direction getPreviousDirection() {
-        return previousDirection;
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", color=" + color +
+                ", dead=" + dead +
+                ", ready=" + ready +
+                ", previousDirection=" + previousDirection +
+                ", speedPerSecond=" + speedPerSecond +
+                ", id=" + id +
+                ", x=" + x +
+                ", y=" + y +
+                ", speed=" + speed +
+                ", width=" + width +
+                ", height=" + height +
+                ", direction=" + direction +
+                '}';
     }
 }
