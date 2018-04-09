@@ -146,7 +146,7 @@ public class GameServer implements ClientListener {
     }
 
     private void startNewGame() {
-        startingPositions.generateFair(currentMap.getGrid(), connectedClients.size());
+        startingPositions.generate(currentMap.getGrid(), connectedClients.size());
 
         Rectangle mapRectangle = getMapRectangle();
         Iterator<GameObject> iterator = gameObjects.iterator();
