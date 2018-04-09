@@ -80,7 +80,7 @@ public class TestUI {
             wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
             GameObject[] startingObjects = {wall};
             map.setStartingGameObjects(startingObjects);
-            if (server == null) server = new GameServer(serverPort, tickRate, updateRate, map);
+            if (server == null) server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, map);
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
