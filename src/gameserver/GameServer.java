@@ -40,7 +40,7 @@ public class GameServer implements ClientListener {
         server = new ServerConnection(serverPort);
         new Thread(server).start();
         server.addListener(this);
-getServerAliveUpdateMessage();
+
         new Thread(() -> gameLoop()).start();
     }
 
