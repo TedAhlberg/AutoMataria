@@ -7,6 +7,7 @@ import gameserver.GameState;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -136,6 +137,8 @@ public class GamePanel extends JComponent {
         drawBackground(g2);
         drawPaintBuffer(g2);
         if (showDebugInfo) drawDebugInfo(g2);
+        if (gameState == GameState.Countdown) drawNewGameCountdown(g2);
+        if (gameState == GameState.GameOver) drawGameOverInfo(g2);
         g2.scale(scale, scale);
 
         if (gameObjects.size() == 0) return;
@@ -208,6 +211,41 @@ public class GamePanel extends JComponent {
         keyHelp += (interpolateMovement) ? " | I=INTERP OFF" : " | I=INTERP ON";
         keyHelp += (player != null && player.isReady()) ? " | R=UNREADY" : " | R=READY";
         g2.drawString("KEYS " + keyHelp, 40, 90);
+    }
+
+    private void drawNewGameCountdown(Graphics2D g2) {
+        String infoText = "GAME IS ABOUT TO BEGIN";
+        String infoText2 = "GET READY";
+        Font font = new Font("Orbitron", Font.BOLD, 30);
+        g2.setFont(font);
+        g2.setColor(Color.WHITE);
+        FontMetrics fontMetrics = g2.getFontMetrics();
+        Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
+        Rectangle2D infoText2Bounds = fontMetrics.getStringBounds(infoText2, g2);
+        int width = g2.getClipBounds().width;
+        int height = g2.getClipBounds().height;
+        int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
+        int infoTextHeight = (int) (((height/2) - (infoTextBounds.getHeight() / 2)) - 20);
+        int infoText2Width = (int) ((width / 2) - (infoText2Bounds.getWidth() / 2));
+        int infoText2Height = (int) (((height/2) - (infoText2Bounds.getHeight() / 2)) + 20);
+
+        g2.drawString(infoText, infoTextWidth, infoTextHeight);
+        g2.drawString(infoText2, infoText2Width, infoText2Height);
+    }
+
+    private void drawGameOverInfo(Graphics2D g2) {
+        String infoText = "GAME OVER";
+        Font font = new Font("Orbitron", Font.BOLD, 30);
+        g2.setFont(font);
+        g2.setColor(Color.WHITE);
+        FontMetrics fontMetrics = g2.getFontMetrics();
+        Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
+        int width = g2.getClipBounds().width;
+        int height = g2.getClipBounds().height;
+        int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
+        int infoTextHeight = (int) (((height/2) - (infoTextBounds.getHeight() / 2)));
+
+        g2.drawString(infoText, infoTextWidth, infoTextHeight);
     }
 
     private void drawBackground(Graphics2D g2) {
