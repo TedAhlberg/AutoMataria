@@ -218,7 +218,7 @@ public class GamePanel extends JComponent {
         String infoText2 = "GET READY";
         Font font = new Font("Orbitron", Font.BOLD, 30);
         g2.setFont(font);
-        g2.setColor(Color.WHITE);
+        g2.setColor(new Color(255, 255, 255, 200));
         FontMetrics fontMetrics = g2.getFontMetrics();
         Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
         Rectangle2D infoText2Bounds = fontMetrics.getStringBounds(infoText2, g2);
@@ -237,7 +237,7 @@ public class GamePanel extends JComponent {
         String infoText = "GAME OVER";
         Font font = new Font("Orbitron", Font.BOLD, 30);
         g2.setFont(font);
-        g2.setColor(Color.WHITE);
+        g2.setColor(new Color(255, 255, 255, 200));
         FontMetrics fontMetrics = g2.getFontMetrics();
         Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
         int width = g2.getClipBounds().width;

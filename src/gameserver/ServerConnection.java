@@ -24,7 +24,7 @@ public class ServerConnection implements Runnable {
             System.out.println("Server started on port " + port + ".");
             while (true) {
                 Socket socket = serverSocket.accept();
-                new Client(socket, listeners);
+                clients.add(new Client(socket, listeners));
             }
         } catch (IOException e) {
         } finally {

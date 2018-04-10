@@ -30,11 +30,11 @@ public class StartTestGame {
         map.setStartingGameObjects(startingObjects);
 
         // Start a game server
-        new GameServer(32000, 50, 150, map);
+        new GameServer("AM-test-server", 32000, 50, 150, map);
 
         // Start a game client
-        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
-//        new Game("127.0.0.1", 32000, new Dimension(500, 500), 30);
+        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
+        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
 
 //        new Game("127.0.0.1", 32000, 100);
     }
