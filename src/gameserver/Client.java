@@ -13,16 +13,15 @@ public class Client {
     private boolean connected;
     private LinkedList<ClientListener> listeners;
 
-    public Client(Socket socket, LinkedList<ClientListener> listeners) throws IOException {
+    public Client(Socket socket, LinkedList<ClientListener> listeners) {
         this.listeners = listeners;
         thread = new Thread(() -> listenForDataAndUpdateListeners(socket));
         thread.start();
     }
 
     private void listenForDataAndUpdateListeners(Socket socket) {
-        try (
-                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
             this.outputStream = outputStream;
             connected = true;
             listeners.forEach(listener -> listener.onConnect(this));
