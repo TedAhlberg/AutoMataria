@@ -1,5 +1,6 @@
 package gameclient;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -8,12 +9,18 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
+import javax.swing.JButton;
 
-public class Buttons extends JComponent implements MouseListener {
+/**
+ * 
+ * @author Henrik Olofsson & Erik Lundow
+ *
+ */
+public class Buttons extends JButton implements MouseListener {
 	private BufferedImage imagePressed;
 	private BufferedImage imageUnpressed;
 	private int width = 100, height = 50;
+	private boolean isPressed = false;
 	private States state = States.Unpressed;
 
 	private enum States {
@@ -21,7 +28,8 @@ public class Buttons extends JComponent implements MouseListener {
 	};
 
 	public Buttons(String filenamePressed, String filenameUnpressed) {
-
+	    this.setOpaque(false);
+	    setPreferredSize(new Dimension(10, 10));
 		try {
 			this.imagePressed = ImageIO.read(new File(filenamePressed));
 			this.imageUnpressed = ImageIO.read(new File(filenameUnpressed));
@@ -46,24 +54,27 @@ public class Buttons extends JComponent implements MouseListener {
 
 	public void mousePressed(MouseEvent play) {
 		state = States.Pressed;
+		isPressed=true;
 		repaint();
 	}
 
 	public void mouseReleased(MouseEvent play) {
 		state = States.Unpressed;
+		isPressed=false;
 		repaint();
 	}
 
 	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		System.out.println(getSize());
 		if (state == States.Pressed) {
 			g.drawImage(imagePressed, 0, 0, width, height, null);
+			
 		} else if (state == States.Unpressed) {
 			g.drawImage(imageUnpressed, 0, 0, width, height, null);
+			
 		}
 
 	}
+
 
 	public void setWidth(int width) {
 		this.width = width;
@@ -74,5 +85,9 @@ public class Buttons extends JComponent implements MouseListener {
 		this.height = height;
 		repaint();
 
+	}
+	
+	public boolean isPressed() {
+	    return isPressed;
 	}
 }

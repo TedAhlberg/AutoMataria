@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+
 /**
  * A class for playing a sound clip.
+ * @Erik Lundow
  */
 public class Audio implements Runnable {
     private SourceDataLine line;
