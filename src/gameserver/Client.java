@@ -45,6 +45,7 @@ public class Client {
     synchronized public void send(Object object) {
         if (!connected) return;
         try {
+            System.out.println(object);
             outputStream.writeObject(object);
             outputStream.flush();
             outputStream.reset();

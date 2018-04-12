@@ -5,6 +5,7 @@ import gameobjects.GameObject;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -17,7 +18,7 @@ public class GameMap implements Serializable {
     private Dimension grid;
     private Point[] startingPositions;
     private GameObject[] startingGameObjects;
-    private Random rand;
+    private GameMapObject[] gameMapObjects;
 
     public String getName() {
         return name;
@@ -85,6 +86,12 @@ public class GameMap implements Serializable {
 
     public void setStartingGameObjects(GameObject[] startingGameObjects) {
         this.startingGameObjects = startingGameObjects;
+    }
+    public GameMapObject[] getGameMapObjects() {
+        return gameMapObjects;
+    }
+    public void setGameMapObjects(GameMapObject[] gameMapObjects) {
+        this.gameMapObjects = gameMapObjects;
     }
     
 }

@@ -1,12 +1,15 @@
 package test;
 
 import common.GameMap;
+import common.GameMapObject;
 import gameclient.Game;
 import gameobjects.GameObject;
 import gameobjects.Wall;
 import gameserver.GameServer;
 
 import java.awt.*;
+
+import PickUp.SelfSpeedUpPickUp;
 
 /**
  * @author Johannes Bluml
@@ -29,7 +32,9 @@ public class StartTestGame {
         wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
         GameObject[] startingObjects = {wall};
         map.setStartingGameObjects(startingObjects);
-
+        GameMapObject[] gameMapObjects = new GameMapObject[1];
+        gameMapObjects[0] = new GameMapObject(new SelfSpeedUpPickUp(200, 200, 0, null), 5000, 0, null, false, 10000);
+        map.setGameMapObjects(gameMapObjects);
         // Start a game server
         new GameServer("AM-test-server", 32000, 50, 150, map);
 
