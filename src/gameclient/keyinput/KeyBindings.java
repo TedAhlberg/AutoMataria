@@ -1,4 +1,4 @@
-package gameclient.keyInput;
+package gameclient.keyinput;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;

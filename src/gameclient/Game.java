@@ -2,7 +2,7 @@ package gameclient;
 
 import common.Action;
 import common.*;
-import gameclient.keyInput.KeyInput;
+import gameclient.keyinput.KeyInput;
 import gameobjects.Player;
 
 import javax.swing.*;

@@ -1,4 +1,6 @@
-package gameclient;
+package test;
+
+import gameclient.Game;
 
 /**
  * @author Johannes Blüml

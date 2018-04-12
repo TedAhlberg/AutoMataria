@@ -1,4 +1,4 @@
-package gameclient.keyInput;
+package gameclient.keyinput;
 
 import common.Action;
 import common.Direction;

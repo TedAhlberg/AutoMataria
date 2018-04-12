@@ -1,5 +1,6 @@
-package common;
+package test;
 
+import common.GameMap;
 import gameclient.Game;
 import gameobjects.GameObject;
 import gameobjects.Wall;
