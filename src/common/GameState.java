@@ -1,4 +1,4 @@
-package gameserver;
+package common;
 
 /**
  * @author Johannes Blüml
