@@ -26,6 +26,7 @@ public class GameServer implements ClientListener {
     private boolean running = true;
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
+    private GameMapObject[] gameMapObjects;
 
     public GameServer(String serverName, int serverPort, int tickRate, int updateRate, GameMap map) {
         this.serverName = serverName;
@@ -117,6 +118,25 @@ public class GameServer implements ClientListener {
                 currentCountdown -= tickRate;
             }
         }
+        
+    }
+    private void placeGameMapObjects() {
+        for(GameMapObject gameMapObject : gameMapObjects) {
+            if(gameMapObject.getTimer()<=0) {
+                if(gameObjects.contains(gameMapObject.getPickup())) {
+          gameObjects.remove(gameMapObject.getPickup());
+                gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                } else {
+                    gameObjects.add(gameMapObject.getPickup());
+                    gameMapObject.setTimer(gameMapObject.getVisibletime());
+                    
+                }
+            }
+            else {
+                gameMapObject.setTimer(gameMapObject.getTimer()- tickRate);
+            }
+            
+        }
     }
 
     private void startNewWarmup() {
@@ -171,7 +191,9 @@ public class GameServer implements ClientListener {
         }
 
         gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
+        gameMapObjects = currentMap.getGameMapObjects();
     }
+    
 
     private Rectangle getMapRectangle() {
         Dimension grid = currentMap.getGrid();

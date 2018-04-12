@@ -21,6 +21,7 @@ public class Player extends GameObject {
     private boolean dead, ready, invincible;
     private Direction previousDirection;
     private int speedPerSecond;
+    private PickUp pickUpSlot;
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -182,6 +183,14 @@ public class Player extends GameObject {
 
     public void setReady(boolean ready) {
         this.ready = ready;
+    }
+    public void setPickUp(PickUp pickUp) {
+        this.pickUpSlot = pickUp;
+    }
+    public void usePickUp() {
+        if(pickUpSlot!=null) {
+            pickUpSlot.use(this);
+        }
     }
 
     @Override
