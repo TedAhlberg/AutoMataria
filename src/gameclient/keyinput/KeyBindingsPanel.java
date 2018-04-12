@@ -1,4 +1,4 @@
-package gameclient.keyinput;
+package gameclient.keyInput;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;

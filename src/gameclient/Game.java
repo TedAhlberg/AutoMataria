@@ -2,7 +2,7 @@ package gameclient;
 
 import common.Action;
 import common.*;
-import gameclient.keyinput.KeyInput;
+import gameclient.keyInput.KeyInput;
 import gameobjects.Player;
 import gameserver.GameState;
 

@@ -1,4 +1,4 @@
-package gameclient.keyinput;
+package gameclient.keyInput;
 /**
  * @author Ted Ahlberg
  */
