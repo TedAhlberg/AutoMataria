@@ -2,10 +2,12 @@ package gameclient;
 
 import gameobjects.GameObject;
 import gameobjects.Player;
-import gameserver.GameState;
+import common.GameState;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -26,7 +28,7 @@ public class GamePanel extends JComponent {
     private boolean gameLoopRunning;
     private Player player;
     private double scale = 1.0;
-    private BufferedImage background, paintBuffer;
+    private BufferedImage background, gridBuffer;
     private Color backgroundColor = Color.BLACK;
     private long timeBetweenRenders;
     private int fps, frameCounter;
@@ -48,7 +50,7 @@ public class GamePanel extends JComponent {
         gameLoopRunning = false;
         gameLoopThread = null;
         background = null;
-        paintBuffer = null;
+        gridBuffer = null;
     }
 
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
@@ -79,7 +81,7 @@ public class GamePanel extends JComponent {
     public void setGrid(Dimension gridSize) {
         if (gridSize != null) {
             int size = Math.min(getWidth(), getHeight());
-            Graphics2D g2 = getPaintBuffer();
+            Graphics2D g2 = getGridBuffer();
             g2.setPaint(new Color(1, 1, 1, 0.05f));
             int spaceWidth = size / gridSize.width;
             int spaceHeight = size / gridSize.height;
@@ -111,7 +113,8 @@ public class GamePanel extends JComponent {
 
             // CALCULATE INTERPOLATION
             long ratio = timeSinceLastRender / timeBetweenRenders;
-            calculateInterpolation = playerMovementPerSecond -> (int) Math.ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
+            calculateInterpolation = playerMovementPerSecond -> (int) Math
+                    .ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
             // RERENDER THE GAME
             paintImmediately(0, 0, getWidth(), getHeight());
 
@@ -126,7 +129,10 @@ public class GamePanel extends JComponent {
             // WAIT BEFORE CONTINUING WITH THE GAMELOOP
             while (nowTime - previousTime < timeBetweenRenders) {
                 Thread.yield();
-                try { Thread.sleep(1); } catch (InterruptedException e) {}
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                }
                 nowTime = System.nanoTime();
             }
         }
@@ -135,13 +141,17 @@ public class GamePanel extends JComponent {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
-        drawPaintBuffer(g2);
-        if (showDebugInfo) drawDebugInfo(g2);
-        if (gameState == GameState.Countdown) drawNewGameCountdown(g2);
-        if (gameState == GameState.GameOver) drawGameOverInfo(g2);
+        drawGridBuffer(g2);
+        if (showDebugInfo)
+            drawDebugInfo(g2);
+        if (gameState == GameState.Countdown)
+            drawNewGameCountdown(g2);
+        if (gameState == GameState.GameOver)
+            drawGameOverInfo(g2);
         g2.scale(scale, scale);
 
-        if (gameObjects.size() == 0) return;
+        if (gameObjects.size() == 0)
+            return;
         for (GameObject gameObject : gameObjects.values()) {
             if (gameObject instanceof Player && interpolateMovement) {
                 interpolate(gameObject);
@@ -167,11 +177,6 @@ public class GamePanel extends JComponent {
 
         // Get target position
         Point target = targetPositions.get(id);
-        if (target == null) {
-            // Set target position from the gameObject if there is none available yet
-            targetPositions.put(id, new Point(gameObject.getX(), gameObject.getY()));
-            target = targetPositions.get(id);
-        }
 
         {
             // Sets a limit for how far behind the current position can be from target
@@ -192,8 +197,10 @@ public class GamePanel extends JComponent {
 
     private int approach(int current, int target, int delta) {
         int difference = target - current;
-        if (difference > delta) return current + delta;
-        if (difference < -delta) return current - delta;
+        if (difference > delta)
+            return current + delta;
+        if (difference < -delta)
+            return current - delta;
         return target;
     }
 
@@ -225,9 +232,9 @@ public class GamePanel extends JComponent {
         int width = g2.getClipBounds().width;
         int height = g2.getClipBounds().height;
         int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
-        int infoTextHeight = (int) (((height/2) - (infoTextBounds.getHeight() / 2)) - 20);
+        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)) - 20);
         int infoText2Width = (int) ((width / 2) - (infoText2Bounds.getWidth() / 2));
-        int infoText2Height = (int) (((height/2) - (infoText2Bounds.getHeight() / 2)) + 20);
+        int infoText2Height = (int) (((height / 2) - (infoText2Bounds.getHeight() / 2)) + 20);
 
         g2.drawString(infoText, infoTextWidth, infoTextHeight);
         g2.drawString(infoText2, infoText2Width, infoText2Height);
@@ -243,7 +250,7 @@ public class GamePanel extends JComponent {
         int width = g2.getClipBounds().width;
         int height = g2.getClipBounds().height;
         int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
-        int infoTextHeight = (int) (((height/2) - (infoTextBounds.getHeight() / 2)));
+        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)));
 
         g2.drawString(infoText, infoTextWidth, infoTextHeight);
     }
@@ -257,23 +264,25 @@ public class GamePanel extends JComponent {
         }
     }
 
-    private void drawPaintBuffer(Graphics2D g2) {
-        if (paintBuffer != null) g2.drawImage(paintBuffer, 0, 0, getWidth(), getHeight(), null);
+    private void drawGridBuffer(Graphics2D g2) {
+        if (gridBuffer != null)
+            g2.drawImage(gridBuffer, 0, 0, getWidth(), getHeight(), null);
     }
 
-    private Graphics2D getPaintBuffer() {
-        if (paintBuffer == null) {
+    private Graphics2D getGridBuffer() {
+        if (gridBuffer == null) {
             GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
             GraphicsDevice device = env.getDefaultScreenDevice();
             GraphicsConfiguration config = device.getDefaultConfiguration();
-            paintBuffer = config.createCompatibleImage(getWidth(), getHeight(), Transparency.TRANSLUCENT);
+            gridBuffer = config.createCompatibleImage(getWidth(), getHeight(), Transparency.TRANSLUCENT);
         }
-        return (Graphics2D) paintBuffer.getGraphics();
+        return (Graphics2D) gridBuffer.getGraphics();
     }
 
     public void setGameState(GameState state) {
         gameState = state;
     }
+
 
     public void setReadyPlayers(double readyPercentage) {
         playerReadyPercentage = readyPercentage;

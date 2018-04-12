@@ -1,7 +1,6 @@
 package common;
 
 import gameobjects.GameObject;
-import gameserver.GameState;
 
 import java.io.Serializable;
 import java.util.Collection;

@@ -4,7 +4,6 @@ import common.Action;
 import common.*;
 import gameclient.keyinput.KeyInput;
 import gameobjects.Player;
-import gameserver.GameState;
 
 import javax.swing.*;
 import java.awt.*;
