@@ -8,7 +8,7 @@ import gameobjects.Pickup;
 import gameobjects.Player;
 
 /**
- * @author Dante Håkansson
+ * @author Dante Hï¿½kansson
  * 
  */
 
@@ -32,7 +32,7 @@ public class SelfSpeedUpPickUp extends Pickup {
 
     public void use(Player player) {
         int speed = player.getSpeedPerSecond();
-        speed *= 0.25;
+        player.setSpeedPerSecond((int) (speed*1.25));
 
     }
 
