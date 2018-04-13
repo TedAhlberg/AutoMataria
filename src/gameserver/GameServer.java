@@ -87,7 +87,7 @@ public class GameServer implements ClientListener {
             gameObject.tick();
         }
 
-        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0 && connectedClients.size() > 1) {
+        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0 && connectedClients.size() > 0) {
             players.clear();
             players.addAll(connectedClients.values());
             state = GameState.Countdown;
@@ -118,15 +118,25 @@ public class GameServer implements ClientListener {
                 currentCountdown -= tickRate;
             }
         }
+        placeGameMapObjects();
         
     }
     private void placeGameMapObjects() {
+        if(gameMapObjects == null) {
+            return;
+        }
         for(GameMapObject gameMapObject : gameMapObjects) {
             if(gameMapObject.getTimer()<=0) {
                 if(gameObjects.contains(gameMapObject.getPickup())) {
           gameObjects.remove(gameMapObject.getPickup());
                 gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                 } else {
+                    if(gameMapObject.isSpawnRandom()) {
+                       Point point = startingPositions.getOneRandom(currentMap.getGrid());
+                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE);
+                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE);
+                        
+                    }
                     gameObjects.add(gameMapObject.getPickup());
                     gameMapObject.setTimer(gameMapObject.getVisibletime());
                     

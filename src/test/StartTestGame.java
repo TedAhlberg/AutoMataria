@@ -33,14 +33,14 @@ public class StartTestGame {
         GameObject[] startingObjects = {wall};
         map.setStartingGameObjects(startingObjects);
         GameMapObject[] gameMapObjects = new GameMapObject[1];
-        gameMapObjects[0] = new GameMapObject(new SelfSpeedUpPickUp(200, 200, 0, null), 5000, 0, null, false, 10000);
+        gameMapObjects[0] = new GameMapObject(new SelfSpeedUpPickUp(200, 200), 5000, 0, null, true, 10000);
         map.setGameMapObjects(gameMapObjects);
         // Start a game server
         new GameServer("AM-test-server", 32000, 50, 150, map);
 
         // Start a game client
-        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
-        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
+       // new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
+        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
 
 //        new Game("127.0.0.1", 32000, 100);
     }
