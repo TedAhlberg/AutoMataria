@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 
 /**
  * 
- * @author Dante Håkansson
- * @author Johannes Blüml
+ * @author Dante HÃ¥kansson
+ * @author Johannes Bluml
  *
  */
 public class Resources {

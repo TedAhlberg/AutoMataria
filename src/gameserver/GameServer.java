@@ -279,13 +279,16 @@ public class GameServer implements ClientListener {
             Player player = connectedClients.get(client);
             player.setDirection(direction);
         } else if (value instanceof Action) {
+            Player player = connectedClients.get(client);
             if (state == GameState.Warmup) {
-                Player player = connectedClients.get(client);
                 if (value == Action.TogglePlayerColor) {
                     player.setColor(colors.exchangeColor(player.getColor()));
                 } else if (value == Action.ToggleReady) {
                     player.setReady(!player.isReady());
-                } else if(value == Action.UsePickup) {
+                }
+            }
+            if (state == GameState.Running) {
+                if(value == Action.UsePickup) {
                     player.usePickUp();
                 }
             }
