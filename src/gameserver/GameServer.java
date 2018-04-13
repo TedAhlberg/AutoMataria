@@ -119,34 +119,29 @@ public class GameServer implements ClientListener {
             }
         }
         placeGameMapObjects();
-        
+
     }
+
     private void placeGameMapObjects() {
-        if(gameMapObjects == null) {
-            return;
-        }
-        for(SpecialGameObject gameMapObject : gameMapObjects) {
-            if(gameMapObject.getTimer()<=0) {
-                if(gameObjects.contains(gameMapObject.getPickup())) {
-          gameObjects.remove(gameMapObject.getPickup());
-                gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+        if (gameMapObjects == null) return;
+        for (SpecialGameObject gameMapObject : gameMapObjects) {
+            if (gameMapObject.getTimer() <= 0) {
+                if (gameObjects.contains(gameMapObject.getPickup())) {
+                    gameObjects.remove(gameMapObject.getPickup());
+                    gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                 } else {
-                    if(gameMapObject.isSpawnRandom()) {
-                       Point point = startingPositions.getOneRandom(currentMap.getGrid());
-                       int quarterGridPixel = Game.GRID_PIXEL_SIZE/4;
-                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE-quarterGridPixel);
-                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE-quarterGridPixel);
-                        
+                    if (gameMapObject.isSpawnRandom()) {
+                        Point point = startingPositions.getOneRandom(currentMap.getGrid());
+                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
+                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE - quarterGridPixel);
+                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE - quarterGridPixel);
                     }
                     gameObjects.add(gameMapObject.getPickup());
                     gameMapObject.setTimer(gameMapObject.getVisibletime());
-                    
                 }
+            } else {
+                gameMapObject.setTimer(gameMapObject.getTimer() - tickRate);
             }
-            else {
-                gameMapObject.setTimer(gameMapObject.getTimer()- tickRate);
-            }
-            
         }
     }
 
@@ -204,7 +199,7 @@ public class GameServer implements ClientListener {
         gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
         gameMapObjects = currentMap.getGameMapObjects();
     }
-    
+
 
     private Rectangle getMapRectangle() {
         Dimension grid = currentMap.getGrid();
@@ -244,8 +239,7 @@ public class GameServer implements ClientListener {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
         player.setSpeed(currentMap.getPlayerSpeed());
-        player.setTickrate(tickRate);
-        //player.setSpeedPerSecond((1000 / tickRate) * currentMap.getPlayerSpeed());
+        player.setTickRate(tickRate);
 
         if (state == GameState.Warmup) {
             boolean hasFoundStartingPosition = false;
@@ -289,7 +283,7 @@ public class GameServer implements ClientListener {
                 }
             }
             if (state == GameState.Running) {
-                if(value == Action.UsePickup) {
+                if (value == Action.UsePickup) {
                     player.usePickUp();
                 }
             }
