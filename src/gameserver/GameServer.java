@@ -244,7 +244,8 @@ public class GameServer implements ClientListener {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
         player.setSpeed(currentMap.getPlayerSpeed());
-        player.setSpeedPerSecond((1000 / tickRate) * currentMap.getPlayerSpeed());
+        player.setTickrate(tickRate);
+        //player.setSpeedPerSecond((1000 / tickRate) * currentMap.getPlayerSpeed());
 
         if (state == GameState.Warmup) {
             boolean hasFoundStartingPosition = false;

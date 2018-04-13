@@ -31,11 +31,8 @@ public class SelfSpeedUpPickUp extends Pickup {
     }
 
     public void use(Player player) {
-        System.out.println(player.getSpeedPerSecond());
-        int speed = player.getSpeedPerSecond();
-        player.setSpeedPerSecond((int) (speed*2));
-        System.out.println(player.getSpeedPerSecond());
-
+        int speed = player.getSpeed();
+        player.setSpeed((int) (speed*2));
     }
 
 }

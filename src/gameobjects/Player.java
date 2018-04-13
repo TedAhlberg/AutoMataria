@@ -22,6 +22,7 @@ public class Player extends GameObject {
     private Direction previousDirection;
     private int speedPerSecond;
     private Pickup pickUpSlot;
+    private int tickRate;
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -180,11 +181,7 @@ public class Player extends GameObject {
     }
 
     public int getSpeedPerSecond() {
-        return speedPerSecond;
-    }
-
-    public void setSpeedPerSecond(int speedPerSecond) {
-        this.speedPerSecond = speedPerSecond;
+        return (1000 / tickRate) * speed;
     }
 
     public Trail getTrail() {
@@ -217,5 +214,9 @@ public class Player extends GameObject {
                 + ", previousDirection=" + previousDirection + ", speedPerSecond=" + speedPerSecond + ", id=" + id
                 + ", x=" + x + ", y=" + y + ", speed=" + speed + ", width=" + width + ", height=" + height
                 + ", direction=" + direction + '}';
+    }
+
+    public void setTickrate(int tickRate) {
+        this.tickRate = tickRate;
     }
 }
