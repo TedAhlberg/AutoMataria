@@ -18,7 +18,7 @@ public class GameMap implements Serializable {
     private Dimension grid;
     private Point[] startingPositions;
     private GameObject[] startingGameObjects;
-    private GameMapObject[] gameMapObjects;
+    private SpecialGameObject[] gameMapObjects;
 
     public String getName() {
         return name;
@@ -87,10 +87,10 @@ public class GameMap implements Serializable {
     public void setStartingGameObjects(GameObject[] startingGameObjects) {
         this.startingGameObjects = startingGameObjects;
     }
-    public GameMapObject[] getGameMapObjects() {
+    public SpecialGameObject[] getGameMapObjects() {
         return gameMapObjects;
     }
-    public void setGameMapObjects(GameMapObject[] gameMapObjects) {
+    public void setGameMapObjects(SpecialGameObject[] gameMapObjects) {
         this.gameMapObjects = gameMapObjects;
     }
     

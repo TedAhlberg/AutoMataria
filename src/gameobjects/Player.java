@@ -206,6 +206,8 @@ public class Player extends GameObject {
     public void usePickUp() {
         if (pickUpSlot != null) {
             pickUpSlot.use(this);
+            pickUpSlot = null;
+            
         }
     }
 

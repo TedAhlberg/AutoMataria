@@ -100,7 +100,7 @@ public class Game {
             gamePanel.toggleDebugInfo();
         } else {
             client.send(action);
-        }
+        } 
     }
 
     public void onKeyPress(Direction direction) {

@@ -26,7 +26,7 @@ public class GameServer implements ClientListener {
     private boolean running = true;
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
-    private GameMapObject[] gameMapObjects;
+    private SpecialGameObject[] gameMapObjects;
 
     public GameServer(String serverName, int serverPort, int tickRate, int updateRate, GameMap map) {
         this.serverName = serverName;
@@ -125,7 +125,7 @@ public class GameServer implements ClientListener {
         if(gameMapObjects == null) {
             return;
         }
-        for(GameMapObject gameMapObject : gameMapObjects) {
+        for(SpecialGameObject gameMapObject : gameMapObjects) {
             if(gameMapObject.getTimer()<=0) {
                 if(gameObjects.contains(gameMapObject.getPickup())) {
           gameObjects.remove(gameMapObject.getPickup());
@@ -133,8 +133,9 @@ public class GameServer implements ClientListener {
                 } else {
                     if(gameMapObject.isSpawnRandom()) {
                        Point point = startingPositions.getOneRandom(currentMap.getGrid());
-                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE);
-                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE);
+                       int quarterGridPixel = Game.GRID_PIXEL_SIZE/4;
+                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE-quarterGridPixel);
+                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE-quarterGridPixel);
                         
                     }
                     gameObjects.add(gameMapObject.getPickup());
@@ -284,6 +285,8 @@ public class GameServer implements ClientListener {
                     player.setColor(colors.exchangeColor(player.getColor()));
                 } else if (value == Action.ToggleReady) {
                     player.setReady(!player.isReady());
+                } else if(value == Action.UsePickup) {
+                    player.usePickUp();
                 }
             }
         } else if (value instanceof String && !connectedClients.containsKey(client)) {

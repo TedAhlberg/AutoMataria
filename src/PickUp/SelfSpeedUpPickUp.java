@@ -7,6 +7,11 @@ import gameclient.Resources;
 import gameobjects.Pickup;
 import gameobjects.Player;
 
+/**
+ * @author Dante Håkansson
+ * 
+ */
+
 public class SelfSpeedUpPickUp extends Pickup {
 
     private int timer;
@@ -20,7 +25,7 @@ public class SelfSpeedUpPickUp extends Pickup {
     }
 
     public void render(Graphics2D g) {
-       BufferedImage image = Resources.getImage("SelfSpeedUp.png");
+       BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
         g.drawImage(image, x, y, width, height, null);
 
     }

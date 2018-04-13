@@ -5,14 +5,14 @@ import gameobjects.GameObject;
 import gameobjects.Player;
 
 /*
- * @author Dante Håkansson
+ * @author Dante HÃ¥kansson
  */
 public abstract class Pickup extends GameObject {
 
     public Pickup(int x, int y) {
         super(x, y);
-        width = Game.GRID_PIXEL_SIZE;
-        height = Game.GRID_PIXEL_SIZE;
+        width = (int) (Game.GRID_PIXEL_SIZE * 1.5);
+        height = width;
     }
 
     public void tick() {
