@@ -1,10 +1,8 @@
 package test;
 
-import common.GameMap;
 import gameclient.Game;
-import gameobjects.GameObject;
-import gameobjects.Wall;
 import gameserver.GameServer;
+import common.Maps;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,25 +14,21 @@ import java.awt.event.MouseEvent;
  */
 public class TestUI {
     private JPanel container;
-    private JTextField tfClientIP, tfClientPort, tfPlayerSpeedTick, tfFramesPerSecond, tfPlayerSpeedSecond,
-            tfServerPort, tfPlayers, tfTickRate, tfUpdateRate, tfMapWidth, tfMapHeight;
-    private JButton btnStartGame, btnStartServer, btnStopServer, btnChangeWallColor, btnChangeWallBorderColor;
+    private JTextField tfClientIP, tfClientPort, tfFramesPerSecond, tfServerPort, tfTickRate, tfUpdateRate;
+    private JButton btnStartGame, btnStartServer, btnStopServer;
     private JCheckBox checkFullscreen;
-    private JComboBox cbWindowSize;
+    private JComboBox<String> cbWindowSize;
     private JLabel lblWindowSize;
+    private JComboBox<String> mapComboBox;
 
     private GameServer server;
-    private Color mapWallColor = Color.CYAN.darker().darker().darker();
-    private Color mapWallBorderColor = Color.CYAN.darker();
 
-    private String clientIP;
-    private int serverPort, tickRate, updateRate, players, mapWidth, mapHeight, clientPort, framesPerSecond, clientWidth, clientHeight;
-    private double playerSpeedTick, playerSpeedSecond;
+    private String clientIP, gameMap;
+    private int serverPort, tickRate, updateRate, clientPort, framesPerSecond, clientWidth, clientHeight;
     private boolean fullscreen;
 
     TestUI() {
-        tfPlayerSpeedTick.setEnabled(false);
-
+        $$$setupUI$$$();
         container.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -66,39 +60,14 @@ public class TestUI {
         btnStartServer.addActionListener(e -> {
             updateAllVariables();
             System.out.println(toString());
-            GameMap map = new GameMap();
-            map.setBackground("resources/Stars.png");
-            map.setMusicTrack("resources/Music/AM-trck1.mp3");
-            map.setPlayers(players);
-            map.setPlayerSpeed(playerSpeedTick);
-            map.setGrid(new Dimension(mapWidth, mapHeight));
-            Wall wall = new Wall(mapWallColor, mapWallBorderColor);
-            int width = mapWidth * Game.GRID_PIXEL_SIZE;
-            int height = mapHeight * Game.GRID_PIXEL_SIZE;
-            wall.add(new Rectangle(0, 0, Game.GRID_PIXEL_SIZE, width));
-            wall.add(new Rectangle(height - Game.GRID_PIXEL_SIZE, 0, Game.GRID_PIXEL_SIZE, width));
-            wall.add(new Rectangle(0, 0, height, Game.GRID_PIXEL_SIZE));
-            wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
-            GameObject[] startingObjects = {wall};
-            map.setStartingGameObjects(startingObjects);
-            if (server == null) server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, map);
+            if (server == null)
+                server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, Maps.getInstance().get(gameMap));
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
                 server.stop();
                 server = null;
             }
-        });
-
-        btnChangeWallColor.setForeground(mapWallColor);
-        btnChangeWallColor.addActionListener(e -> {
-            mapWallColor = JColorChooser.showDialog(null, "Wall Color", mapWallColor);
-            btnChangeWallColor.setForeground(mapWallColor);
-        });
-        btnChangeWallBorderColor.setForeground(mapWallBorderColor);
-        btnChangeWallBorderColor.addActionListener(e -> {
-            mapWallBorderColor = JColorChooser.showDialog(null, "Wall Border Color", mapWallBorderColor);
-            btnChangeWallBorderColor.setForeground(mapWallBorderColor);
         });
     }
 
@@ -121,12 +90,7 @@ public class TestUI {
         tfServerPort.setText(Integer.toString(serverPort));
         tfTickRate.setText(Integer.toString(tickRate));
         tfUpdateRate.setText(Integer.toString(updateRate));
-        tfPlayers.setText(Integer.toString(players));
-        // SERVER MAP
-        tfMapWidth.setText(Integer.toString(mapWidth));
-        tfMapHeight.setText(Integer.toString(mapHeight));
-        tfPlayerSpeedTick.setText(Double.toString(playerSpeedTick));
-        tfPlayerSpeedSecond.setText(Double.toString(playerSpeedSecond));
+        mapComboBox.setSelectedItem(gameMap);
     }
 
     private void updateAllVariables() {
@@ -141,40 +105,17 @@ public class TestUI {
             framesPerSecond = Integer.parseInt(tfFramesPerSecond.getText());
             // SERVER
             serverPort = Integer.parseInt(tfServerPort.getText());
-            int tickRate = Integer.parseInt(tfTickRate.getText());
+            tickRate = Integer.parseInt(tfTickRate.getText());
             updateRate = Integer.parseInt(tfUpdateRate.getText());
-            players = Integer.parseInt(tfPlayers.getText());
-            //SERVER MAP
-            mapWidth = Integer.parseInt(tfMapWidth.getText());
-            mapHeight = Integer.parseInt(tfMapHeight.getText());
-            double playerSpeedTick = Double.parseDouble(tfPlayerSpeedTick.getText());
-            double playerSpeedSecond = Double.parseDouble(tfPlayerSpeedSecond.getText());
-
-            // Some special calculation for a better user experience
-            if (tickRate != this.tickRate || playerSpeedTick != this.playerSpeedTick) {
-                this.playerSpeedSecond = (1000 / tickRate) * playerSpeedTick;
-                this.tickRate = tickRate;
-                this.playerSpeedTick = playerSpeedTick;
-            } else if (playerSpeedSecond != this.playerSpeedSecond) {
-                playerSpeedSecond = Math.round(playerSpeedSecond * 2.0) / 2.0;
-                this.playerSpeedTick = playerSpeedSecond / (1000 / tickRate);
-                this.playerSpeedSecond = playerSpeedSecond;
-            } else {
-                this.tickRate = tickRate;
-                this.playerSpeedSecond = playerSpeedSecond;
-                this.playerSpeedTick = playerSpeedTick;
-            }
+            gameMap = (String) mapComboBox.getSelectedItem();
 
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(null, "Please enter only numbers.");
         }
     }
 
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
+    private void createUIComponents() {
+        mapComboBox = new JComboBox<>(Maps.getInstance().getMapList());
     }
 
     /**
@@ -185,6 +126,7 @@ public class TestUI {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
+        createUIComponents();
         container = new JPanel();
         container.setLayout(new GridBagLayout());
         tfServerPort = new JTextField();
@@ -196,29 +138,6 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(tfServerPort, gbc);
-        tfMapWidth = new JTextField();
-        tfMapWidth.setText("50");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 15;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfMapWidth, gbc);
-        tfMapHeight = new JTextField();
-        tfMapHeight.setText("50");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 16;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfMapHeight, gbc);
-        btnChangeWallColor = new JButton();
-        btnChangeWallColor.setText("Change");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 13;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnChangeWallColor, gbc);
         final JLabel label1 = new JLabel();
         Font label1Font = this.$$$getFont$$$(null, Font.BOLD, -1, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
@@ -355,34 +274,10 @@ public class TestUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
         container.add(spacer5, gbc);
-        final JLabel label7 = new JLabel();
-        label7.setText("Wall Color");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 13;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label7, gbc);
-        final JLabel label8 = new JLabel();
-        label8.setText("Horizontal Grids");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 15;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label8, gbc);
-        final JLabel label9 = new JLabel();
-        label9.setText("Vertical Grids");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 16;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label9, gbc);
         final JPanel spacer6 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 17;
+        gbc.gridy = 10;
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
@@ -390,57 +285,34 @@ public class TestUI {
         final JPanel spacer7 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 19;
+        gbc.gridy = 12;
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
         container.add(spacer7, gbc);
         final JPanel spacer8 = new JPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 21;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipady = 10;
-        container.add(spacer8, gbc);
-        final JPanel spacer9 = new JPanel();
-        gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
-        container.add(spacer9, gbc);
-        btnStartServer = new JButton();
-        btnStartServer.setText("Start Server");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 18;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnStartServer, gbc);
+        container.add(spacer8, gbc);
         btnStopServer = new JButton();
         btnStopServer.setText("Stop Server");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 20;
+        gbc.gridy = 11;
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(btnStopServer, gbc);
-        final JLabel label10 = new JLabel();
-        label10.setText("PlayerSpeed (grids/sec)");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 11;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label10, gbc);
-        final JLabel label11 = new JLabel();
-        label11.setText("Frame Rate (FPS)");
+        final JLabel label7 = new JLabel();
+        label7.setText("Frame Rate (FPS)");
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label11, gbc);
+        container.add(label7, gbc);
         tfFramesPerSecond = new JTextField();
         tfFramesPerSecond.setText("60");
         gbc = new GridBagConstraints();
@@ -449,101 +321,29 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(tfFramesPerSecond, gbc);
-        final JPanel spacer10 = new JPanel();
+        final JPanel spacer9 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 7;
         gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
-        container.add(spacer10, gbc);
-        final JLabel label12 = new JLabel();
-        Font label12Font = this.$$$getFont$$$(null, Font.BOLD, -1, label12.getFont());
-        if (label12Font != null) label12.setFont(label12Font);
-        label12.setText("Map Settings");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 8;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label12, gbc);
-        final JPanel spacer11 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 9;
-        gbc.gridwidth = 5;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipady = 10;
-        container.add(spacer11, gbc);
-        final JLabel label13 = new JLabel();
-        label13.setText("PlayerSpeed (grids/tick)");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 12;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label13, gbc);
-        tfPlayerSpeedTick = new JTextField();
-        tfPlayerSpeedTick.setText("0.25");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 12;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfPlayerSpeedTick, gbc);
-        tfPlayerSpeedSecond = new JTextField();
-        tfPlayerSpeedSecond.setText("5.0");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 11;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfPlayerSpeedSecond, gbc);
-        final JLabel label14 = new JLabel();
-        label14.setText("Wall Border Color");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 14;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label14, gbc);
-        btnChangeWallBorderColor = new JButton();
-        btnChangeWallBorderColor.setText("Change");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 14;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnChangeWallBorderColor, gbc);
-        final JLabel label15 = new JLabel();
-        label15.setText("Players");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 10;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label15, gbc);
-        tfPlayers = new JTextField();
-        tfPlayers.setText("5");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 10;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfPlayers, gbc);
-        final JPanel spacer12 = new JPanel();
+        container.add(spacer9, gbc);
+        final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipadx = 10;
-        container.add(spacer12, gbc);
-        final JLabel label16 = new JLabel();
-        label16.setText("Tick Rate (ms)");
+        container.add(spacer10, gbc);
+        final JLabel label8 = new JLabel();
+        label8.setText("Tick Rate (ms)");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label16, gbc);
+        container.add(label8, gbc);
         tfTickRate = new JTextField();
         tfTickRate.setText("50");
         gbc = new GridBagConstraints();
@@ -552,14 +352,14 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(tfTickRate, gbc);
-        final JLabel label17 = new JLabel();
-        label17.setText("Update Rate (ms)");
+        final JLabel label9 = new JLabel();
+        label9.setText("Update Rate (ms)");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label17, gbc);
+        container.add(label9, gbc);
         tfUpdateRate = new JTextField();
         tfUpdateRate.setText("150");
         gbc = new GridBagConstraints();
@@ -568,6 +368,30 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(tfUpdateRate, gbc);
+        final JLabel label10 = new JLabel();
+        Font label10Font = this.$$$getFont$$$(null, Font.BOLD, -1, label10.getFont());
+        if (label10Font != null) label10.setFont(label10Font);
+        label10.setText("Map");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label10, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(mapComboBox, gbc);
+        btnStartServer = new JButton();
+        btnStartServer.setText("Start Server");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 9;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(btnStartServer, gbc);
         label2.setLabelFor(tfClientIP);
         label3.setLabelFor(tfClientPort);
     }

@@ -1,24 +1,22 @@
-package PickUp;
+package gameobjects.pickups;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import gameclient.Resources;
-import gameobjects.Pickup;
-import gameobjects.Player;
+import gameobjects.*;
 
 /**
  * @author Dante H�kansson
  * 
  */
 
-public class SelfSpeedUpPickUp extends Pickup {
+public class SelfSpeedPickup extends Pickup {
 
     private int timer;
 
-    public SelfSpeedUpPickUp(int x, int y) {
+    public SelfSpeedPickup(int x, int y) {
         super(x, y);
-
     }
 
     public void tick() {

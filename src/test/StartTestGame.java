@@ -3,13 +3,13 @@ package test;
 import common.GameMap;
 import common.SpecialGameObject;
 import gameclient.Game;
-import gameobjects.GameObject;
-import gameobjects.Wall;
 import gameserver.GameServer;
 
 import java.awt.*;
+import java.util.Arrays;
 
-import PickUp.SelfSpeedUpPickUp;
+import gameobjects.pickups.SelfSpeedPickup;
+import common.Maps;
 
 /**
  * @author Johannes Blüml
@@ -17,23 +17,10 @@ import PickUp.SelfSpeedUpPickUp;
 public class StartTestGame {
     public static void main(String[] args) {
         // Create a map
-        GameMap map = new GameMap();
-        map.setBackground("resources/Stars.png");
-        map.setMusicTrack("resources/Music/AM-trck1.mp3");
-        map.setPlayerSpeed(0.25);
-        map.setPlayers(5);
-        map.setGrid(new Dimension(50, 50));
-        Wall wall = new Wall();
-        int width = map.getGrid().width * Game.GRID_PIXEL_SIZE;
-        int height = map.getGrid().height * Game.GRID_PIXEL_SIZE;
-        wall.add(new Rectangle(0, 0, Game.GRID_PIXEL_SIZE, width));
-        wall.add(new Rectangle(height - Game.GRID_PIXEL_SIZE, 0, Game.GRID_PIXEL_SIZE, width));
-        wall.add(new Rectangle(0, 0, height, Game.GRID_PIXEL_SIZE));
-        wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
-        GameObject[] startingObjects = {wall};
-        map.setStartingGameObjects(startingObjects);
-        SpecialGameObject[] gameMapObjects = new SpecialGameObject[1];
-        gameMapObjects[0] = new SpecialGameObject(new SelfSpeedUpPickUp(200, 200), 10000, 0, true, 15000);
+        GameMap map = Maps.getInstance().get("Small Map 1");
+        System.out.println(map);
+        SpecialGameObject[] gameMapObjects = Arrays.copyOf(map.getGameMapObjects(), map.getGameMapObjects().length + 1);
+        gameMapObjects[gameMapObjects.length - 1] = new SpecialGameObject(new SelfSpeedPickup(200, 200), 10000, 0, true, 15000);
         map.setGameMapObjects(gameMapObjects);
         // Start a game server
         new GameServer("AM-test-server", 32000, 50, 150, map);

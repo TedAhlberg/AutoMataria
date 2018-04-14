@@ -5,9 +5,9 @@ import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.concurrent.*;
 
 /**
  * @author Johannes Blüml
@@ -26,7 +26,6 @@ public class GameServer implements ClientListener {
     private boolean running = true;
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
-    private SpecialGameObject[] gameMapObjects;
 
     public GameServer(String serverName, int serverPort, int tickRate, int updateRate, GameMap map) {
         this.serverName = serverName;
@@ -36,7 +35,6 @@ public class GameServer implements ClientListener {
         this.gameStartCountdown = 5000;
         this.gameOverCountDown = 10000;
         this.currentMap = map;
-        gameObjects.addAll(Arrays.asList(map.getStartingGameObjects()));
 
         server = new ServerConnection(serverPort);
         new Thread(server).start();
@@ -82,6 +80,13 @@ public class GameServer implements ClientListener {
         }
     }
 
+    private void update() {
+        GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
+        for (Client client : connectedClients.keySet()) {
+            client.send(update);
+        }
+    }
+
     private void tick() {
         for (GameObject gameObject : gameObjects) {
             gameObject.tick();
@@ -119,24 +124,34 @@ public class GameServer implements ClientListener {
             }
         }
         placeGameMapObjects();
-
     }
 
     private void placeGameMapObjects() {
-        if (gameMapObjects == null) return;
-        for (SpecialGameObject gameMapObject : gameMapObjects) {
+        if (currentMap.getGameMapObjects() == null) return;
+        for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
+            GameObject gameObject = gameMapObject.getGameObject();
+            if (gameObject.getId() == 0) {
+                gameObject.setId(ID.getNext());
+            }
+            if (gameMapObject.getSpawnInterval() == 0) {
+                if (!gameObjects.contains(gameObject)) {
+
+                    gameObjects.add(gameObject);
+                }
+                continue;
+            }
             if (gameMapObject.getTimer() <= 0) {
-                if (gameObjects.contains(gameMapObject.getPickup())) {
-                    gameObjects.remove(gameMapObject.getPickup());
+                if (gameObjects.contains(gameObject)) {
+                    gameObjects.remove(gameMapObject.getGameObject());
                     gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                 } else {
                     if (gameMapObject.isSpawnRandom()) {
                         Point point = startingPositions.getOneRandom(currentMap.getGrid());
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameMapObject.getPickup().setX(point.x * Game.GRID_PIXEL_SIZE - quarterGridPixel);
-                        gameMapObject.getPickup().setY(point.y * Game.GRID_PIXEL_SIZE - quarterGridPixel);
+                        gameObject.setX(point.x * Game.GRID_PIXEL_SIZE - quarterGridPixel);
+                        gameObject.setY(point.y * Game.GRID_PIXEL_SIZE - quarterGridPixel);
                     }
-                    gameObjects.add(gameMapObject.getPickup());
+                    gameObjects.add(gameObject);
                     gameMapObject.setTimer(gameMapObject.getVisibletime());
                 }
             } else {
@@ -150,25 +165,25 @@ public class GameServer implements ClientListener {
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
             GameObject gameObject = iterator.next();
-            if (gameObject instanceof Player) {
-                Player player = (Player) gameObject;
-
-                player.setInvincible(true);
-                player.setReady(false);
-                player.setDead(false);
-                player.setDirection(Direction.Static);
-
-                Point nextPosition = startingPositions.getOneRandom(currentMap.getGrid());
-                player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
-                player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
-            } else if (gameObject instanceof Trail) {
+            if (gameObject instanceof Trail) {
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
                 iterator.remove();
             }
         }
 
-        gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
+        connectedClients.forEach((client, player) -> {
+            player.setInvincible(true);
+            player.setReady(false);
+            player.setDead(false);
+            player.setDirection(Direction.Static);
+
+            Point nextPosition = startingPositions.getOneRandom(currentMap.getGrid());
+            player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
+            player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+
+            gameObjects.add(player);
+        });
     }
 
     private void startNewGame() {
@@ -195,22 +210,11 @@ public class GameServer implements ClientListener {
                 iterator.remove();
             }
         }
-
-        gameObjects.addAll(Arrays.asList(currentMap.getStartingGameObjects()));
-        gameMapObjects = currentMap.getGameMapObjects();
     }
-
 
     private Rectangle getMapRectangle() {
         Dimension grid = currentMap.getGrid();
         return new Rectangle(grid.width * Game.GRID_PIXEL_SIZE, grid.height * Game.GRID_PIXEL_SIZE);
-    }
-
-    private void update() {
-        GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
-        for (Client client : connectedClients.keySet()) {
-            client.send(update);
-        }
     }
 
     private boolean intersectsAnyGameObject(Rectangle rect) {
@@ -238,6 +242,7 @@ public class GameServer implements ClientListener {
     private Player newPlayer(String name) {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
+        player.setId(ID.getNext());
         player.setSpeed(currentMap.getPlayerSpeed());
         player.setTickRate(tickRate);
 
@@ -281,8 +286,7 @@ public class GameServer implements ClientListener {
                 } else if (value == Action.ToggleReady) {
                     player.setReady(!player.isReady());
                 }
-            }
-            if (state == GameState.Running) {
+            } else if (state == GameState.Running) {
                 if (value == Action.UsePickup) {
                     player.usePickUp();
                 }

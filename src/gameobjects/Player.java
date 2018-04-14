@@ -1,7 +1,6 @@
 package gameobjects;
 
-import common.Direction;
-import common.GameMap;
+import common.*;
 import gameclient.Game;
 
 import java.awt.*;
@@ -25,14 +24,15 @@ public class Player extends GameObject {
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
-        this.invincible = true;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;
-        this.color = Color.LIGHT_GRAY;
-        this.width = Game.GRID_PIXEL_SIZE;
-        this.height = Game.GRID_PIXEL_SIZE;
-        this.previousDirection = direction;
-        this.trail = new Trail(this);
+        invincible = true;
+        color = Color.LIGHT_GRAY;
+        width = Game.GRID_PIXEL_SIZE;
+        height = Game.GRID_PIXEL_SIZE;
+        previousDirection = direction;
+        trail = new Trail(this);
+        trail.setId(ID.getNext());
     }
 
     public void render(Graphics2D g) {
@@ -207,9 +207,23 @@ public class Player extends GameObject {
 
     @Override
     public String toString() {
-        return "Player{" + "name='" + name + '\'' + ", color=" + color + ", dead=" + dead + ", ready=" + ready
-                + ", previousDirection=" + previousDirection + ", speedPerSecond=" + getSpeedPerSecond() + ", id=" + id
-                + ", x=" + x + ", y=" + y + ", speed=" + speed + ", width=" + width + ", height=" + height
-                + ", direction=" + direction + '}';
+        return "Player{" +
+                "id=" + id +
+                ", x=" + x +
+                ", y=" + y +
+                ", speed=" + speed +
+                ", width=" + width +
+                ", height=" + height +
+                ", direction=" + direction +
+                ", name='" + name + '\'' +
+                ", trail=" + trail +
+                ", color=" + color +
+                ", dead=" + dead +
+                ", ready=" + ready +
+                ", invincible=" + invincible +
+                ", previousDirection=" + previousDirection +
+                ", pickUpSlot=" + pickUpSlot +
+                ", tickRate=" + tickRate +
+                '}';
     }
 }

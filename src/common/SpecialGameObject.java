@@ -1,38 +1,40 @@
 package common;
 
-import java.awt.Rectangle;
 import java.io.Serializable;
 
 import gameobjects.GameObject;
 
 /**
  *
- * @author Dante H�kansson
- * @author Johannes Bl�ml
+ * @author Dante Håkansson
+ * @author Johannes Bluml
  *
  */
 
 public class SpecialGameObject implements Serializable {
-
-    private GameObject pickup;
+    public static final long serialVersionUID = 1;
+    private GameObject gameObject;
     private int spawnInterval;
     private int spawnLimit;
     private boolean spawnRandom;
     private int visibletime;
     private int timer;
 
-    public SpecialGameObject(GameObject pickup, int spawnInterval, int spawnLimit,
+    public SpecialGameObject(GameObject gameObject) {
+        this(gameObject, 0, 0, false, 0);
+    }
+    public SpecialGameObject(GameObject gameObject, int spawnInterval, int spawnLimit,
             boolean spawnRandom, int visibletime) {
 
-        this.pickup = pickup;
+        this.gameObject = gameObject;
         this.spawnInterval = spawnInterval;
         this.spawnLimit = spawnLimit;
         this.spawnRandom = spawnRandom;
         this.visibletime = visibletime;
     }
 
-    public GameObject getPickup() {
-        return pickup;
+    public GameObject getGameObject() {
+        return gameObject;
     }
 
     public int getSpawnInterval() {
