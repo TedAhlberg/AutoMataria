@@ -16,6 +16,7 @@ public class Window extends JFrame {
     }
 
     public Window(String title, Dimension windowSize) {
+        this.getContentPane().setBackground(Color.BLACK);
         this.setTitle(title);
         this.setResizable(false);
         this.setUndecorated(true);
