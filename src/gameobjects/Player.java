@@ -49,7 +49,7 @@ public class Player extends GameObject {
     }
 
     public void tick() {
-        if(pickUpSlot!=null) {
+        if (pickUpSlot != null) {
             pickUpSlot.tick();
         }
         if (dead) return;
@@ -57,7 +57,7 @@ public class Player extends GameObject {
         Point previousPosition = new Point(x, y);
 
         updateDirection();
-        move();
+        move(speed);
         boolean hasTeleported = teleportIfOutsideMap();
         if (!hasTeleported) {
             Point newPosition = new Point(x, y);
@@ -96,25 +96,72 @@ public class Player extends GameObject {
 
         if (inputQueue.isEmpty()) return;
 
-        if (x % Game.GRID_PIXEL_SIZE == 0 && y % Game.GRID_PIXEL_SIZE == 0) {
-            previousDirection = direction;
-            direction = inputQueue.remove();
-        }
-    }
-
-    private void move() {
+        Point previous = new Point(x, y);
         switch (direction) {
             case Up:
-                y -= speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((y - i) % Game.GRID_PIXEL_SIZE == 0) {
+                        y -= i;
+                        trail.grow(previous, new Point(x, y));
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Down:
-                y += speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((y + i) % Game.GRID_PIXEL_SIZE == 0) {
+                        y += i;
+                        trail.grow(previous, new Point(x, y));
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Left:
-                x -= speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((x - i) % Game.GRID_PIXEL_SIZE == 0) {
+                        x -= i;
+                        trail.grow(previous, new Point(x, y));
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Right:
-                x += speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((x + i) % Game.GRID_PIXEL_SIZE == 0) {
+                        x += i;
+                        trail.grow(previous, new Point(x, y));
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
+                break;
+            default:
+                previousDirection = direction;
+                direction = inputQueue.remove();
+        }
+
+    }
+
+    private void move(int amount) {
+        switch (direction) {
+            case Up:
+                y -= amount;
+                break;
+            case Down:
+                y += amount;
+                break;
+            case Left:
+                x -= amount;
+                break;
+            case Right:
+                x += amount;
                 break;
         }
     }
@@ -133,13 +180,12 @@ public class Player extends GameObject {
                     setDead(true);
                     System.out.println(name + " HAS CRASHED INTO A WALL");
                 }
-            }
-                else if (gameObject instanceof InstantPickup) {
-                    if (this.getBounds().intersects(gameObject.getBounds())) {
-                        ((InstantPickup) gameObject).use(this, gameObjects);
-                        gameObjects.remove(gameObject);
-                        System.out.println("Player " + name + "used pickup " + gameObject);
-                    }
+            } else if (gameObject instanceof InstantPickup) {
+                if (this.getBounds().intersects(gameObject.getBounds())) {
+                    ((InstantPickup) gameObject).use(this, gameObjects);
+                    gameObjects.remove(gameObject);
+                    System.out.println("Player " + name + "used pickup " + gameObject);
+                }
             } else if (gameObject instanceof Pickup) {
                 if (this.getBounds().intersects(gameObject.getBounds())) {
                     this.setPickUp((Pickup) gameObject);
@@ -149,6 +195,7 @@ public class Player extends GameObject {
             }
         }
     }
+
     public GameMap getCurrentMap() {
         return currentMap;
     }
