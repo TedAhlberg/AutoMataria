@@ -93,12 +93,14 @@ public class GameServer implements ClientListener {
         }
 
         if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0 && connectedClients.size() > 0) {
+            System.out.println("SERVER STATE: Warmup -> Countdown");
             players.clear();
             players.addAll(connectedClients.values());
             state = GameState.Countdown;
             currentCountdown = gameStartCountdown;
         } else if (state == GameState.Countdown) {
             if (currentCountdown <= 0) {
+                System.out.println("SERVER STATE: Countdown -> Running");
                 state = GameState.Running;
                 startNewGame();
             } else {
@@ -112,11 +114,13 @@ public class GameServer implements ClientListener {
                 }
             }
             if (alivePlayers <= 1) {
+                System.out.println("SERVER STATE: Running -> Game Over");
                 state = GameState.GameOver;
                 currentCountdown = gameOverCountDown;
             }
         } else if (state == GameState.GameOver) {
             if (currentCountdown <= 0) {
+                System.out.println("SERVER STATE: Game Over -> Warmup");
                 state = GameState.Warmup;
                 startNewWarmup();
             } else {
@@ -135,24 +139,31 @@ public class GameServer implements ClientListener {
             }
             if (gameMapObject.getSpawnInterval() == 0) {
                 if (!gameObjects.contains(gameObject)) {
-
-                    gameObjects.add(gameObject);
+                    if (!intersectsAnyGameObject(gameObject.getBounds())) {
+                        System.out.println("Placing on map: " + gameObject);
+                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
+                        gameObject.setX(gameObject.getX() - quarterGridPixel);
+                        gameObject.setY(gameObject.getY() - quarterGridPixel);
+                        gameObjects.add(gameObject);
+                    }
                 }
                 continue;
             }
             if (gameMapObject.getTimer() <= 0) {
                 if (gameObjects.contains(gameObject)) {
+                    System.out.println("Removing from map (Timed out): " + gameObject);
                     gameObjects.remove(gameMapObject.getGameObject());
                     gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                 } else {
+                    System.out.println("Placing on map (Spawn time): " + gameObject);
                     if (gameMapObject.isSpawnRandom()) {
-                        Point point = startingPositions.getOneRandom(currentMap.getGrid());
+                        Point point = findRandomMapPosition();
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(point.x * Game.GRID_PIXEL_SIZE - quarterGridPixel);
                         gameObject.setY(point.y * Game.GRID_PIXEL_SIZE - quarterGridPixel);
                     }
                     gameObjects.add(gameObject);
-                    gameMapObject.setTimer(gameMapObject.getVisibletime());
+                    gameMapObject.setTimer(gameMapObject.getVisibleTime());
                 }
             } else {
                 gameMapObject.setTimer(gameMapObject.getTimer() - tickRate);
@@ -161,6 +172,7 @@ public class GameServer implements ClientListener {
     }
 
     private void startNewWarmup() {
+        System.out.println("Starting Warmup");
         Rectangle mapRectangle = getMapRectangle();
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
@@ -176,18 +188,26 @@ public class GameServer implements ClientListener {
             player.setInvincible(true);
             player.setReady(false);
             player.setDead(false);
+            player.setPickUp(null);
+            player.setSpeed(currentMap.getPlayerSpeed());
             player.setDirection(Direction.Static);
 
-            Point nextPosition = startingPositions.getOneRandom(currentMap.getGrid());
-            player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
-            player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+            Point nextPosition = findRandomMapPosition();
+            player.setX(nextPosition.x);
+            player.setY(nextPosition.y);
 
             gameObjects.add(player);
+            System.out.println("Placing player " + player.getName() + " at " + nextPosition);
         });
     }
 
     private void startNewGame() {
-        startingPositions.generate(currentMap.getGrid(), connectedClients.size());
+        System.out.println("Starting new game");
+        if (currentMap.getStartingPositions() != null) {
+            startingPositions.set(currentMap.getStartingPositions());
+        } else {
+            startingPositions.generate(currentMap.getGrid(), connectedClients.size());
+        }
 
         Rectangle mapRectangle = getMapRectangle();
         Iterator<GameObject> iterator = gameObjects.iterator();
@@ -199,11 +219,14 @@ public class GameServer implements ClientListener {
                 player.setInvincible(false);
                 player.setReady(false);
                 player.setDead(false);
+                player.setPickUp(null);
+                player.setSpeed(currentMap.getPlayerSpeed());
                 player.setDirection(Direction.Static);
 
                 Point nextPosition = startingPositions.getNext();
                 player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
                 player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
+                System.out.println("Placing player " + player.getName() + " at " + nextPosition);
             } else if (gameObject instanceof Trail) {
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
@@ -247,24 +270,27 @@ public class GameServer implements ClientListener {
         player.setTickRate(tickRate);
 
         if (state == GameState.Warmup) {
-            boolean hasFoundStartingPosition = false;
-            while (!hasFoundStartingPosition) {
-                Rectangle point = new Rectangle(startingPositions.getOneRandom(currentMap.getGrid()));
-                point.x *= Game.GRID_PIXEL_SIZE;
-                point.y *= Game.GRID_PIXEL_SIZE;
-                point.width = player.getWidth();
-                point.height = player.getHeight();
-
-                if (!intersectsAnyGameObject(point)) {
-                    hasFoundStartingPosition = true;
-                    player.setX(point.x);
-                    player.setY(point.y);
-                }
-            }
+            Point position = findRandomMapPosition();
+            player.setX(position.x);
+            player.setY(position.y);
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
         }
         return player;
+    }
+
+    private Point findRandomMapPosition() {
+        while (true) {
+            Rectangle rectangle = new Rectangle(startingPositions.getOneRandom(currentMap.getGrid()));
+            rectangle.x *= Game.GRID_PIXEL_SIZE;
+            rectangle.y *= Game.GRID_PIXEL_SIZE;
+            rectangle.width = Game.GRID_PIXEL_SIZE;
+            rectangle.height = Game.GRID_PIXEL_SIZE;
+
+            if (!intersectsAnyGameObject(rectangle)) {
+                return rectangle.getLocation();
+            }
+        }
     }
 
     @Override

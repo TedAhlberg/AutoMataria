@@ -9,7 +9,19 @@ import java.util.*;
  */
 public class StartingPositions {
     private Random random = new Random();
+    private LinkedList<Point> positions = new LinkedList<>();
     private LinkedList<Point> availablePositions = new LinkedList<>();
+
+    public void set(Point[] startingPositions) {
+        positions.clear();
+        positions.addAll(Arrays.asList(startingPositions));
+        reset();
+    }
+
+    public void reset() {
+        availablePositions.clear();
+        availablePositions.addAll(positions);
+    }
 
     public Point getNext() throws NoSuchElementException {
         if (availablePositions.size() == 0) throw new NoSuchElementException();
@@ -22,19 +34,22 @@ public class StartingPositions {
         return new Point(x, y);
     }
 
-    public void generate(Dimension grid, int amount) {
+    public Point[] generate(Dimension grid, int amount) {
+        positions.clear();
         if (amount <= 5) generate2to5(grid, amount);
         else if (amount <= 9) generate9(grid);
         else if (amount <= 16) generate16(grid);
         else generateRandom(grid, amount);
+        reset();
+        return positions.toArray(new Point[0]);
     }
 
-    private void generateRandom(Dimension grid, int amount) {
-        availablePositions.clear();
-        while (availablePositions.size() < amount) {
+    public void generateRandom(Dimension grid, int amount) {
+        positions.clear();
+        while (positions.size() < amount) {
             Point point = getOneRandom(grid);
-            if (!availablePositions.contains(point)) {
-                availablePositions.add(point);
+            if (!positions.contains(point)) {
+                positions.add(point);
             }
         }
     }
@@ -48,15 +63,14 @@ public class StartingPositions {
         int yTop = grid.height / 4;
         int yBottom = yCenter + yTop;
 
-        availablePositions.clear();
-        availablePositions.add(new Point(xLeft, yTop));
-        availablePositions.add(new Point(xRight, yBottom));
+        positions.add(new Point(xLeft, yTop));
+        positions.add(new Point(xRight, yBottom));
         if (amount > 2) {
-            availablePositions.add(new Point(xRight, yTop));
-            availablePositions.add(new Point(xLeft, yBottom));
+            positions.add(new Point(xRight, yTop));
+            positions.add(new Point(xLeft, yBottom));
         }
         if (amount == 5) {
-            availablePositions.add(new Point(xCenter, yCenter));
+            positions.add(new Point(xCenter, yCenter));
         }
     }
 
@@ -67,19 +81,18 @@ public class StartingPositions {
         int yEvery = grid.height / 3;
         int yBegin = yEvery / 2;
 
-        availablePositions.clear();
         // First row positions
-        availablePositions.add(new Point(xBegin, yBegin));
-        availablePositions.add(new Point(xBegin + xEvery, yBegin));
-        availablePositions.add(new Point(xBegin + xEvery + xEvery, yBegin));
+        positions.add(new Point(xBegin, yBegin));
+        positions.add(new Point(xBegin + xEvery, yBegin));
+        positions.add(new Point(xBegin + xEvery + xEvery, yBegin));
         // Center row positions
-        availablePositions.add(new Point(xBegin, yBegin + yEvery));
-        availablePositions.add(new Point(xBegin + xEvery, yBegin + yEvery));
-        availablePositions.add(new Point(xBegin + xEvery + xEvery, yBegin + yEvery));
+        positions.add(new Point(xBegin, yBegin + yEvery));
+        positions.add(new Point(xBegin + xEvery, yBegin + yEvery));
+        positions.add(new Point(xBegin + xEvery + xEvery, yBegin + yEvery));
         // Last row positions
-        availablePositions.add(new Point(xBegin, yBegin + yEvery + yEvery));
-        availablePositions.add(new Point(xBegin + xEvery, yBegin + yEvery + yEvery));
-        availablePositions.add(new Point(xBegin + xEvery + xEvery, yBegin + yEvery + yEvery));
+        positions.add(new Point(xBegin, yBegin + yEvery + yEvery));
+        positions.add(new Point(xBegin + xEvery, yBegin + yEvery + yEvery));
+        positions.add(new Point(xBegin + xEvery + xEvery, yBegin + yEvery + yEvery));
     }
 
     private void generate16(Dimension grid) {
@@ -89,26 +102,25 @@ public class StartingPositions {
         int yEvery = grid.height / 4;
         int yBegin = yEvery / 2;
 
-        availablePositions.clear();
         // First row positions
-        availablePositions.add(new Point(xBegin, yBegin));
-        availablePositions.add(new Point(xBegin + yEvery, yBegin));
-        availablePositions.add(new Point(xBegin + yEvery * 2, yBegin));
-        availablePositions.add(new Point(xBegin + yEvery * 3, yBegin));
+        positions.add(new Point(xBegin, yBegin));
+        positions.add(new Point(xBegin + yEvery, yBegin));
+        positions.add(new Point(xBegin + yEvery * 2, yBegin));
+        positions.add(new Point(xBegin + yEvery * 3, yBegin));
         // Second row positions
-        availablePositions.add(new Point(xBegin, yBegin + yEvery));
-        availablePositions.add(new Point(xBegin + yEvery, yBegin + yEvery));
-        availablePositions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery));
-        availablePositions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery));
+        positions.add(new Point(xBegin, yBegin + yEvery));
+        positions.add(new Point(xBegin + yEvery, yBegin + yEvery));
+        positions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery));
+        positions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery));
         // Third row positions
-        availablePositions.add(new Point(xBegin, yBegin + yEvery * 2));
-        availablePositions.add(new Point(xBegin + yEvery, yBegin + yEvery * 2));
-        availablePositions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery * 2));
-        availablePositions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery * 2));
+        positions.add(new Point(xBegin, yBegin + yEvery * 2));
+        positions.add(new Point(xBegin + yEvery, yBegin + yEvery * 2));
+        positions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery * 2));
+        positions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery * 2));
         // Forth row positions
-        availablePositions.add(new Point(xBegin, yBegin + yEvery * 3));
-        availablePositions.add(new Point(xBegin + yEvery, yBegin + yEvery * 3));
-        availablePositions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery * 3));
-        availablePositions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery * 3));
+        positions.add(new Point(xBegin, yBegin + yEvery * 3));
+        positions.add(new Point(xBegin + yEvery, yBegin + yEvery * 3));
+        positions.add(new Point(xBegin + yEvery * 2, yBegin + yEvery * 3));
+        positions.add(new Point(xBegin + yEvery * 3, yBegin + yEvery * 3));
     }
 }
