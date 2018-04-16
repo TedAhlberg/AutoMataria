@@ -1,12 +1,13 @@
 package gameobjects;
 
-import java.awt.Graphics2D;
-
 public abstract class InstantPickup extends Pickup {
+    private static final long serialVersionUID = 1;
+
+    public InstantPickup() {
+        this(0, 0);
+    }
 
     public InstantPickup(int x, int y) {
         super(x, y);
-        // TODO Auto-generated constructor stub
-
     }
 }

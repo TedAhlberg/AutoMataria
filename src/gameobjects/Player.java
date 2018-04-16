@@ -138,11 +138,13 @@ public class Player extends GameObject {
                     if (this.getBounds().intersects(gameObject.getBounds())) {
                         ((InstantPickup) gameObject).use(this, gameObjects);
                         gameObjects.remove(gameObject);
+                        System.out.println("Player " + name + "used pickup " + gameObject);
                     }
             } else if (gameObject instanceof Pickup) {
                 if (this.getBounds().intersects(gameObject.getBounds())) {
                     this.setPickUp((Pickup) gameObject);
                     gameObjects.remove(gameObject);
+                    System.out.println("Player " + name + "picked up " + gameObject);
                 }
             }
         }
@@ -154,6 +156,7 @@ public class Player extends GameObject {
     public void usePickUp() {
         if (pickUpSlot != null) {
             pickUpSlot.use(this, gameObjects);
+            System.out.println("Player " + name + " used pickup " + pickUpSlot);
         }
     }
 

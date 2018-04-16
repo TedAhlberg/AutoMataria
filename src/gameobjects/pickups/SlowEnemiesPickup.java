@@ -11,6 +11,7 @@ import gameobjects.Player;
 import gameobjects.Trail;
 
 public class SlowEnemiesPickup extends InstantPickup {
+    private static final long serialVersionUID = 1;
 
     private int timer = 30;
     private ConcurrentLinkedQueue<GameObject> gameObjects;

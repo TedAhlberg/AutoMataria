@@ -28,24 +28,6 @@ public class Wall extends GameObject {
     }
 
     /**
-     * Changes the color of the Wall
-     *
-     * @param color The new color of the Wall
-     */
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    /**
-     * Changes the border color of the Wall
-     *
-     * @param borderColor The new border color of the Wall
-     */
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    /**
      * Adds a Rectangle object to be part of the Wall
      *
      * @param rectangle Rectangle object to add to the Wall
@@ -100,6 +82,22 @@ public class Wall extends GameObject {
             g.setColor(borderColor);
             g.draw(shape);
         }
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public Color getBorderColor() {
+        return borderColor;
     }
 
     @Override

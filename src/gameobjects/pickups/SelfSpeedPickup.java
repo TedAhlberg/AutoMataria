@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class SelfSpeedPickup extends Pickup {
+    private static final long serialVersionUID = 1;
 
     private int timer = 60;
     private Player player;

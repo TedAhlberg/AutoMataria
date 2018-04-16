@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class EraserPickup extends InstantPickup {
+    private static final long serialVersionUID = 1;
 
     public EraserPickup() {
         this(0, 0);
