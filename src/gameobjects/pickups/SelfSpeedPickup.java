@@ -1,15 +1,14 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
 import gameobjects.*;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * @author Dante H�kansson
- * 
  */
 
 public class SelfSpeedPickup extends Pickup {
@@ -18,23 +17,27 @@ public class SelfSpeedPickup extends Pickup {
     private Player player;
     private boolean pickedUp = false;
 
+    public SelfSpeedPickup() {
+        this(0, 0);
+    }
+
     public SelfSpeedPickup(int x, int y) {
         super(x, y);
     }
 
     public void tick() {
-        if(player == null) {
+        if (player == null) {
             return;
         }
         timer--;
-        if(timer<=0) {
-            player.setSpeed(player.getSpeed()/2);
+        if (timer <= 0) {
+            player.setSpeed(player.getSpeed() / 2);
             player.setPickUp(null);
         }
     }
 
     public void render(Graphics2D g) {
-       BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
+        BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
         g.drawImage(image, x, y, width, height, null);
 
     }
@@ -42,6 +45,6 @@ public class SelfSpeedPickup extends Pickup {
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
         this.player = player;
         int speed = player.getSpeed();
-        player.setSpeed((int) (speed*2));
+        player.setSpeed((int) (speed * 2));
     }
 }

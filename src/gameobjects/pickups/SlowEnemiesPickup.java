@@ -14,12 +14,14 @@ public class SlowEnemiesPickup extends InstantPickup {
 
     private int timer = 30;
     private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private Player player;
 
-    Player player;
+    public SlowEnemiesPickup() {
+        this(0, 0);
+    }
 
     public SlowEnemiesPickup(int x, int y) {
         super(x, y);
-        // TODO Auto-generated constructor stub
     }
 
     public void tick() {

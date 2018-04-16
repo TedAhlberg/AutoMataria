@@ -1,29 +1,25 @@
 package gameobjects.pickups;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import gameclient.Game;
+import gameclient.Resources;
+import gameobjects.*;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import gameclient.Game;
-import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.InstantPickup;
-import gameobjects.Pickup;
-import gameobjects.Player;
-import gameobjects.Trail;
-
 /**
  * @author Dante Håkansson
- * 
  */
 
 public class EraserPickup extends InstantPickup {
 
+    public EraserPickup() {
+        this(0, 0);
+    }
+
     public EraserPickup(int x, int y) {
         super(x, y);
-
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
