@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gameclient.Resources;
 import gameobjects.*;
@@ -28,7 +29,7 @@ public class SelfSpeedPickup extends Pickup {
 
     }
 
-    public void use(Player player) {
+    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
         int speed = player.getSpeed();
         player.setSpeed((int) (speed*2));
     }
