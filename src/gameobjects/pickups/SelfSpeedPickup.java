@@ -14,13 +14,23 @@ import gameobjects.*;
 
 public class SelfSpeedPickup extends Pickup {
 
-    private int timer;
+    private int timer = 60;
+    private Player player;
+    private boolean pickedUp = false;
 
     public SelfSpeedPickup(int x, int y) {
         super(x, y);
     }
 
     public void tick() {
+        if(player == null) {
+            return;
+        }
+        timer--;
+        if(timer<=0) {
+            player.setSpeed(player.getSpeed()/2);
+            player.setPickUp(null);
+        }
     }
 
     public void render(Graphics2D g) {
@@ -30,8 +40,8 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed*2));
     }
-
 }

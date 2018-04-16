@@ -49,6 +49,9 @@ public class Player extends GameObject {
     }
 
     public void tick() {
+        if(pickUpSlot!=null) {
+            pickUpSlot.tick();
+        }
         if (dead) return;
 
         Point previousPosition = new Point(x, y);
@@ -151,7 +154,6 @@ public class Player extends GameObject {
     public void usePickUp() {
         if (pickUpSlot != null) {
             pickUpSlot.use(this, gameObjects);
-            pickUpSlot = null;
         }
     }
 

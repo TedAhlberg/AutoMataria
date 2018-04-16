@@ -34,6 +34,7 @@ public class EraserPickup extends InstantPickup {
                 ((Trail) gameObject).remove(new Rectangle(gridSize));
             }
         }
+        player.setPickUp(null);
     }
 
     public void render(Graphics2D g) {
