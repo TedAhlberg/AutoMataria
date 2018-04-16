@@ -66,22 +66,8 @@ public class TestUI {
         btnStartServer.addActionListener(e -> {
             updateAllVariables();
             System.out.println(toString());
-            GameMap map = new GameMap();
-            map.setBackground("resources/Stars.png");
-            map.setMusicTrack("resources/Music/AM-GameTrack.mp3");
-            map.setPlayers(players);
-            map.setPlayerSpeed(playerSpeedTick);
-            map.setGrid(new Dimension(mapWidth, mapHeight));
-            Wall wall = new Wall(mapWallColor, mapWallBorderColor);
-            int width = mapWidth * Game.GRID_PIXEL_SIZE;
-            int height = mapHeight * Game.GRID_PIXEL_SIZE;
-            wall.add(new Rectangle(0, 0, Game.GRID_PIXEL_SIZE, width));
-            wall.add(new Rectangle(height - Game.GRID_PIXEL_SIZE, 0, Game.GRID_PIXEL_SIZE, width));
-            wall.add(new Rectangle(0, 0, height, Game.GRID_PIXEL_SIZE));
-            wall.add(new Rectangle(0, height - Game.GRID_PIXEL_SIZE, height, Game.GRID_PIXEL_SIZE));
-            GameObject[] startingObjects = {wall};
-            map.setStartingGameObjects(startingObjects);
-            if (server == null) server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, map);
+            if (server == null)
+                server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, Maps.getInstance().get(gameMap));
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
