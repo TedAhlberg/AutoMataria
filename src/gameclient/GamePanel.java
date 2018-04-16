@@ -32,6 +32,12 @@ public class GamePanel extends JComponent {
     private Function<Integer, Integer> calculateInterpolation = x -> 0;
     private GameState gameState = GameState.Warmup;
     private double playerReadyPercentage;
+    private Dimension windowSize;
+
+    public GamePanel(Dimension windowSize) {
+        this.windowSize = windowSize;
+        setSize(windowSize);
+    }
 
     public void start(double scale, int framesPerSecond) {
         this.scale = scale;
@@ -72,17 +78,25 @@ public class GamePanel extends JComponent {
 
     public void setGrid(Dimension gridSize) {
         if (gridSize != null) {
-            int size = Math.min(getWidth(), getHeight());
-            Graphics2D g2 = createGridBuffer();
+            int forceSize = Math.min(windowSize.width, windowSize.height);
+            int gridWidth = forceSize / gridSize.width;
+            int gridHeight = forceSize / gridSize.height;
+            int width = gridWidth * gridSize.width;
+            int height = gridHeight * gridSize.height;
+            Dimension panelSize = new Dimension(width, height);
+
+            setSize(panelSize);
+            Graphics2D g2 = createGridBuffer(panelSize);
             g2.setPaint(new Color(1, 1, 1, 0.05f));
-            int spaceWidth = size / gridSize.width;
-            int spaceHeight = size / gridSize.height;
-            for (int i = 0; i <= spaceWidth * gridSize.width; i += spaceWidth) {
-                g2.drawLine(i, 0, i, size);
+
+            for (int i = 0; i <= width; i += gridWidth) {
+                g2.drawLine(i, 0, i, height);
             }
-            for (int i = 0; i <= spaceHeight * gridSize.height; i += spaceHeight) {
-                g2.drawLine(0, i, size, i);
+
+            for (int i = 0; i <= height; i += gridHeight) {
+                g2.drawLine(0, i, width, i);
             }
+
             g2.dispose();
         }
     }
@@ -259,11 +273,11 @@ public class GamePanel extends JComponent {
             g2.drawImage(gridBuffer, 0, 0, getWidth(), getHeight(), null);
     }
 
-    private Graphics2D createGridBuffer() {
+    private Graphics2D createGridBuffer(Dimension size) {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = env.getDefaultScreenDevice();
         GraphicsConfiguration config = device.getDefaultConfiguration();
-        gridBuffer = config.createCompatibleImage(getWidth(), getHeight(), Transparency.TRANSLUCENT);
+        gridBuffer = config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
         return (Graphics2D) gridBuffer.getGraphics();
     }
 
