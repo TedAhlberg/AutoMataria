@@ -54,17 +54,10 @@ public class Player extends GameObject {
         }
         if (dead) return;
 
-        Point previousPosition = new Point(x, y);
-
         updateDirection();
         move(speed);
-        boolean hasTeleported = teleportIfOutsideMap();
-        if (!hasTeleported) {
-            Point newPosition = new Point(x, y);
-            trail.grow(previousPosition, newPosition);
-        }
 
-        if (!invincible) checkCollisions();
+        checkCollisions();
     }
 
     private boolean teleportIfOutsideMap() {
@@ -96,13 +89,11 @@ public class Player extends GameObject {
 
         if (inputQueue.isEmpty()) return;
 
-        Point previous = new Point(x, y);
         switch (direction) {
             case Up:
                 for (int i = 0; i < speed; i++) {
                     if ((y - i) % Game.GRID_PIXEL_SIZE == 0) {
-                        y -= i;
-                        trail.grow(previous, new Point(x, y));
+                        move(i);
                         previousDirection = direction;
                         direction = inputQueue.remove();
                         break;
@@ -112,8 +103,7 @@ public class Player extends GameObject {
             case Down:
                 for (int i = 0; i < speed; i++) {
                     if ((y + i) % Game.GRID_PIXEL_SIZE == 0) {
-                        y += i;
-                        trail.grow(previous, new Point(x, y));
+                        move(i);
                         previousDirection = direction;
                         direction = inputQueue.remove();
                         break;
@@ -123,8 +113,7 @@ public class Player extends GameObject {
             case Left:
                 for (int i = 0; i < speed; i++) {
                     if ((x - i) % Game.GRID_PIXEL_SIZE == 0) {
-                        x -= i;
-                        trail.grow(previous, new Point(x, y));
+                        move(i);
                         previousDirection = direction;
                         direction = inputQueue.remove();
                         break;
@@ -134,8 +123,7 @@ public class Player extends GameObject {
             case Right:
                 for (int i = 0; i < speed; i++) {
                     if ((x + i) % Game.GRID_PIXEL_SIZE == 0) {
-                        x += i;
-                        trail.grow(previous, new Point(x, y));
+                        move(i);
                         previousDirection = direction;
                         direction = inputQueue.remove();
                         break;
@@ -150,6 +138,7 @@ public class Player extends GameObject {
     }
 
     private void move(int amount) {
+        Point previousPosition = new Point(x, y);
         switch (direction) {
             case Up:
                 y -= amount;
@@ -164,6 +153,11 @@ public class Player extends GameObject {
                 x += amount;
                 break;
         }
+        boolean hasTeleported = teleportIfOutsideMap();
+        if (!hasTeleported) {
+            Point newPosition = new Point(x, y);
+            trail.grow(previousPosition, newPosition);
+        }
     }
 
     private void checkCollisions() {
@@ -173,12 +167,10 @@ public class Player extends GameObject {
                 if (otherPlayer.equals(this)) continue;
                 if (otherPlayer.getBounds().intersects(this.getBounds())) {
                     setDead(true);
-                    System.out.println(name + " HAS CRASHED WITH " + otherPlayer.getName());
                 }
             } else if (gameObject instanceof Wall) {
                 if (((Wall) gameObject).intersects(this.getBounds())) {
                     setDead(true);
-                    System.out.println(name + " HAS CRASHED INTO A WALL");
                 }
             } else if (gameObject instanceof InstantPickup) {
                 if (this.getBounds().intersects(gameObject.getBounds())) {
@@ -228,8 +220,13 @@ public class Player extends GameObject {
     }
 
     public void setDead(boolean dead) {
-        direction = Direction.Static;
-        this.dead = dead;
+        if (invincible) {
+            this.dead = false;
+        } else {
+            direction = Direction.Static;
+            this.dead = dead;
+            System.out.println(name + " HAS DIED");
+        }
     }
 
     public boolean isReady() {

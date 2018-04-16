@@ -4,6 +4,7 @@ import common.*;
 import gameclient.Game;
 import gameobjects.*;
 
+import javax.swing.text.Position;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -140,10 +141,10 @@ public class GameServer implements ClientListener {
             if (gameMapObject.getSpawnInterval() == 0) {
                 if (!gameObjects.contains(gameObject)) {
                     if (!intersectsAnyGameObject(gameObject.getBounds())) {
-                        System.out.println("Placing on map: " + gameObject);
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(gameObject.getX() - quarterGridPixel);
                         gameObject.setY(gameObject.getY() - quarterGridPixel);
+                        System.out.println("Placing on map (Instant): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
                         gameObjects.add(gameObject);
                     }
                 }
@@ -151,17 +152,17 @@ public class GameServer implements ClientListener {
             }
             if (gameMapObject.getTimer() <= 0) {
                 if (gameObjects.contains(gameObject)) {
-                    System.out.println("Removing from map (Timed out): " + gameObject);
+                    System.out.println("Removing from map (Timed out): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
                     gameObjects.remove(gameMapObject.getGameObject());
                     gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                 } else {
-                    System.out.println("Placing on map (Spawn time): " + gameObject);
                     if (gameMapObject.isSpawnRandom()) {
                         Point point = findRandomMapPosition();
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameObject.setX(point.x * Game.GRID_PIXEL_SIZE - quarterGridPixel);
-                        gameObject.setY(point.y * Game.GRID_PIXEL_SIZE - quarterGridPixel);
+                        gameObject.setX(point.x - quarterGridPixel);
+                        gameObject.setY(point.y - quarterGridPixel);
                     }
+                    System.out.println("Placing on map (Spawn time): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
                     gameObjects.add(gameObject);
                     gameMapObject.setTimer(gameMapObject.getVisibleTime());
                 }
@@ -306,15 +307,13 @@ public class GameServer implements ClientListener {
             player.setDirection(direction);
         } else if (value instanceof Action) {
             Player player = connectedClients.get(client);
-            if (state == GameState.Warmup) {
+            if (value == Action.UsePickup) {
+                player.usePickUp();
+            } else if (state == GameState.Warmup) {
                 if (value == Action.TogglePlayerColor) {
                     player.setColor(colors.exchangeColor(player.getColor()));
                 } else if (value == Action.ToggleReady) {
                     player.setReady(!player.isReady());
-                }
-            } else if (state == GameState.Running) {
-                if (value == Action.UsePickup) {
-                    player.usePickUp();
                 }
             }
         } else if (value instanceof String && !connectedClients.containsKey(client)) {

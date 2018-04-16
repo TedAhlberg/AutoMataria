@@ -75,7 +75,7 @@ public class GameMap implements Serializable {
     }
 
     public Dimension getGrid() {
-        return grid;
+        return new Dimension(grid);
     }
 
     public void setGrid(Dimension grid) {
