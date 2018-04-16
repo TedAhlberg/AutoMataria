@@ -15,5 +15,6 @@ public enum Action {
     GoLeft,
     GoRight,
     GoUp,
-    GoDown
+    GoDown, 
+    UsePickup
 }

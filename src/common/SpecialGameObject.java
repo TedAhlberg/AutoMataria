@@ -1,40 +1,40 @@
 package common;
 
-import java.awt.Rectangle;
 import java.io.Serializable;
 
 import gameobjects.GameObject;
 
 /**
  *
- * @author Dante Håkansson
- * @author Johannes Blüml
+ * @author Dante HÃ¥kansson
+ * @author Johannes Bluml
  *
  */
 
-public class GameMapObject implements Serializable {
-
-    private GameObject pickup;
+public class SpecialGameObject implements Serializable {
+    public static final long serialVersionUID = 1;
+    private GameObject gameObject;
     private int spawnInterval;
     private int spawnLimit;
-    private Rectangle spawnPosition;
     private boolean spawnRandom;
     private int visibletime;
     private int timer;
 
-    public GameMapObject(GameObject pickup, int spawnInterval, int spawnLimit, Rectangle spawnPosition,
+    public SpecialGameObject(GameObject gameObject) {
+        this(gameObject, 0, 0, false, 0);
+    }
+    public SpecialGameObject(GameObject gameObject, int spawnInterval, int spawnLimit,
             boolean spawnRandom, int visibletime) {
 
-        this.pickup = pickup;
+        this.gameObject = gameObject;
         this.spawnInterval = spawnInterval;
         this.spawnLimit = spawnLimit;
-        this.spawnPosition = spawnPosition;
         this.spawnRandom = spawnRandom;
         this.visibletime = visibletime;
     }
 
-    public GameObject getPickup() {
-        return pickup;
+    public GameObject getGameObject() {
+        return gameObject;
     }
 
     public int getSpawnInterval() {
@@ -43,10 +43,6 @@ public class GameMapObject implements Serializable {
 
     public int getSpawnLimit() {
         return spawnLimit;
-    }
-
-    public Rectangle getSpawnPosition() {
-        return spawnPosition;
     }
 
     public boolean isSpawnRandom() {

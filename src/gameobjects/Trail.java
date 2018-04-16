@@ -52,7 +52,7 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
         }
-        if (playerMovingRight) {
+        else if (playerMovingRight) {
             Polygon rectangle = new Polygon();
             rectangle.addPoint(previousPosition.x, previousPosition.y);
             rectangle.addPoint(previousPosition.x, previousPosition.y + player.getHeight());
@@ -60,7 +60,7 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
         }
-        if (playerMovingDown) {
+        else if (playerMovingDown) {
             Polygon rectangle = new Polygon();
             rectangle.addPoint(previousPosition.x, previousPosition.y);
             rectangle.addPoint(previousPosition.x + player.getWidth(), previousPosition.y);
@@ -68,7 +68,7 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
         }
-        if (playerMovingUp) {
+        else if (playerMovingUp) {
             newPosition.y = newPosition.y + player.getHeight();
             previousPosition.y = previousPosition.y + player.getHeight();
             Polygon rectangle = new Polygon();
@@ -82,5 +82,13 @@ public class Trail extends Wall {
 
     private void add(Polygon rectangle) {
         add(new Rectangle(rectangle.getBounds()));
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean equals(Object obj) {
+        return super.equals(obj) && player.equals(((Trail) obj).getPlayer());
     }
 }

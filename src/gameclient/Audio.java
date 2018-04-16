@@ -4,6 +4,8 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 
 /**
@@ -50,7 +52,7 @@ public class Audio implements Runnable {
     public static Audio getSound(String filename) {
     	Audio sound = null;
     	try {
-    		URL url = new File(filename).toURI().toURL();
+    		URL url = Resources.musicPath.resolve(filename).toUri().toURL();
     		sound = new Audio(url);
     	} catch(Exception e) {
     		System.out.println(e);

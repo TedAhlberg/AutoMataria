@@ -1,12 +1,9 @@
 package common;
 
 import gameclient.Game;
-import gameobjects.GameObject;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Random;
 
 /**
  * @author Johannes Blüml
@@ -17,8 +14,7 @@ public class GameMap implements Serializable {
     private int players, playerSpeed;
     private Dimension grid;
     private Point[] startingPositions;
-    private GameObject[] startingGameObjects;
-    private GameMapObject[] gameMapObjects;
+    private SpecialGameObject[] gameMapObjects;
 
     public String getName() {
         return name;
@@ -56,12 +52,12 @@ public class GameMap implements Serializable {
         return playerSpeed;
     }
 
-    public void setPlayerSpeed(double playerSpeed) {
-        this.playerSpeed = (int) Math.round(Game.GRID_PIXEL_SIZE * playerSpeed);
-    }
-
     public void setPlayerSpeed(int playerSpeed) {
         this.playerSpeed = playerSpeed;
+    }
+
+    public void setPlayerSpeed(double playerSpeed) {
+        this.playerSpeed = (int) Math.round(Game.GRID_PIXEL_SIZE * playerSpeed);
     }
 
     public Dimension getGrid() {
@@ -80,18 +76,15 @@ public class GameMap implements Serializable {
         this.startingPositions = startingPositions;
     }
 
-    public GameObject[] getStartingGameObjects() {
-        return startingGameObjects;
-    }
-
-    public void setStartingGameObjects(GameObject[] startingGameObjects) {
-        this.startingGameObjects = startingGameObjects;
-    }
-    public GameMapObject[] getGameMapObjects() {
+    public SpecialGameObject[] getGameMapObjects() {
+        if (gameMapObjects == null) {
+            return new SpecialGameObject[0];
+        }
         return gameMapObjects;
     }
-    public void setGameMapObjects(GameMapObject[] gameMapObjects) {
+
+    public void setGameMapObjects(SpecialGameObject[] gameMapObjects) {
         this.gameMapObjects = gameMapObjects;
     }
-    
+
 }
