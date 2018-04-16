@@ -1,7 +1,6 @@
 package gameobjects;
 
 import common.Direction;
-import common.ID;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.io.Serializable;
  */
 public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 2;
-    protected final int id;
+    protected int id = 0;
     protected int x, y, speed, width, height;
     protected Direction direction = Direction.Static;
 
@@ -22,7 +21,6 @@ public abstract class GameObject implements Serializable {
     public GameObject(int x, int y) {
         this.x = x;
         this.y = y;
-        this.id = ID.getNext();
     }
 
     public abstract void tick();
@@ -81,15 +79,19 @@ public abstract class GameObject implements Serializable {
         this.width = width;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
 
-    public boolean isAtSamePositionAs(GameObject o) {
-        return x == o.getX() && y == o.getY();
+    public boolean equals(Object obj) {
+        return obj instanceof GameObject && ((GameObject) obj).getId() == id;
     }
 
-    public boolean equals(Object o) {
-        return (o instanceof GameObject) && ((GameObject) o).id == this.id;
+    public int hashCode() {
+        return id;
     }
 }
