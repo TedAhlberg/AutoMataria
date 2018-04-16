@@ -26,7 +26,7 @@ import gameobjects.Player;
 public class SettingsScreen extends JPanel implements ActionListener {
 
     private GamePanel gamePanel;
-    private Player player;
+    Player player;
     private BufferedImage backgroundImage;
     private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
     private Font fontText = new Font("Orbitron", Font.BOLD, 20);
@@ -46,14 +46,14 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
 
     private JLabel lblUserName = new JLabel("USER: " + user);
-    private JLabel lblChangeUserName = new JLabel("CHANGE USERNAME");
+    private JLabel lblMusic = new JLabel("ON");
     private JLabel lblSettings = new JLabel("SETTINGS");
     private JLabel lblControls = new JLabel("CONTROLS");
     private JLabel lblSounds = new JLabel("SOUND");
     private Color color;
 
-    public SettingsScreen(GamePanel hgamePanel) {
-        this.gamePanel = gamePanel;
+    public SettingsScreen() {
+        Player player = new Player(fileChangePressed, null, null);
 
         setPreferredSize(new Dimension(500, 500));
 
@@ -79,28 +79,24 @@ public class SettingsScreen extends JPanel implements ActionListener {
         lblSounds.setForeground(Color.white);
         lblSounds.setBounds(30, 190, 300, 20);
 
+        lblMusic.setFont(fontText);
+        lblMusic.setForeground(color.white);
+
         btnChange.setWidth(60);
         btnChange.setHeight(25);
 
         btnChange.setMinimumSize(new Dimension(60, 25));
         btnChange.setPreferredSize(new Dimension(60, 25));
 
-        btnKeyBinder.setWidth(200);
-        btnKeyBinder.setHeight(15);
-
         btnMusic.setWidth(60);
         btnMusic.setHeight(25);
 
-        btnKeyBinder.setBounds(230, 155, 200, 15);
-        pnlKeyBinder.setForeground(null);
-
-        btnMusic.setBounds(30, 275, 120, 50);
-        btnChange.add(pnlKeyBinder);
+        btnMusic.setMinimumSize(new Dimension(60, 25));
+        btnMusic.setPreferredSize(new Dimension(60, 25));
 
         add(lblUserName);
-        // add(btnMusic);
-        // add(btnKeyBinder);
-        // add(lblSounds);
+        add(btnMusic);
+        add(lblMusic);
 
         add(lblSettings);
 
@@ -116,16 +112,16 @@ public class SettingsScreen extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-        pnlKeyBinder.setLocation(30, 300);
         g.setColor(Color.white);
         lblSettings.setLocation(10, 10);
         g.setFont(fontText);
         lblUserName.setLocation(30, 85);
-        lblChangeUserName.setLocation(30, 120);
         btnChange.setLocation(300, 85);
+        btnMusic.setLocation(30, 150);
+        lblMusic.setLocation(95, 150);
+
         lblControls.setLocation(30, 275);
-        g.setColor(color);
-        g.fillRect(30, 150, 20, 20);
+        pnlKeyBinder.setLocation(30, 300);
 
     }
 
@@ -136,23 +132,26 @@ public class SettingsScreen extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnKeyBinder) {
+        if (e.getSource() == btnMusic) {
+           
+            lblMusic.setText("OFF");
 
         }
 
         if (e.getSource() == btnChange) {
             user = JOptionPane.showInputDialog("Input new username");
 
-            lblUserName.setText("USER: " + user);
-            repaint();
+            if (user != null) {
+                lblUserName.setText("USER: " + user);
+                repaint();
+            }
         }
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        GamePanel gamePanel = new GamePanel();
-        frame.setPreferredSize(new Dimension(750, 750));
-        frame.add(new SettingsScreen(gamePanel));
+        frame.setPreferredSize(new Dimension(500, 750));
+        frame.add(new SettingsScreen());
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

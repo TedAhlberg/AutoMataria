@@ -19,7 +19,7 @@ public class StartTestGame {
         // Create a map
         GameMap map = new GameMap();
         map.setBackground("resources/Stars.png");
-        map.setMusicTrack("resources/Music/AM-trck1.mp3");
+        map.setMusicTrack("resources/Music/AM-GameTrack.mp3");
         map.setPlayerSpeed(0.25);
         map.setPlayers(5);
         map.setGrid(new Dimension(50, 50));

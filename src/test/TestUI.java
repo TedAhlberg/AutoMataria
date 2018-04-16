@@ -68,7 +68,7 @@ public class TestUI {
             System.out.println(toString());
             GameMap map = new GameMap();
             map.setBackground("resources/Stars.png");
-            map.setMusicTrack("resources/Music/AM-trck1.mp3");
+            map.setMusicTrack("resources/Music/AM-GameTrack.mp3");
             map.setPlayers(players);
             map.setPlayerSpeed(playerSpeedTick);
             map.setGrid(new Dimension(mapWidth, mapHeight));
