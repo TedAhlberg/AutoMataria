@@ -93,6 +93,7 @@ public class Wall extends GameObject {
      */
     public void render(Graphics2D g) {
         if (shape == null) return;
+
         g.setColor(color);
         g.fill(shape);
 
@@ -100,14 +101,5 @@ public class Wall extends GameObject {
             g.setColor(borderColor);
             g.draw(shape);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Wall{" +
-                "id=" + id +
-                ", color=" + color +
-                ", borderColor=" + borderColor +
-                '}';
     }
 }

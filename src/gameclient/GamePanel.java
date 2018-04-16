@@ -1,25 +1,29 @@
 package gameclient;
 
-import common.GameState;
 import gameobjects.GameObject;
 import gameobjects.Player;
+import common.GameState;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
  * @author Johannes Blüml
  */
 public class GamePanel extends JComponent {
-    private final ConcurrentHashMap<GameObject, Point> currentPositions = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<GameObject, Point> targetPositions = new ConcurrentHashMap<>();
-    private final CopyOnWriteArraySet<GameObject> gameObjects = new CopyOnWriteArraySet<>();
+    private final ConcurrentHashMap<Integer, Point> currentPositions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Point> targetPositions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, GameObject> gameObjects = new ConcurrentHashMap<>();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
     private Player player;
@@ -52,9 +56,9 @@ public class GamePanel extends JComponent {
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
         gameObjects.clear();
         for (GameObject updated : updatedGameObjects) {
-            gameObjects.add(updated);
+            gameObjects.put(updated.getId(), updated);
             if (interpolateMovement) {
-                targetPositions.put(updated, new Point(updated.getX(), updated.getY()));
+                targetPositions.put(updated.getId(), new Point(updated.getX(), updated.getY()));
             }
             if (updated.equals(player)) {
                 player = (Player) updated;
@@ -66,14 +70,18 @@ public class GamePanel extends JComponent {
         this.player = player;
     }
 
-    public void setBackground(String file) {
-        background = Resources.getImage(file);
+    public void setBackground(String filePath) {
+        try {
+            this.background = ImageIO.read(new File(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setGrid(Dimension gridSize) {
         if (gridSize != null) {
             int size = Math.min(getWidth(), getHeight());
-            Graphics2D g2 = createGridBuffer();
+            Graphics2D g2 = getGridBuffer();
             g2.setPaint(new Color(1, 1, 1, 0.05f));
             int spaceWidth = size / gridSize.width;
             int spaceHeight = size / gridSize.height;
@@ -105,8 +113,8 @@ public class GamePanel extends JComponent {
 
             // CALCULATE INTERPOLATION
             long ratio = timeSinceLastRender / timeBetweenRenders;
-            calculateInterpolation = playerMovementPerSecond ->
-                    (int) Math.ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
+            calculateInterpolation = playerMovementPerSecond -> (int) Math
+                    .ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
             // RERENDER THE GAME
             paintImmediately(0, 0, getWidth(), getHeight());
 
@@ -134,38 +142,41 @@ public class GamePanel extends JComponent {
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
         drawGridBuffer(g2);
-
+        if (showDebugInfo)
+            drawDebugInfo(g2);
+        if (gameState == GameState.Countdown)
+            drawNewGameCountdown(g2);
+        if (gameState == GameState.GameOver)
+            drawGameOverInfo(g2);
         g2.scale(scale, scale);
 
-        for (GameObject gameObject : gameObjects) {
+        if (gameObjects.size() == 0)
+            return;
+        for (GameObject gameObject : gameObjects.values()) {
             if (gameObject instanceof Player && interpolateMovement) {
                 interpolate(gameObject);
             }
             gameObject.render(g2);
         }
-
-        if (showDebugInfo) drawDebugInfo(g2);
-        if (gameState == GameState.Countdown) drawNewGameCountdown(g2);
-        if (gameState == GameState.GameOver) drawGameOverInfo(g2);
-
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
         frameCounter += 1;
     }
 
     private void interpolate(GameObject gameObject) {
+        int id = gameObject.getId();
         int interpolation = calculateInterpolation.apply(((Player) gameObject).getSpeedPerSecond());
 
         // Get current position
-        Point current = currentPositions.get(gameObject);
+        Point current = currentPositions.get(id);
         if (current == null) {
             // Set current position from the gameObject if there none available yet
-            currentPositions.put(gameObject, new Point(gameObject.getX(), gameObject.getY()));
-            current = currentPositions.get(gameObject);
+            currentPositions.put(id, new Point(gameObject.getX(), gameObject.getY()));
+            current = currentPositions.get(id);
         }
 
         // Get target position
-        Point target = targetPositions.get(gameObject);
+        Point target = targetPositions.get(id);
 
         {
             // Sets a limit for how far behind the current position can be from target
@@ -179,7 +190,6 @@ public class GamePanel extends JComponent {
         }
 
         // Interpolate current position towards target position
-        //System.out.println("Target: " + target + " Current: " + current);
         current.setLocation(approach(current.x, target.x, interpolation), approach(current.y, target.y, interpolation));
         gameObject.setX(current.x);
         gameObject.setY(current.y);
@@ -196,24 +206,24 @@ public class GamePanel extends JComponent {
 
     private void drawDebugInfo(Graphics2D g2) {
         g2.setColor(new Color(255, 255, 255, 200));
-        g2.setFont(new Font("Orbitron", Font.PLAIN, 100));
+        g2.setFont(new Font("Orbitron", Font.PLAIN, 16));
 
         String state = "STATE: " + gameState.toString().toUpperCase() + " ";
         if (gameState == GameState.Warmup) {
-            state += Math.round(playerReadyPercentage * 100) + "% READY";
-            state += (player != null && player.isReady()) ? " | YOU ARE READY" : " | PRESS R TO READY UP";
+            state += (playerReadyPercentage * 100) + "% READY";
         }
-        g2.drawString(fps + " FPS | " + state, 40, 120);
+        g2.drawString(fps + " FPS | " + state, 40, 60);
 
-        String keyHelp = "TOGGLE COLOR : C | TOGGLE HELP : F1";
-        keyHelp += (interpolateMovement) ? " | INTERP ON : I" : " | INTERP OFF : I";
-        g2.drawString(keyHelp, 40, 240);
+        String keyHelp = "C=TOGGLE COLOR | F1=TOGGLE HELP";
+        keyHelp += (interpolateMovement) ? " | I=INTERP OFF" : " | I=INTERP ON";
+        keyHelp += (player != null && player.isReady()) ? " | R=UNREADY" : " | R=READY";
+        g2.drawString("KEYS " + keyHelp, 40, 90);
     }
 
     private void drawNewGameCountdown(Graphics2D g2) {
         String infoText = "GAME IS ABOUT TO BEGIN";
         String infoText2 = "GET READY";
-        Font font = new Font("Orbitron", Font.BOLD, 200);
+        Font font = new Font("Orbitron", Font.BOLD, 30);
         g2.setFont(font);
         g2.setColor(new Color(255, 255, 255, 200));
         FontMetrics fontMetrics = g2.getFontMetrics();
@@ -222,9 +232,9 @@ public class GamePanel extends JComponent {
         int width = g2.getClipBounds().width;
         int height = g2.getClipBounds().height;
         int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
-        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)) - 100);
+        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)) - 20);
         int infoText2Width = (int) ((width / 2) - (infoText2Bounds.getWidth() / 2));
-        int infoText2Height = (int) (((height / 2) - (infoText2Bounds.getHeight() / 2)) + 100);
+        int infoText2Height = (int) (((height / 2) - (infoText2Bounds.getHeight() / 2)) + 20);
 
         g2.drawString(infoText, infoTextWidth, infoTextHeight);
         g2.drawString(infoText2, infoText2Width, infoText2Height);
@@ -232,7 +242,7 @@ public class GamePanel extends JComponent {
 
     private void drawGameOverInfo(Graphics2D g2) {
         String infoText = "GAME OVER";
-        Font font = new Font("Orbitron", Font.BOLD, 300);
+        Font font = new Font("Orbitron", Font.BOLD, 30);
         g2.setFont(font);
         g2.setColor(new Color(255, 255, 255, 200));
         FontMetrics fontMetrics = g2.getFontMetrics();
@@ -259,11 +269,13 @@ public class GamePanel extends JComponent {
             g2.drawImage(gridBuffer, 0, 0, getWidth(), getHeight(), null);
     }
 
-    private Graphics2D createGridBuffer() {
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice device = env.getDefaultScreenDevice();
-        GraphicsConfiguration config = device.getDefaultConfiguration();
-        gridBuffer = config.createCompatibleImage(getWidth(), getHeight(), Transparency.TRANSLUCENT);
+    private Graphics2D getGridBuffer() {
+        if (gridBuffer == null) {
+            GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice device = env.getDefaultScreenDevice();
+            GraphicsConfiguration config = device.getDefaultConfiguration();
+            gridBuffer = config.createCompatibleImage(getWidth(), getHeight(), Transparency.TRANSLUCENT);
+        }
         return (Graphics2D) gridBuffer.getGraphics();
     }
 
@@ -271,11 +283,8 @@ public class GamePanel extends JComponent {
         gameState = state;
     }
 
+
     public void setReadyPlayers(double readyPercentage) {
         playerReadyPercentage = readyPercentage;
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
     }
 }

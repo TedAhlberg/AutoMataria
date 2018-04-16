@@ -1,6 +1,7 @@
 package gameobjects;
 
-import common.*;
+import common.Direction;
+import common.GameMap;
 import gameclient.Game;
 
 import java.awt.*;
@@ -19,20 +20,19 @@ public class Player extends GameObject {
     private Color color;
     private boolean dead, ready, invincible;
     private Direction previousDirection;
+    private int speedPerSecond;
     private Pickup pickUpSlot;
-    private int tickRate;
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
+        this.invincible = true;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;
-        invincible = true;
-        color = Color.LIGHT_GRAY;
-        width = Game.GRID_PIXEL_SIZE;
-        height = Game.GRID_PIXEL_SIZE;
-        previousDirection = direction;
-        trail = new Trail(this);
-        trail.setId(ID.getNext());
+        this.color = Color.LIGHT_GRAY;
+        this.width = Game.GRID_PIXEL_SIZE;
+        this.height = Game.GRID_PIXEL_SIZE;
+        this.previousDirection = direction;
+        this.trail = new Trail(this);
     }
 
     public void render(Graphics2D g) {
@@ -44,12 +44,14 @@ public class Player extends GameObject {
         String displayName = name.toUpperCase();
         FontMetrics fontMetrics = g.getFontMetrics(font);
         int stringWidth = fontMetrics.stringWidth(displayName);
-        if (dead) displayName += " (DEAD)";
+        if (dead)
+            displayName += " (DEAD)";
         g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
     }
 
     public void tick() {
-        if (dead) return;
+        if (dead)
+            return;
 
         Point previousPosition = new Point(x, y);
 
@@ -61,7 +63,8 @@ public class Player extends GameObject {
             trail.grow(previousPosition, newPosition);
         }
 
-        if (!invincible) checkCollisions();
+        if (!invincible)
+            checkCollisions();
     }
 
     private boolean teleportIfOutsideMap() {
@@ -85,13 +88,15 @@ public class Player extends GameObject {
 
     private void updateDirection() {
         previousDirection = direction;
-        if (inputQueue.isEmpty()) return;
+        if (inputQueue.isEmpty())
+            return;
 
         while (inputQueue.peek() == direction) {
             inputQueue.remove();
         }
 
-        if (inputQueue.isEmpty()) return;
+        if (inputQueue.isEmpty())
+            return;
 
         if (x % Game.GRID_PIXEL_SIZE == 0 && y % Game.GRID_PIXEL_SIZE == 0) {
             previousDirection = direction;
@@ -101,18 +106,18 @@ public class Player extends GameObject {
 
     private void move() {
         switch (direction) {
-            case Up:
-                y -= speed;
-                break;
-            case Down:
-                y += speed;
-                break;
-            case Left:
-                x -= speed;
-                break;
-            case Right:
-                x += speed;
-                break;
+        case Up:
+            y -= speed;
+            break;
+        case Down:
+            y += speed;
+            break;
+        case Left:
+            x -= speed;
+            break;
+        case Right:
+            x += speed;
+            break;
         }
     }
 
@@ -130,36 +135,13 @@ public class Player extends GameObject {
                     setDead(true);
                     System.out.println(name + " HAS CRASHED INTO A WALL");
                 }
-            } else if (gameObject instanceof Pickup) {
+            } else if(gameObject instanceof Pickup) {
                 if (this.getBounds().intersects(gameObject.getBounds())) {
                     this.setPickUp((Pickup) gameObject);
                     gameObjects.remove(gameObject);
                 }
-            }
+            }   
         }
-    }
-
-    public void usePickUp() {
-        if (pickUpSlot != null) {
-            pickUpSlot.use(this);
-            pickUpSlot = null;
-        }
-    }
-
-    public void setInvincible(boolean invincible) {
-        this.invincible = invincible;
-    }
-
-    public void setDirection(Direction direction) {
-        inputQueue.add(direction);
-    }
-
-    public void setTickRate(int tickRate) {
-        this.tickRate = tickRate;
-    }
-
-    public void setPickUp(Pickup pickUp) {
-        this.pickUpSlot = pickUp;
     }
 
     public boolean isDead() {
@@ -171,12 +153,12 @@ public class Player extends GameObject {
         this.dead = dead;
     }
 
-    public boolean isReady() {
-        return ready;
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
     }
 
-    public void setReady(boolean ready) {
-        this.ready = ready;
+    public void setDirection(Direction direction) {
+        inputQueue.add(direction);
     }
 
     public Direction getPreviousDirection() {
@@ -198,32 +180,40 @@ public class Player extends GameObject {
     }
 
     public int getSpeedPerSecond() {
-        return (1000 / tickRate) * speed;
+        return speedPerSecond;
+    }
+
+    public void setSpeedPerSecond(int speedPerSecond) {
+        this.speedPerSecond = speedPerSecond;
     }
 
     public Trail getTrail() {
         return trail;
     }
 
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public void setPickUp(Pickup pickUp) {
+        this.pickUpSlot = pickUp;
+    }
+
+    public void usePickUp() {
+        if (pickUpSlot != null) {
+            pickUpSlot.use(this);
+        }
+    }
+
     @Override
     public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", x=" + x +
-                ", y=" + y +
-                ", speed=" + speed +
-                ", width=" + width +
-                ", height=" + height +
-                ", direction=" + direction +
-                ", name='" + name + '\'' +
-                ", trail=" + trail +
-                ", color=" + color +
-                ", dead=" + dead +
-                ", ready=" + ready +
-                ", invincible=" + invincible +
-                ", previousDirection=" + previousDirection +
-                ", pickUpSlot=" + pickUpSlot +
-                ", tickRate=" + tickRate +
-                '}';
+        return "Player{" + "name='" + name + '\'' + ", color=" + color + ", dead=" + dead + ", ready=" + ready
+                + ", previousDirection=" + previousDirection + ", speedPerSecond=" + speedPerSecond + ", id=" + id
+                + ", x=" + x + ", y=" + y + ", speed=" + speed + ", width=" + width + ", height=" + height
+                + ", direction=" + direction + '}';
     }
 }

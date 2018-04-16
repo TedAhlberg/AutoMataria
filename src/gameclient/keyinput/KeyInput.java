@@ -42,9 +42,6 @@ public class KeyInput implements KeyEventDispatcher {
             game.onKeyPress(Direction.Down);
             lastKey = KeyEvent.VK_DOWN;
         }
-        else if(key == KeyEvent.VK_SPACE) {
-            game.onKeyPress(Action.UsePickup);
-        }
 
         // ExitGame
         else if (key == KeyEvent.VK_ESCAPE) {
