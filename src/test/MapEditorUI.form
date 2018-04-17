@@ -310,6 +310,7 @@
                       <model>
                         <item value="gameobjects.Wall"/>
                         <item value="gameobjects.pickups.SelfSpeedPickup"/>
+                        <item value="gameobjects.pickups.SlowEnemiesPickup"/>
                         <item value="gameobjects.pickups.EraserPickup"/>
                       </model>
                     </properties>

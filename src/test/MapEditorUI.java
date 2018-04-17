@@ -263,10 +263,6 @@ public class MapEditorUI {
 
     private void updateGamePanel() {
         if (gamePanel == null) return;
-        int width = currentMap.getGrid().width * Game.GRID_PIXEL_SIZE;
-        int height = currentMap.getGrid().height * Game.GRID_PIXEL_SIZE;
-        double scale = Math.min((double) gamePanel.getWidth() / width, (double) gamePanel.getHeight() / height);
-        gamePanel.setScale(scale);
         gamePanel.setGrid(currentMap.getGrid());
 
         ArrayList<GameObject> gameObjects = new ArrayList<>();
@@ -323,7 +319,7 @@ public class MapEditorUI {
         gameGridPanel = new JPanel(new GridLayout(1, 1));
         gameGridPanel.add(gamePanel);
         gamePanel.toggleDebugInfo();
-        gamePanel.start(1.0, 6);
+        gamePanel.start(6);
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 
@@ -635,6 +631,7 @@ public class MapEditorUI {
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("gameobjects.Wall");
         defaultComboBoxModel1.addElement("gameobjects.pickups.SelfSpeedPickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.SlowEnemiesPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.EraserPickup");
         gameObjectComboBox.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();

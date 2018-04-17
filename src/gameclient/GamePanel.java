@@ -9,17 +9,21 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.*;
-import java.util.function.Function;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
+ * GamePanel is a custom swing component that displays the game
+ * GameObjects can be sent to it and they will be rendered on the component
+ *
+ * Related requirements:
+ * AF043, Spelplan
+ * SF002, Visa spelet
+ *
  * @author Johannes Blüml
  */
 public class GamePanel extends JComponent {
-    private final ConcurrentHashMap<GameObject, Point> currentPositions = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<GameObject, Point> targetPositions = new ConcurrentHashMap<>();
     private final CopyOnWriteArraySet<GameObject> gameObjects = new CopyOnWriteArraySet<>();
+    private Interpolation interpolation;
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
     private Player player;
@@ -29,25 +33,37 @@ public class GamePanel extends JComponent {
     private long timeBetweenRenders;
     private int fps, frameCounter;
     private boolean interpolateMovement = true, showDebugInfo = true;
-    private Function<Integer, Integer> calculateInterpolation = x -> 0;
     private GameState gameState = GameState.Warmup;
     private double playerReadyPercentage;
     private Dimension windowSize;
 
-    public GamePanel(Dimension windowSize) {
-        this.windowSize = windowSize;
-        setSize(windowSize);
+    /**
+     * The GamePanel will always try to match the provided size depending on the grid size of the game
+     *
+     * @param size Size of the GamePanel
+     */
+    public GamePanel(Dimension size) {
+        this.windowSize = size;
+        setSize(size);
     }
 
-    public void start(double scale, int framesPerSecond) {
-        this.scale = scale;
-        timeBetweenRenders = (1000 / framesPerSecond) * 1000000;
+    /**
+     * Starts the game loop with the provided FPS
+     *
+     * @param maxFPS Maximum frames per second to render each second
+     */
+    public void start(int maxFPS) {
+        timeBetweenRenders = (1000 / maxFPS) * 1000000;
+        interpolation = new Interpolation(timeBetweenRenders);
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop());
         gameLoopThread.start();
         gameLoopThread.setPriority(Thread.MAX_PRIORITY);
     }
 
+    /**
+     * Stops the game loop
+     */
     public void stop() {
         gameLoopRunning = false;
         gameLoopThread = null;
@@ -55,27 +71,32 @@ public class GamePanel extends JComponent {
         gridBuffer = null;
     }
 
+    /**
+     * Updates the gameobjects that are visible on the panel
+     * Current objects are removed and the updated objects are added again
+     *
+     * @param updatedGameObjects Collection of updated GameObjects
+     */
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
         gameObjects.clear();
         for (GameObject updated : updatedGameObjects) {
             gameObjects.add(updated);
-            if (interpolateMovement) {
-                targetPositions.put(updated, new Point(updated.getX(), updated.getY()));
-            }
             if (updated.equals(player)) {
                 player = (Player) updated;
+            }
+            if (updated instanceof Player && interpolateMovement) {
+                interpolation.addTarget(updated);
             }
         }
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public void setBackground(String file) {
-        background = Resources.getImage(file);
-    }
-
+    /**
+     * Changes the grid that is displayed above the background
+     * Also note that this method will resize the panel in some cases
+     * to display the grid evenly
+     *
+     * @param gridSize Amount of vertical and horizontal grid lines to draw
+     */
     public void setGrid(Dimension gridSize) {
         if (gridSize != null) {
             int forceSize = Math.min(windowSize.width, windowSize.height);
@@ -86,7 +107,8 @@ public class GamePanel extends JComponent {
             Dimension panelSize = new Dimension(width, height);
 
             setSize(panelSize);
-            Graphics2D g2 = createGridBuffer(panelSize);
+            gridBuffer = createCompatibleImage(panelSize);
+            Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
             g2.setPaint(new Color(1, 1, 1, 0.05f));
 
             for (int i = 0; i <= width; i += gridWidth) {
@@ -98,17 +120,17 @@ public class GamePanel extends JComponent {
             }
 
             g2.dispose();
+
+            // Calculate the scaling of GameObjects to the GamePanel size (Usually downscaling)
+            int gameObjectsWidth = gridSize.width * Game.GRID_PIXEL_SIZE;
+            int gameObjectsHeight = gridSize.height * Game.GRID_PIXEL_SIZE;
+            scale = Math.min((double) panelSize.width / gameObjectsWidth, (double) panelSize.height / gameObjectsHeight);
         }
     }
 
-    public void toggleInterpolation() {
-        interpolateMovement = !interpolateMovement;
-    }
-
-    public void toggleDebugInfo() {
-        showDebugInfo = !showDebugInfo;
-    }
-
+    /**
+     * The main game loop manages when it is time to render a new frame to the panel
+     */
     private void gameLoop() {
         long previousTime = System.nanoTime();
         int lastSecond = (int) (previousTime / 1000000000);
@@ -117,14 +139,14 @@ public class GamePanel extends JComponent {
             long timeSinceLastRender = nowTime - previousTime;
             previousTime = nowTime;
 
-            // CALCULATE INTERPOLATION
-            long ratio = timeSinceLastRender / timeBetweenRenders;
-            calculateInterpolation = playerMovementPerSecond ->
-                    (int) Math.ceil(ratio * (playerMovementPerSecond / (1000000000.0 / timeSinceLastRender)));
-            // RERENDER THE GAME
+            if (interpolateMovement) {
+                interpolation.createCalculation(timeSinceLastRender);
+            }
+
+            // Render the game to the panel
             paintImmediately(0, 0, getWidth(), getHeight());
 
-            // UPDATE FPS EACH SECOND
+            // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
             if (thisSecond > lastSecond) {
                 fps = frameCounter;
@@ -132,7 +154,7 @@ public class GamePanel extends JComponent {
                 lastSecond = thisSecond;
             }
 
-            // WAIT BEFORE CONTINUING WITH THE GAMELOOP
+            // Wait until timeBetweenRenders nanoseconds have elapsed since the render began
             while (nowTime - previousTime < timeBetweenRenders) {
                 Thread.yield();
                 try {
@@ -144,6 +166,12 @@ public class GamePanel extends JComponent {
         }
     }
 
+    /**
+     * Renders the game to the component
+     * This method is called in the gameLoop() method with paintImmediately()
+     *
+     * @param g Graphics object of the panel
+     */
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
@@ -153,7 +181,7 @@ public class GamePanel extends JComponent {
 
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player && interpolateMovement) {
-                interpolate(gameObject);
+                interpolation.interpolate(gameObject);
             }
             gameObject.render(g2);
         }
@@ -165,47 +193,6 @@ public class GamePanel extends JComponent {
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
         frameCounter += 1;
-    }
-
-    private void interpolate(GameObject gameObject) {
-        int interpolation = calculateInterpolation.apply(((Player) gameObject).getSpeedPerSecond());
-
-        // Get current position
-        Point current = currentPositions.get(gameObject);
-        if (current == null) {
-            // Set current position from the gameObject if there none available yet
-            currentPositions.put(gameObject, new Point(gameObject.getX(), gameObject.getY()));
-            current = currentPositions.get(gameObject);
-        }
-
-        // Get target position
-        Point target = targetPositions.get(gameObject);
-
-        {
-            // Sets a limit for how far behind the current position can be from target
-            int limit = 3 * Game.GRID_PIXEL_SIZE;
-            int xDiff = target.x - current.x;
-            int yDiff = target.y - current.y;
-            if (xDiff > limit || xDiff < -limit || yDiff > limit || yDiff < -limit) {
-                current.x = target.x;
-                current.y = target.y;
-            }
-        }
-
-        // Interpolate current position towards target position
-        //System.out.println("Target: " + target + " Current: " + current);
-        current.setLocation(approach(current.x, target.x, interpolation), approach(current.y, target.y, interpolation));
-        gameObject.setX(current.x);
-        gameObject.setY(current.y);
-    }
-
-    private int approach(int current, int target, int delta) {
-        int difference = target - current;
-        if (difference > delta)
-            return current + delta;
-        if (difference < -delta)
-            return current - delta;
-        return target;
     }
 
     private void drawDebugInfo(Graphics2D g2) {
@@ -259,6 +246,11 @@ public class GamePanel extends JComponent {
         g2.drawString(infoText, infoTextWidth, infoTextHeight);
     }
 
+    /**
+     * Draws the Background BufferedImage or just black color if no image is set
+     *
+     * @param g2 Graphics2D object to draw on
+     */
     private void drawBackground(Graphics2D g2) {
         if (background != null) {
             g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
@@ -268,17 +260,28 @@ public class GamePanel extends JComponent {
         }
     }
 
+    /**
+     * Draws the BufferedImage that contains the grid created in setGrid() method
+     *
+     * @param g2 Graphics2D object to draw on
+     */
     private void drawGridBuffer(Graphics2D g2) {
-        if (gridBuffer != null)
+        if (gridBuffer != null) {
             g2.drawImage(gridBuffer, 0, 0, getWidth(), getHeight(), null);
+        }
     }
 
-    private Graphics2D createGridBuffer(Dimension size) {
+    /**
+     * Creates a compatible BufferedImage that can be used to paint on
+     *
+     * @param size Dimension of the BufferedImage that is created
+     * @return A BufferedImage
+     */
+    private BufferedImage createCompatibleImage(Dimension size) {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = env.getDefaultScreenDevice();
         GraphicsConfiguration config = device.getDefaultConfiguration();
-        gridBuffer = config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
-        return (Graphics2D) gridBuffer.getGraphics();
+        return config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
     }
 
     public void setGameState(GameState state) {
@@ -289,7 +292,19 @@ public class GamePanel extends JComponent {
         playerReadyPercentage = readyPercentage;
     }
 
-    public void setScale(double scale) {
-        this.scale = scale;
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setBackground(String file) {
+        background = Resources.getImage(file);
+    }
+
+    public void toggleInterpolation() {
+        interpolateMovement = !interpolateMovement;
+    }
+
+    public void toggleDebugInfo() {
+        showDebugInfo = !showDebugInfo;
     }
 }

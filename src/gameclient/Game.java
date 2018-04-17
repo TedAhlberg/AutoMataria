@@ -57,10 +57,7 @@ public class Game {
                     System.out.println("CLIENT: Got MAP from server: " + map.getName());
                     gamePanel.setBackground(map.getBackground());
                     gamePanel.setGrid(map.getGrid());
-                    int width = map.getGrid().width * Game.GRID_PIXEL_SIZE;
-                    int height = map.getGrid().height * Game.GRID_PIXEL_SIZE;
-                    double scale = Math.min((double) gamePanel.getWidth() / width, (double) gamePanel.getHeight() / height);
-                    gamePanel.start(scale, framesPerSecond);
+                    gamePanel.start(framesPerSecond);
                     backgroundMusic = Audio.getSound(map.getMusicTrack());
                     backgroundMusic.play(99);
                 } else if (data instanceof GameServerUpdate) {
