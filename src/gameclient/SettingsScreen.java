@@ -7,9 +7,7 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,18 +23,18 @@ import gameobjects.Player;
 
 public class SettingsScreen extends JPanel implements ActionListener {
 
-    private GamePanel gamePanel;
-    Player player;
+
+    
     private BufferedImage backgroundImage;
     private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
     private Font fontText = new Font("Orbitron", Font.BOLD, 20);
 
-    private String fileKeyBindPressed = "images/SetKeyBinding_Pressed.png";
-    private String fileMusicPressed = "images/Music_Pressed.png";
-    private String fileMusicUnpressed = "images/Music_Unpressed.png";
-    private String fileKeyBindUnpressed = "images/SetKeyBinding_Unpressed.png";
-    private String fileChangePressed = "images/Change_Pressed.png";
-    private String fileChangeUnpressed = "images/Change_Unpressed.png";
+    private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
+    private String fileMusicPressed = "Music_Pressed.png";
+    private String fileMusicUnpressed = "Music_Unpressed.png";
+    private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
+    private String fileChangePressed = "Change_Pressed.png";
+    private String fileChangeUnpressed = "Change_Unpressed.png";
     private String user = "Testperson";
     private Buttons btnChange = new Buttons(fileChangePressed, fileChangeUnpressed);
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
@@ -53,15 +51,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private Color color;
 
     public SettingsScreen() {
-        Player player = new Player(fileChangePressed, null, null);
 
         setPreferredSize(new Dimension(500, 500));
 
-        try {
-            backgroundImage = ImageIO.read(new File("resources/Stars.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        backgroundImage = Resources.getImage("Stars.png");
+
         lblSettings.setFont(fontHead);
         lblSettings.setForeground(Color.white);
 
@@ -128,12 +122,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
     public void addListeners() {
         btnKeyBinder.addActionListener(this);
         btnChange.addActionListener(this);
-
+        btnMusic.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
-           
+
             lblMusic.setText("OFF");
 
         }
@@ -147,6 +141,8 @@ public class SettingsScreen extends JPanel implements ActionListener {
             }
         }
     }
+
+    
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
