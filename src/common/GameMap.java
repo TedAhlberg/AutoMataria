@@ -16,6 +16,20 @@ public class GameMap implements Serializable {
     private Point[] startingPositions;
     private SpecialGameObject[] gameMapObjects;
 
+    public GameMap() {
+    }
+
+    public GameMap(String name, String background, String musicTrack, int players, int playerSpeed, Dimension grid, Point[] startingPositions, SpecialGameObject[] gameMapObjects) {
+        this.name = name;
+        this.background = background;
+        this.musicTrack = musicTrack;
+        this.players = players;
+        this.playerSpeed = playerSpeed;
+        this.grid = grid;
+        this.startingPositions = startingPositions;
+        this.gameMapObjects = gameMapObjects;
+    }
+
     public String getName() {
         return name;
     }
@@ -61,7 +75,7 @@ public class GameMap implements Serializable {
     }
 
     public Dimension getGrid() {
-        return grid;
+        return new Dimension(grid);
     }
 
     public void setGrid(Dimension grid) {
@@ -69,6 +83,9 @@ public class GameMap implements Serializable {
     }
 
     public Point[] getStartingPositions() {
+        if (startingPositions == null) {
+            return new Point[0];
+        }
         return startingPositions;
     }
 

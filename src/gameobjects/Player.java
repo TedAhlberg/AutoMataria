@@ -49,19 +49,15 @@ public class Player extends GameObject {
     }
 
     public void tick() {
+        if (pickUpSlot != null) {
+            pickUpSlot.tick();
+        }
         if (dead) return;
 
-        Point previousPosition = new Point(x, y);
-
         updateDirection();
-        move();
-        boolean hasTeleported = teleportIfOutsideMap();
-        if (!hasTeleported) {
-            Point newPosition = new Point(x, y);
-            trail.grow(previousPosition, newPosition);
-        }
+        move(speed);
 
-        if (!invincible) checkCollisions();
+        checkCollisions();
     }
 
     private boolean teleportIfOutsideMap() {
@@ -93,26 +89,74 @@ public class Player extends GameObject {
 
         if (inputQueue.isEmpty()) return;
 
-        if (x % Game.GRID_PIXEL_SIZE == 0 && y % Game.GRID_PIXEL_SIZE == 0) {
-            previousDirection = direction;
-            direction = inputQueue.remove();
-        }
-    }
-
-    private void move() {
         switch (direction) {
             case Up:
-                y -= speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((y - i) % Game.GRID_PIXEL_SIZE == 0) {
+                        move(i);
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Down:
-                y += speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((y + i) % Game.GRID_PIXEL_SIZE == 0) {
+                        move(i);
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Left:
-                x -= speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((x - i) % Game.GRID_PIXEL_SIZE == 0) {
+                        move(i);
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
             case Right:
-                x += speed;
+                for (int i = 0; i < speed; i++) {
+                    if ((x + i) % Game.GRID_PIXEL_SIZE == 0) {
+                        move(i);
+                        previousDirection = direction;
+                        direction = inputQueue.remove();
+                        break;
+                    }
+                }
                 break;
+            default:
+                previousDirection = direction;
+                direction = inputQueue.remove();
+        }
+
+    }
+
+    private void move(int amount) {
+        Point previousPosition = new Point(x, y);
+        switch (direction) {
+            case Up:
+                y -= amount;
+                break;
+            case Down:
+                y += amount;
+                break;
+            case Left:
+                x -= amount;
+                break;
+            case Right:
+                x += amount;
+                break;
+        }
+        boolean hasTeleported = teleportIfOutsideMap();
+        if (!hasTeleported) {
+            Point newPosition = new Point(x, y);
+            trail.grow(previousPosition, newPosition);
         }
     }
 
@@ -123,26 +167,35 @@ public class Player extends GameObject {
                 if (otherPlayer.equals(this)) continue;
                 if (otherPlayer.getBounds().intersects(this.getBounds())) {
                     setDead(true);
-                    System.out.println(name + " HAS CRASHED WITH " + otherPlayer.getName());
                 }
             } else if (gameObject instanceof Wall) {
                 if (((Wall) gameObject).intersects(this.getBounds())) {
                     setDead(true);
-                    System.out.println(name + " HAS CRASHED INTO A WALL");
+                }
+            } else if (gameObject instanceof InstantPickup) {
+                if (this.getBounds().intersects(gameObject.getBounds())) {
+                    ((InstantPickup) gameObject).use(this, gameObjects);
+                    gameObjects.remove(gameObject);
+                    System.out.println("Player " + name + "used pickup " + gameObject);
                 }
             } else if (gameObject instanceof Pickup) {
                 if (this.getBounds().intersects(gameObject.getBounds())) {
                     this.setPickUp((Pickup) gameObject);
                     gameObjects.remove(gameObject);
+                    System.out.println("Player " + name + "picked up " + gameObject);
                 }
             }
         }
     }
 
+    public GameMap getCurrentMap() {
+        return currentMap;
+    }
+
     public void usePickUp() {
         if (pickUpSlot != null) {
-            pickUpSlot.use(this);
-            pickUpSlot = null;
+            pickUpSlot.use(this, gameObjects);
+            System.out.println("Player " + name + " used pickup " + pickUpSlot);
         }
     }
 
@@ -167,8 +220,13 @@ public class Player extends GameObject {
     }
 
     public void setDead(boolean dead) {
-        direction = Direction.Static;
-        this.dead = dead;
+        if (invincible) {
+            this.dead = false;
+        } else {
+            direction = Direction.Static;
+            this.dead = dead;
+            System.out.println(name + " HAS DIED");
+        }
     }
 
     public boolean isReady() {

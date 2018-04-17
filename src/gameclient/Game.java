@@ -32,8 +32,7 @@ public class Game {
 
         Window window = new Window(TITLE, windowSize);
 
-        gamePanel = new GamePanel();
-        gamePanel.setSize(window.getSize());
+        gamePanel = new GamePanel(window.getSize());
         window.add(gamePanel);
         window.pack();
 

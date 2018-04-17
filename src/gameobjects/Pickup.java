@@ -1,13 +1,18 @@
 package gameobjects;
 
 import gameclient.Game;
-import gameobjects.GameObject;
-import gameobjects.Player;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /*
  * @author Dante Håkansson
  */
 public abstract class Pickup extends GameObject {
+    private static final long serialVersionUID = 1;
+
+    public Pickup() {
+        this(0, 0);
+    }
 
     public Pickup(int x, int y) {
         super(x, y);
@@ -18,6 +23,6 @@ public abstract class Pickup extends GameObject {
     public void tick() {
     }
 
-    public abstract void use(Player player);
-    
+    public abstract void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects);
+
 }

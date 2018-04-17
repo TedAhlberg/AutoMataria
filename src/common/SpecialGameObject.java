@@ -17,20 +17,19 @@ public class SpecialGameObject implements Serializable {
     private int spawnInterval;
     private int spawnLimit;
     private boolean spawnRandom;
-    private int visibletime;
+    private int visibleTime;
     private int timer;
 
     public SpecialGameObject(GameObject gameObject) {
         this(gameObject, 0, 0, false, 0);
     }
-    public SpecialGameObject(GameObject gameObject, int spawnInterval, int spawnLimit,
-            boolean spawnRandom, int visibletime) {
 
+    public SpecialGameObject(GameObject gameObject, int spawnInterval, int spawnLimit, boolean spawnRandom, int visibleTime) {
         this.gameObject = gameObject;
         this.spawnInterval = spawnInterval;
         this.spawnLimit = spawnLimit;
         this.spawnRandom = spawnRandom;
-        this.visibletime = visibletime;
+        this.visibleTime = visibleTime;
     }
 
     public GameObject getGameObject() {
@@ -49,8 +48,8 @@ public class SpecialGameObject implements Serializable {
         return spawnRandom;
     }
 
-    public int getVisibletime() {
-        return visibletime;
+    public int getVisibleTime() {
+        return visibleTime;
     }
 
     public int getTimer() {
@@ -61,4 +60,7 @@ public class SpecialGameObject implements Serializable {
         this.timer = timer;
     }
 
+    public String toString() {
+        return gameObject.getClass().getName();
+    }
 }
