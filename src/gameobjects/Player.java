@@ -83,7 +83,7 @@ public class Player extends GameObject {
         previousDirection = direction;
         if (inputQueue.isEmpty()) return;
 
-        while (inputQueue.peek() == direction) {
+        while (inputQueue.peek() == direction || inputQueue.size() > 2) {
             inputQueue.remove();
         }
 
@@ -195,7 +195,6 @@ public class Player extends GameObject {
     public void usePickUp() {
         if (pickUpSlot != null) {
             pickUpSlot.use(this, gameObjects);
-            System.out.println("Player " + name + " used pickup " + pickUpSlot);
         }
     }
 
