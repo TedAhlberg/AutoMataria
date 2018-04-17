@@ -18,10 +18,31 @@ public class Resources {
     private static HashMap<String, BufferedImage> images = new HashMap<>();
     public static Path imagePath = FileSystems.getDefault().getPath("resources", "images");
     public static Path musicPath = FileSystems.getDefault().getPath("resources", "Music");
+    public static Path buttonPath = FileSystems.getDefault().getPath("resources", "images", "Buttons");
 
     private Resources() {
     }
 
+    public static BufferedImage getImage(Path path, String name) {
+
+        if (images.containsKey(name)) {
+            return images.get(name);
+        }
+        Path filePath = path.resolve(name);
+        try {
+            BufferedImage image = ImageIO.read(filePath.toFile());
+            images.put(name, image);
+            return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static BufferedImage getButtonImage(String name) {
+        return getImage(buttonPath,name);
+        
+    }
     public static BufferedImage getImage(String name) {
         if (images.containsKey(name)) {
             return images.get(name);
