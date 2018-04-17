@@ -11,6 +11,7 @@ import java.util.Arrays;
 import gameobjects.pickups.EraserPickup;
 import gameobjects.pickups.SelfSpeedPickup;
 import gameobjects.pickups.SlowEnemiesPickup;
+import gameobjects.pickups.SpeedEnemiesPickup;
 import common.Maps;
 
 /**
@@ -23,6 +24,7 @@ public class StartTestGame {
         System.out.println(map);
         SpecialGameObject[] gameMapObjects = Arrays.copyOf(map.getGameMapObjects(), map.getGameMapObjects().length + 1);
         gameMapObjects[gameMapObjects.length - 1] = new SpecialGameObject(new SlowEnemiesPickup(200, 200), 10000, 0, true, 15000);
+        gameMapObjects[gameMapObjects.length-1]= new SpecialGameObject(new SpeedEnemiesPickup(200,200),10000,0,true,15000);
         map.setGameMapObjects(gameMapObjects);
         // Start a game server
         new GameServer("AM-test-server", 32000, 50, 150, map);
