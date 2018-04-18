@@ -51,24 +51,21 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y + player.getHeight());
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
-        }
-        else if (playerMovingRight) {
+        } else if (playerMovingRight) {
             Polygon rectangle = new Polygon();
             rectangle.addPoint(previousPosition.x, previousPosition.y);
             rectangle.addPoint(previousPosition.x, previousPosition.y + player.getHeight());
             rectangle.addPoint(newPosition.x, newPosition.y + player.getHeight());
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
-        }
-        else if (playerMovingDown) {
+        } else if (playerMovingDown) {
             Polygon rectangle = new Polygon();
             rectangle.addPoint(previousPosition.x, previousPosition.y);
             rectangle.addPoint(previousPosition.x + player.getWidth(), previousPosition.y);
             rectangle.addPoint(newPosition.x + player.getWidth(), newPosition.y);
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
-        }
-        else if (playerMovingUp) {
+        } else if (playerMovingUp) {
             newPosition.y = newPosition.y + player.getHeight();
             previousPosition.y = previousPosition.y + player.getHeight();
             Polygon rectangle = new Polygon();
@@ -78,10 +75,6 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
         }
-    }
-
-    private void add(Polygon rectangle) {
-        add(new Rectangle(rectangle.getBounds()));
     }
 
     public Player getPlayer() {

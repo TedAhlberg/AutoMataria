@@ -1,8 +1,9 @@
 package gameobjects;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
+import java.awt.geom.*;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * A Wall is GameObject that has a shape that can be changed into any shape by adding or removing Rectangles
@@ -22,37 +23,70 @@ public class Wall extends GameObject {
         this(color, null);
     }
 
+    public Wall(Wall object) {
+        this(object.getColor(), object.getBorderColor());
+        this.shape = object.getShape();
+    }
+
     public Wall(Color color, Color borderColor) {
         this.color = color;
         this.borderColor = borderColor;
     }
 
     /**
-     * Adds a Rectangle object to be part of the Wall
+     * Adds a Shape object to be part of the Wall
      *
-     * @param rectangle Rectangle object to add to the Wall
+     * @param shape A Shape object to add to the Wall
      */
-    public void add(Rectangle rectangle) {
+    public void add(Shape shape) {
         Area area = new Area();
-        if (shape != null) {
-            area.add(new Area(shape));
+        if (this.shape != null) {
+            area.add(new Area(this.shape));
         }
-        area.add(new Area(rectangle));
-        shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
+        area.add(new Area(shape));
+        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
     }
 
     /**
-     * Removes a Rectangle shape from the wall. It is possible to poke holes in the wall using this method.
+     * Adds a Collection of Shape objects to be part of the Wall
      *
-     * @param rectangle Rectangle to remove from the Wall
+     * @param shape A Collection of Shape object to add to the Wall
      */
-    public void remove(Rectangle rectangle) {
+    public void add(Collection<Shape> shape) {
         Area area = new Area();
-        if (shape != null) {
-            area.add(new Area(shape));
+        if (this.shape != null) {
+            area.add(new Area(this.shape));
         }
-        area.subtract(new Area(rectangle));
-        shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
+        for (Shape s : shape) {
+            area.add(new Area(s));
+        }
+        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
+    }
+
+    /**
+     * Removes a Shape from the wall. It is possible to poke holes in the wall using this method.
+     *
+     * @param shape Shape to remove from the Wall
+     */
+    public void remove(Shape shape) {
+        if (this.shape == null) return;
+        Area area = new Area(this.shape);
+        area.subtract(new Area(shape));
+        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
+    }
+
+    /**
+     * Removes a Collection of shapes from the wall. It is possible to poke holes in the wall using this method.
+     *
+     * @param shape Collection of Shapes to remove from the Wall
+     */
+    public void remove(Collection<Shape> shape) {
+        if (shape == null) return;
+        Area area = new Area(this.shape);
+        for (Shape s : shape) {
+            area.subtract(new Area(s));
+        }
+        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
     }
 
     /**
@@ -98,6 +132,10 @@ public class Wall extends GameObject {
 
     public Color getBorderColor() {
         return borderColor;
+    }
+
+    public Shape getShape() {
+        return shape;
     }
 
     @Override
