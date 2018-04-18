@@ -28,12 +28,13 @@ public class Game {
     }
 
     public Game(String serverIP, int serverPort, Dimension windowSize, int framesPerSecond) {
+        System.setProperty("sun.java2d.opengl", "True");
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
 
         Window window = new Window(TITLE, windowSize);
 
         gamePanel = new GamePanel(window.getSize());
-        window.add(gamePanel);
+        window.setContentPane(gamePanel);
         window.pack();
 
         client = new GameServerConnection(new GameServerListener() {
@@ -96,7 +97,7 @@ public class Game {
             gamePanel.toggleDebugInfo();
         } else {
             client.send(action);
-        } 
+        }
     }
 
     public void onKeyPress(Direction direction) {
