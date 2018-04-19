@@ -19,11 +19,16 @@ public class SelfSpeedPickup extends Pickup {
     private boolean pickedUp = false;
 
     public SelfSpeedPickup() {
-        this(0, 0);
+        this(0, 0, 60);
+        
     }
 
-    public SelfSpeedPickup(int x, int y) {
+    public SelfSpeedPickup(int x, int y, int timer) {
         super(x, y);
+        this.timer = timer;
+    }
+    public SelfSpeedPickup(SelfSpeedPickup object) {
+       this(object.getX(), object.getY(), object.getTimer());
     }
 
     public void tick() {
@@ -44,8 +49,17 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        if(used) {
+            return;
+        }
         this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 2));
+        used = true;
+    }
+
+    public int getTimer() {
+        return timer;
+        
     }
 }

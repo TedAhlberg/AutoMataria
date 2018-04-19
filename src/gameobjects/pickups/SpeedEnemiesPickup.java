@@ -22,11 +22,12 @@ public class SpeedEnemiesPickup extends InstantPickup {
     private Player player;
 
     public SpeedEnemiesPickup() {
-        this(0, 0);
+        this(0, 0, 60);
     }
 
-    public SpeedEnemiesPickup(int x, int y) {
+    public SpeedEnemiesPickup(int x, int y, int timer) {
         super(x, y);
+       this.timer = timer;
     }
 
     public void tick() {
@@ -42,7 +43,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
             }
             
             player.setPickUp(null);
-            player = null;
+           // player = null;
         }
     }
 
@@ -60,7 +61,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void render(Graphics2D g) {
-        BufferedImage image = Resources.getImage("PlaceHolder.png");
+        BufferedImage image = Resources.getImage("EnemiesSpeedUp.png");
         g.drawImage(image, x, y, width, height, null);
 
     }
