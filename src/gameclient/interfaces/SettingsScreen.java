@@ -1,9 +1,11 @@
-package gameclient;
+package gameclient.interfaces;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -13,9 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import gameclient.Buttons;
+import gameclient.Resources;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
-import gameobjects.Player;
 
 /**
  * @author Erik Lundow
@@ -23,11 +26,11 @@ import gameobjects.Player;
 
 public class SettingsScreen extends JPanel implements ActionListener {
 
-
-    
+    private JPanel pnlHead = new JPanel(new GridBagLayout());
+    private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private BufferedImage backgroundImage;
     private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
-    private Font fontText = new Font("Orbitron", Font.BOLD, 20);
+    private Font fontText = new Font("Orbitron", Font.BOLD, 25);
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileMusicPressed = "Music_Pressed.png";
@@ -49,54 +52,72 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblControls = new JLabel("CONTROLS");
     private JLabel lblSounds = new JLabel("SOUND");
     private Color color;
+    private UserInterface userInterface;
 
-    public SettingsScreen() {
-
-        setPreferredSize(new Dimension(500, 500));
-
+    public SettingsScreen(UserInterface userInterface) {
+        this.userInterface = userInterface;
         backgroundImage = Resources.getImage("Stars.png");
+        // setLayout(new GridBagLayout());
+        pnlHead.setPreferredSize(new Dimension(500, 500));
+        pnlHead.setOpaque(false);
+        GridBagConstraints c = new GridBagConstraints();
 
+        // Add Headline
         lblSettings.setFont(fontHead);
         lblSettings.setForeground(Color.white);
+        c.gridy = 1;
+        c.gridx = 1;
+        c.weighty = 1;
+        c.weightx = 11;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        pnlHead.add(lblSettings, c);
 
+        // Add UserNamePnl
+        c = new GridBagConstraints();
+        c.gridy = 2;
+        c.gridx = 1;
+        c.weightx = 1;
+        c.weighty = 20;
+        c.anchor = GridBagConstraints.NORTH;
+
+        // lblUserName.setVerticalAlignment(SwingConstants.TOP);
+        lblUserName.setMaximumSize(new Dimension(60, 25));
         lblUserName.setFont(fontText);
         lblUserName.setForeground(Color.white);
+        pnlHead.add(lblUserName, c);
 
-        btnChange.setBounds(300, 85, 60, 25);
-        btnChange.setSize(100, 100);
+        c = new GridBagConstraints();
+        c.gridy = 2;
+        c.gridx = 2;
+        c.weightx = 10;
+        c.weighty = 20;
 
-        lblControls.setFont(fontText);
-        lblControls.setForeground(Color.WHITE);
-        lblControls.setBounds(30, 155, 300, 20);
-
-        lblSounds.setFont(fontText);
-        lblSounds.setForeground(Color.white);
-        lblSounds.setBounds(30, 190, 300, 20);
-
-        lblMusic.setFont(fontText);
-        lblMusic.setForeground(color.white);
-
+        c.anchor = GridBagConstraints.NORTHWEST;
+        // btnChange.setVerticalAlignment(SwingConstants.TOP);
         btnChange.setWidth(60);
         btnChange.setHeight(25);
+        pnlHead.add(btnChange, c);
 
-        btnChange.setMinimumSize(new Dimension(60, 25));
-        btnChange.setPreferredSize(new Dimension(60, 25));
+        c = new GridBagConstraints();
+        c.gridy = 3;
+        c.gridx = 1;
+        c.weightx = 11;
+        c.gridwidth = GridBagConstraints.REMAINDER;
 
-        btnMusic.setWidth(60);
-        btnMusic.setHeight(25);
+        System.out.println(pnlKeyBinder.getSize());
+        pnlHead.add(pnlKeyBinder, c);
 
-        btnMusic.setMinimumSize(new Dimension(60, 25));
-        btnMusic.setPreferredSize(new Dimension(60, 25));
+        add(pnlHead);
 
-        add(lblUserName);
-        add(btnMusic);
-        add(lblMusic);
-
-        add(lblSettings);
-
-        add(btnChange);
-        add(pnlKeyBinder);
-        add(lblControls);
+        // add(lblUserName);
+        // add(btnMusic);
+        // add(lblMusic);
+        //
+        // add(lblSettings);
+        //
+        // add(btnChange);
+        // add(pnlKeyBinder);
+        // add(lblControls);
 
         addListeners();
         repaint();
@@ -107,15 +128,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
         g.setColor(Color.white);
-        lblSettings.setLocation(10, 10);
+        // lblSettings.setLocation(10, 10);
         g.setFont(fontText);
-        lblUserName.setLocation(30, 85);
-        btnChange.setLocation(300, 85);
-        btnMusic.setLocation(30, 150);
-        lblMusic.setLocation(95, 150);
-
-        lblControls.setLocation(30, 275);
-        pnlKeyBinder.setLocation(30, 300);
+        // lblUserName.setLocation(30, 85);
+        // btnChange.setLocation(300, 85);
+        // btnMusic.setLocation(30, 150);
+        // lblMusic.setLocation(95, 150);
+        //
+        // lblControls.setLocation(30, 275);
+        // pnlKeyBinder.setLocation(30, 300);
 
     }
 
@@ -142,17 +163,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
     }
 
-    
-
     public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.setPreferredSize(new Dimension(500, 750));
-        frame.add(new SettingsScreen());
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        JFrame frame = new JFrame();
+//        frame.setPreferredSize(new Dimension(500, 750));
+//        frame.add(new SettingsScreen());
+//        frame.pack();
+//        frame.setLocationRelativeTo(null);
+//        frame.setVisible(true);
+//        // frame.setResizable(false);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }
 }
