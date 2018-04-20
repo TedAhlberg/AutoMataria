@@ -24,6 +24,9 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        if(taken) {
+            return;
+        }
         Dimension gridSize = player.getCurrentMap().getGrid();
         gridSize.setSize(gridSize.width * Game.GRID_PIXEL_SIZE, gridSize.height * Game.GRID_PIXEL_SIZE);
         for (GameObject gameObject : gameObjects) {
@@ -31,10 +34,15 @@ public class EraserPickup extends InstantPickup {
                 ((Trail) gameObject).remove(new Rectangle(gridSize));
             }
         }
-        player.setPickUp(null);
+        taken = true;
+        gameObjects.remove(this);
+        
     }
 
     public void render(Graphics2D g) {
+        if(taken) {
+            return;
+        }
         BufferedImage image = Resources.getImage("EraserPickup.png");
         g.drawImage(image, x, y, width, height, null);
 

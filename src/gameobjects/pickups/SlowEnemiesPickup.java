@@ -18,7 +18,7 @@ import gameobjects.Player;
 public class SlowEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
-    private int timer = 30;
+    private int timer;
     private ConcurrentLinkedQueue<GameObject> gameObjects;
     private Player player;
 
@@ -37,9 +37,10 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (player == null) {
+        if (!taken || used) {
             return;
         }
+        
         timer--;
         if (timer <= 0) {
             for (GameObject gameObject : gameObjects) {
@@ -47,28 +48,33 @@ public class SlowEnemiesPickup extends InstantPickup {
                     if (!gameObject.equals(player)) {
                         int speed = gameObject.getSpeed();
                         gameObject.setSpeed((int) (speed * 2));
+                        gameObjects.remove(this);
+                        used = true;
                     }
                 }
             }
-        }
-        player.setPickUp(null);
-        player = null;
+        }    
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        
+        if(taken) {
+            return;
+        }
+        
         this.player = player;
         this.gameObjects = gameObjects;
-
+        
+        
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player) {
                 if (!gameObject.equals(player)) {
                     int speed = gameObject.getSpeed();
                     gameObject.setSpeed((int) (speed * 0.5));
                 }
-
             }
         }
-
+        taken = true;
     }
 
     /**
