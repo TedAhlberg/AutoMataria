@@ -11,8 +11,8 @@ import gameobjects.Player;
 
 /**
  * 
- * @author Erik Lundow
- * Pickup som vid upplockning ökar alla motståndares hastighet.
+ * @author Erik Lundow Pickup som vid upplockning ökar alla motståndares
+ *         hastighet.
  *
  */
 public class SpeedEnemiesPickup extends InstantPickup {
@@ -32,6 +32,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
+
         if (!taken || !used)
             return;
 
@@ -45,6 +46,10 @@ public class SpeedEnemiesPickup extends InstantPickup {
                     System.out.println("blablabla");
                 }
             }
+
+            player.setPickUp(null);
+            // player = null;
+
         }
     }
 

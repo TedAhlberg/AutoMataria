@@ -268,6 +268,3 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/linux,macos,windows,eclipse,intellij,intellij+all,intellij+iml
-src/gameclient/GamePanel.java
-src/gameobjects/Player.java
-src/gameobjects/pickups/SelfSlowPickup.java

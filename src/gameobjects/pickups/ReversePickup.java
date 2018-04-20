@@ -1,6 +1,6 @@
 package gameobjects.pickups;
 
-public class ReversePickup extends  {
+public class ReversePickup  {
     
     
 

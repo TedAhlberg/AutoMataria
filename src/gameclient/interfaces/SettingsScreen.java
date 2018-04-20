@@ -28,9 +28,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
+    private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private BufferedImage backgroundImage;
     private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
     private Font fontText = new Font("Orbitron", Font.BOLD, 25);
+    private Font fontSmall = new Font("Orbitron", Font.BOLD, 20);
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileMusicPressed = "Music_Pressed.png";
@@ -38,27 +40,35 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String fileChangePressed = "Change_Pressed.png";
     private String fileChangeUnpressed = "Change_Unpressed.png";
+    private String fileExitPressed = "Exit_Pressed.png";
+    private String fileExitUnpressed = "Exit_Unpressed.png";
+    private String fileSfxPressed = "SFX_Pressed.png";
+    private String fileSfxUnpressed = "SFX_Unpressed.png";
     private String user = "Testperson";
+
     private Buttons btnChange = new Buttons(fileChangePressed, fileChangeUnpressed);
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
     private Buttons btnMusic = new Buttons(fileMusicPressed, fileMusicUnpressed);
+    private Buttons btnExit = new Buttons(fileExitPressed, fileExitUnpressed);
+    private Buttons btnSFX = new Buttons(fileSfxPressed, fileSfxUnpressed);
 
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
 
     private JLabel lblUserName = new JLabel("USER: " + user);
     private JLabel lblMusic = new JLabel("ON");
+    private JLabel lblSFX = new JLabel("ON");
     private JLabel lblSettings = new JLabel("SETTINGS");
     private JLabel lblControls = new JLabel("CONTROLS");
-    private JLabel lblSounds = new JLabel("SOUND");
-    private Color color;
+    private JLabel lblSpacing = new JLabel(" ");
+    private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
 
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
         backgroundImage = Resources.getImage("Stars.png");
         // setLayout(new GridBagLayout());
-        pnlHead.setPreferredSize(new Dimension(500, 500));
+        // pnlHead.setPreferredSize(new Dimension(500, 500));
         pnlHead.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
 
@@ -69,55 +79,134 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 1;
         c.weighty = 1;
         c.weightx = 11;
+        c.ipady = 30;
         c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(lblSettings, c);
 
-        // Add UserNamePnl
+        // Add UserNamelbl
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 1;
+        c.weightx = 1;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.WEST;
+
+        c.ipadx = 20;
+        c.ipady = 50;
+        lblUserName.setFont(fontText);
+        lblUserName.setForeground(Color.white);
+        pnlUserName.setSize(60, 25);
+        pnlUserName.add(lblUserName, c);
+        pnlUserName.setOpaque(false);
+
+        // Add ChangeButton
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 5;
+        c.weightx = 3;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.EAST;
+        c.ipadx = 10;
+        btnChange.setWidth(60);
+        btnChange.setHeight(25);
+        pnlUserName.add(btnChange, c);
+
+        // Add UserNamePanel
         c = new GridBagConstraints();
         c.gridy = 2;
         c.gridx = 1;
         c.weightx = 1;
         c.weighty = 20;
         c.anchor = GridBagConstraints.NORTH;
+        pnlHead.add(pnlUserName, c);
 
-        // lblUserName.setVerticalAlignment(SwingConstants.TOP);
-        lblUserName.setMaximumSize(new Dimension(60, 25));
-        lblUserName.setFont(fontText);
-        lblUserName.setForeground(Color.white);
-        pnlHead.add(lblUserName, c);
-
+        // Add ControlLabel
         c = new GridBagConstraints();
-        c.gridy = 2;
-        c.gridx = 2;
-        c.weightx = 10;
-        c.weighty = 20;
-
-        c.anchor = GridBagConstraints.NORTHWEST;
-        // btnChange.setVerticalAlignment(SwingConstants.TOP);
-        btnChange.setWidth(60);
-        btnChange.setHeight(25);
-        pnlHead.add(btnChange, c);
-
-        c = new GridBagConstraints();
+        c.gridx = 1;
         c.gridy = 3;
+        c.ipady = 10;
+        lblControls.setFont(fontText);
+        lblControls.setForeground(Color.white);
+        pnlHead.add(lblControls, c);
+
+        // Add keybinderPanel
+        c = new GridBagConstraints();
+        c.gridy = 4;
         c.gridx = 1;
         c.weightx = 11;
         c.gridwidth = GridBagConstraints.REMAINDER;
-
-        System.out.println(pnlKeyBinder.getSize());
         pnlHead.add(pnlKeyBinder, c);
 
-        add(pnlHead);
+        // Add musicButton
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 1;
+        c.ipadx = 10;
+        btnMusic.setWidth(60);
+        btnMusic.setHeight(25);
+        pnlMusic.setOpaque(false);
+        pnlMusic.add(btnMusic, c);
 
-        // add(lblUserName);
-        // add(btnMusic);
-        // add(lblMusic);
-        //
-        // add(lblSettings);
-        //
-        // add(btnChange);
-        // add(pnlKeyBinder);
-        // add(lblControls);
+        // Add musicLabel
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 2;
+        c.ipadx = 10;
+        lblMusic.setFont(fontSmall);
+        lblMusic.setForeground(Color.white);
+        ;
+        pnlMusic.add(lblMusic, c);
+        
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 3;
+        c.ipadx = 10;
+        ;
+        pnlMusic.add(lblSpacing2, c);
+
+        // Add SFXButton
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 4;
+        c.ipadx = 10;
+        btnSFX.setWidth(60);
+        btnSFX.setHeight(25);
+        pnlMusic.add(btnSFX, c);
+
+        // Add SFXLabel
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 5;
+        c.ipadx = 10;
+        lblSFX.setFont(fontSmall);
+        lblSFX.setForeground(Color.white);
+        ;
+        pnlMusic.add(lblSFX, c);
+
+        // Add MusicPanel
+        c = new GridBagConstraints();
+        c.ipady = 30;
+        c.gridy = 6;
+        c.gridx = 1;
+        pnlHead.add(pnlMusic, c);
+
+        // Add spacing
+        lblSpacing.setFont(fontHead);
+        c.gridy = 7;
+        c.gridx = 1;
+        c.weighty = 1;
+        c.weightx = 11;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        pnlHead.add(lblSpacing, c);
+
+        c = new GridBagConstraints();
+        c.gridy = 8;
+        c.gridx = 1;
+        c.anchor = GridBagConstraints.SOUTH;
+        btnExit.setWidth(60);
+        btnExit.setHeight(25);
+        pnlHead.add(btnExit, c);
+        add(pnlHead);
 
         addListeners();
         repaint();
@@ -127,16 +216,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-        g.setColor(Color.white);
-        // lblSettings.setLocation(10, 10);
-        g.setFont(fontText);
-        // lblUserName.setLocation(30, 85);
-        // btnChange.setLocation(300, 85);
-        // btnMusic.setLocation(30, 150);
-        // lblMusic.setLocation(95, 150);
-        //
-        // lblControls.setLocation(30, 275);
-        // pnlKeyBinder.setLocation(30, 300);
 
     }
 
@@ -144,34 +223,53 @@ public class SettingsScreen extends JPanel implements ActionListener {
         btnKeyBinder.addActionListener(this);
         btnChange.addActionListener(this);
         btnMusic.addActionListener(this);
+        btnSFX.addActionListener(this);
+        btnExit.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
 
-            lblMusic.setText("OFF");
+            if (lblMusic.getText() == "ON")
+                lblMusic.setText("OFF");
+            else
+                lblMusic.setText("ON");
+
+        }
+
+        if (e.getSource() == btnSFX) {
+
+            if (lblSFX.getText() == "ON")
+                lblSFX.setText("OFF");
+            else
+                lblSFX.setText("ON");
 
         }
 
         if (e.getSource() == btnChange) {
             user = JOptionPane.showInputDialog("Input new username");
 
-            if (user != null) {
+            if (user != null)
                 lblUserName.setText("USER: " + user);
-                repaint();
-            }
+
         }
+
+        if (e.getSource() == btnExit)
+            userInterface.changeScreen("StartScreen");
+
     }
 
     public static void main(String[] args) {
-//        JFrame frame = new JFrame();
-//        frame.setPreferredSize(new Dimension(500, 750));
-//        frame.add(new SettingsScreen());
-//        frame.pack();
-//        frame.setLocationRelativeTo(null);
-//        frame.setVisible(true);
-//        // frame.setResizable(false);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame frame = new JFrame();
+        frame.setPreferredSize(new Dimension(500, 750));
+        frame.add(new SettingsScreen(new UserInterface()));
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setUndecorated(true);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        // frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     }
 }

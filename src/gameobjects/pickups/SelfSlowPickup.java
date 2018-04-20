@@ -8,6 +8,7 @@ import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.Pickup;
 import gameobjects.Player;
+
 /**
  * 
  * @author Erik Lundow
@@ -30,21 +31,22 @@ public class SelfSlowPickup extends Pickup {
     }
 
     public void tick() {
-        if (!taken || !used) 
+
+        if (!taken || !used)
+
             return;
-        
+
         timer--;
         if (timer == 0) {
-            player.setSpeed(player.getSpeed()*2);
+            player.setSpeed(player.getSpeed() * 2);
             player.setPickUp(null);
             gameObjects.remove(this);
-            
-             
+
         }
     }
 
     public void render(Graphics2D g) {
-        if(taken) {
+        if (taken) {
             return;
         }
         BufferedImage image = Resources.getImage("SlowSelfPickup.png");
@@ -53,13 +55,13 @@ public class SelfSlowPickup extends Pickup {
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if(used) {
+        if (used) {
             return;
         }
         this.gameObjects = gameObjects;
         this.player = player;
         int speed = player.getSpeed();
-        player.setSpeed((int) (speed*0.5));
+        player.setSpeed((int) (speed * 0.5));
         used = true;
     }
 }
