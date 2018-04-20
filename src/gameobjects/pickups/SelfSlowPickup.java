@@ -10,6 +10,7 @@ import gameobjects.Pickup;
 import gameobjects.Player;
 
 /**
+ * Pickup that when activated/used slows down the player for a short duration.
  * 
  * @author Erik Lundow
  *

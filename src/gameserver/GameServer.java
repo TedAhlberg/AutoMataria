@@ -32,6 +32,7 @@ public class GameServer implements ClientListener {
     private boolean running = true;
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
+    private GameObjectSpawner gameObjectSpawner;
 
     public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
@@ -46,7 +47,8 @@ public class GameServer implements ClientListener {
         server = new ServerConnection(serverPort);
         new Thread(server).start();
         server.addListener(this);
-
+        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
+        
         new Thread(() -> gameLoop()).start();
     }
 
@@ -134,67 +136,12 @@ public class GameServer implements ClientListener {
                 currentCountdown -= tickRate;
             }
         }
-        placeGameMapObjects();
+        gameObjectSpawner.tick();
     }
 
-    /**
-     * Iterate over all gameobjects from the current map
-     * if the gameobject should be added it has to be instantiated and have a new ID set
-     */
-    private void placeGameMapObjects() {
-        if (currentMap.getGameMapObjects() == null) return;
-        for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
-            GameObject gameObject = gameMapObject.getGameObject();
-            if (gameMapObject.getSpawnInterval() == 0) {
-                if (!gameObjects.contains(gameObject)) {
-                    if (!intersectsAnyGameObject(gameObject.getBounds())) {
-                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameObject.setX(gameObject.getX() - quarterGridPixel);
-                        gameObject.setY(gameObject.getY() - quarterGridPixel);
-                        gameObject.setId(ID.getNext());
-                        gameObjects.add(gameObject);
-                        System.out.println("Placing on map (Instant): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
-                    }
-                }
-                continue;
-            }
-            if (gameMapObject.getTimer() <= 0) {
-                if (gameObjects.contains(gameObject)) {
-                    if (gameObject instanceof Pickup) {
-                        if (!((Pickup) gameObject).isTaken()) {
-                            System.out.println("Removing from map (Timed out): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
-                            gameObjects.remove(gameMapObject.getGameObject());
-                            gameMapObject.setTimer(gameMapObject.getSpawnInterval());
-                        }
-                    } else {
-                        gameObjects.remove(gameMapObject.getGameObject());
-                        gameMapObject.setTimer(gameMapObject.getSpawnInterval());
-                    }
-                } else {
-                    if (gameMapObject.isSpawnRandom()) {
-                        Point point = findRandomMapPosition();
-                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameObject.setX(point.x - quarterGridPixel);
-                        gameObject.setY(point.y - quarterGridPixel);
-                    }
-                    gameObject.setId(ID.getNext());
-                    gameObjects.add(gameObject);
-                    gameMapObject.setTimer(gameMapObject.getVisibleTime());
-                    System.out.println("Placing on map (Spawn time): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
-                }
-            } else {
-                gameMapObject.setTimer(gameMapObject.getTimer() - tickRate);
-            }
-        }
-    }
-
-    private GameObject getNewGameObject(GameObject gameObject) {
-        try {
-            return gameObject.getClass().getConstructor(gameObject.getClass()).newInstance(gameObject);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            return null;
-        }
-    }
+    
+    
+    
 
     private void startNewWarmup() {
         System.out.println("Starting Warmup");
@@ -217,7 +164,7 @@ public class GameServer implements ClientListener {
             player.setSpeed(playerSpeed);
             player.setNextDirection(Direction.Static);
 
-            Point nextPosition = findRandomMapPosition();
+            Point nextPosition = Utility.findRandomMapPosition(currentMap.getGrid());
             player.setX(nextPosition.x);
             player.setY(nextPosition.y);
 
@@ -265,16 +212,7 @@ public class GameServer implements ClientListener {
         return new Rectangle(grid.width * Game.GRID_PIXEL_SIZE, grid.height * Game.GRID_PIXEL_SIZE);
     }
 
-    private boolean intersectsAnyGameObject(Rectangle rect) {
-        for (GameObject object : gameObjects) {
-            if ((object instanceof Player) && rect.getBounds().intersects(object.getBounds())) {
-                return true;
-            } else if ((object instanceof Wall) && ((Wall) object).intersects(rect.getBounds())) {
-                return true;
-            }
-        }
-        return false;
-    }
+   
 
     private Player newPlayer(String name) {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
@@ -283,7 +221,7 @@ public class GameServer implements ClientListener {
         player.setSpeed(playerSpeed);
 
         if (state == GameState.Warmup) {
-            Point position = findRandomMapPosition();
+            Point position = Utility.findRandomMapPosition(currentMap.getGrid());
             player.setX(position.x);
             player.setY(position.y);
             gameObjects.add(player);
@@ -292,19 +230,7 @@ public class GameServer implements ClientListener {
         return player;
     }
 
-    private Point findRandomMapPosition() {
-        while (true) {
-            Rectangle rectangle = new Rectangle(startingPositions.getOneRandom(currentMap.getGrid()));
-            rectangle.x *= Game.GRID_PIXEL_SIZE;
-            rectangle.y *= Game.GRID_PIXEL_SIZE;
-            rectangle.width = Game.GRID_PIXEL_SIZE;
-            rectangle.height = Game.GRID_PIXEL_SIZE;
-
-            if (!intersectsAnyGameObject(rectangle)) {
-                return rectangle.getLocation();
-            }
-        }
-    }
+   
 
     @Override
     public void onConnect(Client client) {

@@ -10,8 +10,12 @@ import gameobjects.InstantPickup;
 import gameobjects.Player;
 
 /**
+ * Pickup that slows opponents for a short duration. 
+ * 
  * @author Dante Håkansson
  * @author Johannes Blüml
+ * 
+ * 
  * 
  */
 
@@ -42,7 +46,7 @@ public class SlowEnemiesPickup extends InstantPickup {
         }
         
         timer--;
-        if (timer <= 0) {
+        if (timer == 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player) {
                     if (!gameObject.equals(player)) {

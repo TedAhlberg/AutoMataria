@@ -8,7 +8,10 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * @author Dante H�kansson
+ * Pickup that speeds the player up for a short duration when activated/used.
+ * 
+ * @author Dante Håkansson
+ * 
  */
 
 public class SelfSpeedPickup extends Pickup {

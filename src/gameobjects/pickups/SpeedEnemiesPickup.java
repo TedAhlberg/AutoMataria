@@ -10,9 +10,10 @@ import gameobjects.InstantPickup;
 import gameobjects.Player;
 
 /**
+ * Pickup that increases all opponents speed for a short duration.
  * 
- * @author Erik Lundow Pickup som vid upplockning ökar alla motståndares
- *         hastighet.
+ * @author Erik Lundow 
+ * 
  *
  */
 public class SpeedEnemiesPickup extends InstantPickup {

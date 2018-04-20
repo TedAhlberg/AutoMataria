@@ -9,7 +9,10 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
+ * Pickup that erases all drawn trails.
+ * 
  * @author Dante Håkansson
+ * 
  */
 
 public class EraserPickup extends InstantPickup {
