@@ -31,7 +31,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (player == null)
+        if (!taken||used)
             return;
 
         timer--;

@@ -29,7 +29,7 @@ public class SelfSlowPickup extends Pickup {
     }
 
     public void tick() {
-        if (player == null) 
+        if(!taken||used)
             return;
         
         timer--;

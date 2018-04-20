@@ -5,6 +5,9 @@ import gameclient.Window;
 
 public class UserInterface extends JPanel {
 
+    /**
+     * @Erik Lundow
+     */
     private CardLayout cardLayout = new CardLayout();
 
     public UserInterface() {
