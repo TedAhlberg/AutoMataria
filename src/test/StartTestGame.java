@@ -3,9 +3,12 @@ package test;
 import common.GameMap;
 import common.SpecialGameObject;
 import gameclient.Game;
+import gameclient.ServerInformationReceiver;
 import gameserver.GameServer;
+import gameserver.ServerInformationSender;
 
 import java.awt.*;
+import java.net.SocketException;
 import java.util.Arrays;
 
 import gameobjects.pickups.EraserPickup;
@@ -27,7 +30,14 @@ public class StartTestGame {
         gameMapObjects[gameMapObjects.length-1]= new SpecialGameObject(new SpeedEnemiesPickup(200,200),10000,0,true,15000);
         map.setGameMapObjects(gameMapObjects);
         // Start a game server
-        new GameServer("AM-test-server", 32000, 50, 150, map);
+        GameServer gameServer = new GameServer("AM-TEST-SERVER", 32000, 50, 150, map);
+//        try {
+//            ServerInformationSender sis = new ServerInformationSender(gameServer);
+//            ServerInformationReceiver sir = new ServerInformationReceiver();
+//            System.out.println(sir.getServerInformation());
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
 
         // Start a game client
 //        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
