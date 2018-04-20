@@ -27,11 +27,11 @@ public class SpeedEnemiesPickup extends InstantPickup {
 
     public SpeedEnemiesPickup(int x, int y, int timer) {
         super(x, y);
-       this.timer = timer;
+        this.timer = timer;
     }
 
     public void tick() {
-        if (!taken||used)
+        if (!taken || used)
             return;
 
         timer--;
@@ -41,9 +41,9 @@ public class SpeedEnemiesPickup extends InstantPickup {
                     gameObject.setSpeed(gameObject.getSpeed() / 2);
                 }
             }
-            
+
             player.setPickUp(null);
-           // player = null;
+            // player = null;
         }
     }
 
