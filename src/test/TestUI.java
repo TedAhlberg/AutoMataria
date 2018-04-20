@@ -1,8 +1,8 @@
 package test;
 
+import common.Maps;
 import gameclient.Game;
 import gameserver.GameServer;
-import common.Maps;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,17 +14,29 @@ import java.awt.event.MouseEvent;
  */
 public class TestUI {
     private JPanel container;
-    private JTextField tfClientIP, tfClientPort, tfFramesPerSecond, tfServerPort, tfTickRate, tfUpdateRate;
+    private JTextField tfClientIP, tfClientPort, tfServerPort;
     private JButton btnStartGame, btnStartServer, btnStopServer;
     private JCheckBox checkFullscreen;
     private JComboBox<String> cbWindowSize;
     private JLabel lblWindowSize;
-    private JComboBox<String> mapComboBox;
+    private JComboBox<String> serverProfileComboBox;
+    private JSlider playerSpeedSlider;
+    private JSlider updatesSlider;
+    private JSlider tickRateSlider;
+    private JComboBox<String> maxFPSComboBox;
+    private JComboBox<String> mapsComboBox;
 
     private GameServer server;
 
-    private String clientIP, gameMap;
-    private int serverPort, tickRate, updateRate, clientPort, framesPerSecond, clientWidth, clientHeight;
+    private String clientIP = "127.0.0.1", gameMap;
+    private int serverPort = 32000,
+            tickRate = 100,
+            ticksBetweenUpdates = 2,
+            clientPort = 32000,
+            framesPerSecond = 60,
+            clientWidth = 750,
+            clientHeight = 750,
+            playerSpeed = 50;
     private boolean fullscreen;
 
     TestUI() {
@@ -35,11 +47,10 @@ public class TestUI {
                 super.mouseClicked(mouseEvent);
                 SwingUtilities.invokeLater(() -> {
                     updateAllVariables();
-                    updateAllTextFields();
+                    updateAllGUIFields();
                 });
             }
         });
-        SwingUtilities.invokeLater(this::updateAllVariables);
 
         checkFullscreen.addChangeListener(e -> {
             fullscreen = checkFullscreen.isSelected();
@@ -61,7 +72,7 @@ public class TestUI {
             updateAllVariables();
             System.out.println(toString());
             if (server == null)
-                server = new GameServer("AM-test-server", serverPort, tickRate, updateRate, Maps.getInstance().get(gameMap));
+                server = new GameServer("AM-test-server", serverPort, tickRate, ticksBetweenUpdates, playerSpeed, Maps.getInstance().get(gameMap));
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
@@ -69,6 +80,46 @@ public class TestUI {
                 server = null;
             }
         });
+
+        serverProfileComboBox.addActionListener(e -> {
+            String profile = (String) serverProfileComboBox.getSelectedItem();
+
+            if (profile.equals("Custom")) {
+                playerSpeedSlider.setEnabled(true);
+                tickRateSlider.setEnabled(true);
+                updatesSlider.setEnabled(true);
+                return;
+            }
+
+            playerSpeedSlider.setEnabled(false);
+            tickRateSlider.setEnabled(false);
+            updatesSlider.setEnabled(false);
+
+            switch (profile) {
+                case "Low Performance":
+                    playerSpeedSlider.setValue(75);
+                    tickRateSlider.setValue(150);
+                    updatesSlider.setValue(2);
+                    break;
+                case "High Performance":
+                    playerSpeedSlider.setValue(15);
+                    tickRateSlider.setValue(50);
+                    updatesSlider.setValue(2);
+                    break;
+                case "Extreme Performance":
+                    playerSpeedSlider.setValue(15);
+                    tickRateSlider.setValue(50);
+                    updatesSlider.setValue(1);
+                    break;
+                default:
+                    playerSpeedSlider.setValue(50);
+                    tickRateSlider.setValue(100);
+                    updatesSlider.setValue(2);
+            }
+        });
+
+        updateAllGUIFields();
+        serverProfileComboBox.setSelectedItem("Normal (Default)");
     }
 
     public static void main(String[] args) {
@@ -79,18 +130,21 @@ public class TestUI {
         frame.setVisible(true);
     }
 
-    private void updateAllTextFields() {
+    private void updateAllGUIFields() {
         // CLIENT
         cbWindowSize.setSelectedItem(clientWidth + " " + clientHeight);
         checkFullscreen.setSelected(fullscreen);
         tfClientIP.setText(clientIP);
         tfClientPort.setText(Integer.toString(clientPort));
-        tfFramesPerSecond.setText(Integer.toString(framesPerSecond));
+        maxFPSComboBox.setSelectedItem(Integer.toString(framesPerSecond));
         // SERVER
         tfServerPort.setText(Integer.toString(serverPort));
-        tfTickRate.setText(Integer.toString(tickRate));
-        tfUpdateRate.setText(Integer.toString(updateRate));
-        mapComboBox.setSelectedItem(gameMap);
+        tickRateSlider.setValue(tickRate);
+        updatesSlider.setValue(ticksBetweenUpdates);
+        playerSpeedSlider.setValue(playerSpeed);
+        if (gameMap != null) {
+            mapsComboBox.setSelectedItem(gameMap);
+        }
     }
 
     private void updateAllVariables() {
@@ -102,12 +156,13 @@ public class TestUI {
             fullscreen = checkFullscreen.isSelected();
             clientIP = tfClientIP.getText();
             clientPort = Integer.parseInt(tfClientPort.getText());
-            framesPerSecond = Integer.parseInt(tfFramesPerSecond.getText());
+            framesPerSecond = Integer.parseInt((String) maxFPSComboBox.getSelectedItem());
             // SERVER
             serverPort = Integer.parseInt(tfServerPort.getText());
-            tickRate = Integer.parseInt(tfTickRate.getText());
-            updateRate = Integer.parseInt(tfUpdateRate.getText());
-            gameMap = (String) mapComboBox.getSelectedItem();
+            tickRate = tickRateSlider.getValue();
+            ticksBetweenUpdates = updatesSlider.getValue();
+            playerSpeed = playerSpeedSlider.getValue();
+            gameMap = (String) mapsComboBox.getSelectedItem();
 
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(null, "Please enter only numbers.");
@@ -115,7 +170,10 @@ public class TestUI {
     }
 
     private void createUIComponents() {
-        mapComboBox = new JComboBox<>(Maps.getInstance().getMapList());
+        mapsComboBox = new JComboBox<>();
+        for (String item : Maps.getInstance().getMapList()) {
+            mapsComboBox.addItem(item);
+        }
     }
 
     /**
@@ -154,28 +212,6 @@ public class TestUI {
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
         container.add(label2, gbc);
-        final JLabel label3 = new JLabel();
-        label3.setText("Game Port");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label3, gbc);
-        final JLabel label4 = new JLabel();
-        label4.setText("Fullscreen");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label4, gbc);
-        lblWindowSize = new JLabel();
-        lblWindowSize.setText("Window Size");
-        lblWindowSize.setVisible(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 7;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(lblWindowSize, gbc);
         tfClientIP = new JTextField();
         tfClientIP.setText("127.0.0.1");
         gbc = new GridBagConstraints();
@@ -184,43 +220,6 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(tfClientIP, gbc);
-        tfClientPort = new JTextField();
-        tfClientPort.setText("32000");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfClientPort, gbc);
-        cbWindowSize = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("1000x1000");
-        defaultComboBoxModel1.addElement("750x750");
-        defaultComboBoxModel1.addElement("500x500");
-        cbWindowSize.setModel(defaultComboBoxModel1);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 7;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(cbWindowSize, gbc);
-        checkFullscreen = new JCheckBox();
-        checkFullscreen.setEnabled(true);
-        checkFullscreen.setSelected(false);
-        checkFullscreen.setText("");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(checkFullscreen, gbc);
-        btnStartGame = new JButton();
-        btnStartGame.setText("Start Game");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 9;
-        gbc.gridwidth = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnStartGame, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 7;
@@ -235,165 +234,324 @@ public class TestUI {
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipadx = 10;
         container.add(spacer2, gbc);
-        final JPanel spacer3 = new JPanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 8;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipady = 10;
-        container.add(spacer3, gbc);
-        final JLabel label5 = new JLabel();
-        Font label5Font = this.$$$getFont$$$(null, Font.BOLD, -1, label5.getFont());
-        if (label5Font != null) label5.setFont(label5Font);
-        label5.setText("Server Settings");
+        final JLabel label3 = new JLabel();
+        Font label3Font = this.$$$getFont$$$(null, Font.BOLD, -1, label3.getFont());
+        if (label3Font != null) label3.setFont(label3Font);
+        label3.setText("Server Settings");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.gridwidth = 5;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label5, gbc);
-        final JLabel label6 = new JLabel();
-        label6.setText("Server Port");
+        container.add(label3, gbc);
+        final JLabel label4 = new JLabel();
+        label4.setText("Server Port");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label6, gbc);
-        final JPanel spacer4 = new JPanel();
+        container.add(label4, gbc);
+        final JPanel spacer3 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipadx = 10;
-        container.add(spacer4, gbc);
-        final JPanel spacer5 = new JPanel();
+        container.add(spacer3, gbc);
+        final JPanel spacer4 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
+        container.add(spacer4, gbc);
+        final JPanel spacer5 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 16;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipady = 10;
         container.add(spacer5, gbc);
         final JPanel spacer6 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 10;
+        gbc.gridy = 18;
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
         container.add(spacer6, gbc);
         final JPanel spacer7 = new JPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 12;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipady = 10;
-        container.add(spacer7, gbc);
-        final JPanel spacer8 = new JPanel();
-        gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
-        container.add(spacer8, gbc);
+        container.add(spacer7, gbc);
         btnStopServer = new JButton();
         btnStopServer.setText("Stop Server");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 11;
+        gbc.gridy = 17;
         gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(btnStopServer, gbc);
-        final JLabel label7 = new JLabel();
-        label7.setText("Frame Rate (FPS)");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label7, gbc);
-        tfFramesPerSecond = new JTextField();
-        tfFramesPerSecond.setText("60");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfFramesPerSecond, gbc);
-        final JPanel spacer9 = new JPanel();
+        final JPanel spacer8 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 7;
+        gbc.gridy = 14;
         gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 10;
-        container.add(spacer9, gbc);
-        final JPanel spacer10 = new JPanel();
+        container.add(spacer8, gbc);
+        final JPanel spacer9 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.ipadx = 10;
-        container.add(spacer10, gbc);
-        final JLabel label8 = new JLabel();
-        label8.setText("Tick Rate (ms)");
+        container.add(spacer9, gbc);
+        final JLabel label5 = new JLabel();
+        label5.setText("Tick Rate (ms)");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 9;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        container.add(label8, gbc);
-        tfTickRate = new JTextField();
-        tfTickRate.setText("50");
+        container.add(label5, gbc);
+        final JLabel label6 = new JLabel();
+        label6.setText("Ticks/Update");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 11;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label6, gbc);
+        btnStartServer = new JButton();
+        btnStartServer.setText("Start Server");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 15;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(btnStartServer, gbc);
+        final JLabel label7 = new JLabel();
+        label7.setText("Server Profile");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label7, gbc);
+        serverProfileComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("Custom");
+        defaultComboBoxModel1.addElement("Low Performance");
+        defaultComboBoxModel1.addElement("Normal (Default)");
+        defaultComboBoxModel1.addElement("High Performance");
+        defaultComboBoxModel1.addElement("Extreme Performance");
+        serverProfileComboBox.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
-        gbc.gridy = 4;
+        gbc.gridy = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfTickRate, gbc);
+        gbc.ipady = 10;
+        container.add(serverProfileComboBox, gbc);
+        final JLabel label8 = new JLabel();
+        label8.setText("Player Speed");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 13;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label8, gbc);
+        playerSpeedSlider = new JSlider();
+        playerSpeedSlider.setEnabled(false);
+        playerSpeedSlider.setMajorTickSpacing(25);
+        playerSpeedSlider.setMinimum(0);
+        playerSpeedSlider.setMinorTickSpacing(5);
+        playerSpeedSlider.setPaintLabels(true);
+        playerSpeedSlider.setPaintTicks(true);
+        playerSpeedSlider.setSnapToTicks(true);
+        playerSpeedSlider.setValue(25);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 13;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipady = 10;
+        container.add(playerSpeedSlider, gbc);
+        updatesSlider = new JSlider();
+        updatesSlider.setEnabled(false);
+        updatesSlider.setMajorTickSpacing(1);
+        updatesSlider.setMaximum(3);
+        updatesSlider.setMinimum(1);
+        updatesSlider.setMinorTickSpacing(1);
+        updatesSlider.setPaintLabels(true);
+        updatesSlider.setPaintTicks(true);
+        updatesSlider.setSnapToTicks(true);
+        updatesSlider.setValue(2);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 11;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipady = 10;
+        container.add(updatesSlider, gbc);
+        tickRateSlider = new JSlider();
+        tickRateSlider.setEnabled(false);
+        tickRateSlider.setMajorTickSpacing(50);
+        tickRateSlider.setMaximum(200);
+        tickRateSlider.setMinimum(50);
+        tickRateSlider.setMinorTickSpacing(50);
+        tickRateSlider.setPaintLabels(true);
+        tickRateSlider.setPaintTicks(true);
+        tickRateSlider.setSnapToTicks(true);
+        tickRateSlider.setValue(100);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.gridy = 9;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipady = 10;
+        container.add(tickRateSlider, gbc);
+        final JPanel spacer10 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        container.add(spacer10, gbc);
+        final JPanel spacer11 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 8;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        container.add(spacer11, gbc);
+        final JPanel spacer12 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 10;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        container.add(spacer12, gbc);
+        final JPanel spacer13 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 12;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        container.add(spacer13, gbc);
+        final JPanel spacer14 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.gridy = 7;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(spacer14, gbc);
         final JLabel label9 = new JLabel();
-        label9.setText("Update Rate (ms)");
+        Font label9Font = this.$$$getFont$$$(null, Font.BOLD, -1, label9.getFont());
+        if (label9Font != null) label9.setFont(label9Font);
+        label9.setText("Map");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         container.add(label9, gbc);
-        tfUpdateRate = new JTextField();
-        tfUpdateRate.setText("150");
+        final JPanel spacer15 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        container.add(spacer15, gbc);
+        final JLabel label10 = new JLabel();
+        label10.setText("Game Port");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label10, gbc);
+        tfClientPort = new JTextField();
+        tfClientPort.setText("32000");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 8;
+        gbc.gridy = 5;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(tfClientPort, gbc);
+        final JLabel label11 = new JLabel();
+        label11.setText("Fullscreen");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label11, gbc);
+        checkFullscreen = new JCheckBox();
+        checkFullscreen.setEnabled(true);
+        checkFullscreen.setSelected(false);
+        checkFullscreen.setText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 8;
+        gbc.gridy = 7;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(checkFullscreen, gbc);
+        cbWindowSize = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
+        defaultComboBoxModel2.addElement("1000x1000");
+        defaultComboBoxModel2.addElement("750x750");
+        defaultComboBoxModel2.addElement("500x500");
+        cbWindowSize.setModel(defaultComboBoxModel2);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 8;
+        gbc.gridy = 9;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(cbWindowSize, gbc);
+        btnStartGame = new JButton();
+        btnStartGame.setText("Start Game");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 13;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(btnStartGame, gbc);
+        lblWindowSize = new JLabel();
+        lblWindowSize.setText("Window Size");
+        lblWindowSize.setVisible(true);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 9;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(lblWindowSize, gbc);
+        final JLabel label12 = new JLabel();
+        label12.setText("Max FPS");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 11;
+        gbc.anchor = GridBagConstraints.WEST;
+        container.add(label12, gbc);
+        maxFPSComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel3 = new DefaultComboBoxModel();
+        defaultComboBoxModel3.addElement("15");
+        defaultComboBoxModel3.addElement("30");
+        defaultComboBoxModel3.addElement("60");
+        defaultComboBoxModel3.addElement("100");
+        defaultComboBoxModel3.addElement("120");
+        defaultComboBoxModel3.addElement("144");
+        defaultComboBoxModel3.addElement("200");
+        maxFPSComboBox.setModel(defaultComboBoxModel3);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 8;
+        gbc.gridy = 11;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(maxFPSComboBox, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(tfUpdateRate, gbc);
-        final JLabel label10 = new JLabel();
-        Font label10Font = this.$$$getFont$$$(null, Font.BOLD, -1, label10.getFont());
-        if (label10Font != null) label10.setFont(label10Font);
-        label10.setText("Map");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label10, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 4;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(mapComboBox, gbc);
-        btnStartServer = new JButton();
-        btnStartServer.setText("Start Server");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 9;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnStartServer, gbc);
+        container.add(mapsComboBox, gbc);
         label2.setLabelFor(tfClientIP);
-        label3.setLabelFor(tfClientPort);
+        label10.setLabelFor(tfClientPort);
     }
 
     /**

@@ -1,20 +1,20 @@
 package gameclient;
 
+import common.Direction;
 import common.GameState;
-import gameobjects.GameObject;
-import gameobjects.Player;
+import gameobjects.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.LinkedList;
 
 /**
  * GamePanel is a custom swing component that displays the game
  * GameObjects can be sent to it and they will be rendered on the component
- *
+ * <p>
  * Related requirements:
  * AF043, Spelplan
  * SF002, Visa spelet
@@ -22,20 +22,22 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Johannes Blüml
  */
 public class GamePanel extends JComponent {
-    private final CopyOnWriteArraySet<GameObject> gameObjects = new CopyOnWriteArraySet<>();
-    private Interpolation interpolation;
+    private final LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private final LinkedList<GameObject> updatedGameObjects = new LinkedList<>();
+    private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
-    private Player player;
     private double scale = 1.0;
     private BufferedImage background, gridBuffer;
     private Color backgroundColor = Color.BLACK;
     private long timeBetweenRenders;
     private int fps, frameCounter;
-    private boolean interpolateMovement = true, showDebugInfo = true;
+    private boolean interpolateMovement = true, showDebugInfo = true, updateReady = false;
     private GameState gameState = GameState.Warmup;
     private double playerReadyPercentage;
     private Dimension windowSize;
+    private int maxFPS;
+    private long lastUpdateTime;
 
     /**
      * The GamePanel will always try to match the provided size depending on the grid size of the game
@@ -48,13 +50,13 @@ public class GamePanel extends JComponent {
     }
 
     /**
-     * Starts the game loop with the provided FPS
+     * Starts the game loop with the provided maximum FPS
      *
      * @param maxFPS Maximum frames per second to render each second
      */
     public void start(int maxFPS) {
+        this.maxFPS = maxFPS;
         timeBetweenRenders = (1000 / maxFPS) * 1000000;
-        interpolation = new Interpolation(timeBetweenRenders);
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop());
         gameLoopThread.start();
@@ -78,16 +80,20 @@ public class GamePanel extends JComponent {
      * @param updatedGameObjects Collection of updated GameObjects
      */
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
+        this.updatedGameObjects.addAll(updatedGameObjects);
+        updateReady = true;
+    }
+
+    private void updateGameObjects() {
         gameObjects.clear();
         for (GameObject updated : updatedGameObjects) {
             gameObjects.add(updated);
-            if (updated.equals(player)) {
-                player = (Player) updated;
-            }
             if (updated instanceof Player && interpolateMovement) {
                 interpolation.addTarget(updated);
             }
         }
+        updatedGameObjects.clear();
+        updateReady = false;
     }
 
     /**
@@ -140,11 +146,11 @@ public class GamePanel extends JComponent {
             previousTime = nowTime;
 
             if (interpolateMovement) {
-                interpolation.createCalculation(timeSinceLastRender);
+                interpolation.setCurrentDeltaTime(timeSinceLastRender / 1000000000.0);
             }
 
             // Render the game to the panel
-            paintImmediately(0, 0, getWidth(), getHeight());
+            paintImmediately(new Rectangle(getSize()));
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
@@ -156,6 +162,7 @@ public class GamePanel extends JComponent {
 
             // Wait until timeBetweenRenders nanoseconds have elapsed since the render began
             while (nowTime - previousTime < timeBetweenRenders) {
+                if (updateReady) updateGameObjects();
                 Thread.yield();
                 try {
                     Thread.sleep(1);
@@ -202,9 +209,9 @@ public class GamePanel extends JComponent {
         String state = "STATE: " + gameState.toString().toUpperCase() + " ";
         if (gameState == GameState.Warmup) {
             state += Math.round(playerReadyPercentage * 100) + "% READY";
-            state += (player != null && player.isReady()) ? " | YOU ARE READY" : " | PRESS R TO READY UP";
+            //state += (player != null && player.isReady()) ? " | YOU ARE READY" : " | PRESS R TO READY UP";
         }
-        g2.drawString(fps + " FPS | " + state, 40, 120);
+        g2.drawString(fps + "/" + maxFPS + " FPS | " + state, 40, 120);
 
         String keyHelp = "TOGGLE COLOR : C | TOGGLE HELP : F1";
         keyHelp += (interpolateMovement) ? " | INTERP ON : I" : " | INTERP OFF : I";
@@ -292,10 +299,6 @@ public class GamePanel extends JComponent {
         playerReadyPercentage = readyPercentage;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
     public void setBackground(String file) {
         background = Resources.getImage(file);
     }
@@ -306,5 +309,17 @@ public class GamePanel extends JComponent {
 
     public void toggleDebugInfo() {
         showDebugInfo = !showDebugInfo;
+    }
+
+    public void setServerTickRate(int tickRate) {
+        interpolation.setTickRate(tickRate);
+    }
+
+    public void setServerUpdateRate(int updateRate) {
+        interpolation.setUpdateRate(updateRate);
+    }
+
+    public void changeInterpolationDirection(GameObject gameObject, Direction direction) {
+        interpolation.changeDirection(gameObject, direction);
     }
 }

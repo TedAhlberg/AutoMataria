@@ -20,7 +20,6 @@ public class Player extends GameObject {
     private boolean dead, ready, invincible;
     private Direction previousDirection;
     private Pickup pickUpSlot;
-    private int tickRate;
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -39,6 +38,7 @@ public class Player extends GameObject {
         g.setColor(color);
         g.fillRect(x, y, width, height);
         g.setColor(color.darker());
+        /*
         Font font = new Font("Orbitron", Font.BOLD, 100);
         g.setFont(font);
         String displayName = name.toUpperCase();
@@ -46,6 +46,7 @@ public class Player extends GameObject {
         int stringWidth = fontMetrics.stringWidth(displayName);
         if (dead) displayName += " (DEAD)";
         g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
+        */
     }
 
     public void tick() {
@@ -161,28 +162,24 @@ public class Player extends GameObject {
     }
 
     private void checkCollisions() {
+        Rectangle playerRectangle = getBounds();
         for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Player) {
-                Player otherPlayer = (Player) gameObject;
-                if (otherPlayer.equals(this)) continue;
-                if (otherPlayer.getBounds().intersects(this.getBounds())) {
+            if (gameObject instanceof Wall) {
+                if (((Wall) gameObject).intersects(playerRectangle)) {
                     setDead(true);
                 }
-            } else if (gameObject instanceof Wall) {
-                if (((Wall) gameObject).intersects(this.getBounds())) {
+            } else if (playerRectangle.intersects(gameObject.getBounds())) {
+                if (gameObject instanceof Player) {
+                    if (gameObject.equals(this)) continue;
                     setDead(true);
-                }
-            } else if (gameObject instanceof InstantPickup) {
-                if (this.getBounds().intersects(gameObject.getBounds())) {
+                } else if (gameObject instanceof InstantPickup) {
                     ((InstantPickup) gameObject).use(this, gameObjects);
                     gameObjects.remove(gameObject);
-                    System.out.println("Player " + name + "used pickup " + gameObject);
-                }
-            } else if (gameObject instanceof Pickup) {
-                if (this.getBounds().intersects(gameObject.getBounds())) {
+                    System.out.println("Player " + name + " used pickup " + gameObject);
+                } else if (gameObject instanceof Pickup) {
                     this.setPickUp((Pickup) gameObject);
                     gameObjects.remove(gameObject);
-                    System.out.println("Player " + name + "picked up " + gameObject);
+                    System.out.println("Player " + name + " picked up " + gameObject);
                 }
             }
         }
@@ -202,12 +199,8 @@ public class Player extends GameObject {
         this.invincible = invincible;
     }
 
-    public void setDirection(Direction direction) {
+    public void setNextDirection(Direction direction) {
         inputQueue.add(direction);
-    }
-
-    public void setTickRate(int tickRate) {
-        this.tickRate = tickRate;
     }
 
     public void setPickUp(Pickup pickUp) {
@@ -254,10 +247,6 @@ public class Player extends GameObject {
         trail.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 150));
     }
 
-    public int getSpeedPerSecond() {
-        return (1000 / tickRate) * speed;
-    }
-
     public Trail getTrail() {
         return trail;
     }
@@ -266,21 +255,20 @@ public class Player extends GameObject {
     public String toString() {
         return "Player{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
+                ", color=" + color +
                 ", x=" + x +
                 ", y=" + y +
-                ", speed=" + speed +
                 ", width=" + width +
                 ", height=" + height +
+                ", speed=" + speed +
+                ", previousDirection=" + previousDirection +
                 ", direction=" + direction +
-                ", name='" + name + '\'' +
-                ", trail=" + trail +
-                ", color=" + color +
                 ", dead=" + dead +
                 ", ready=" + ready +
                 ", invincible=" + invincible +
-                ", previousDirection=" + previousDirection +
                 ", pickUpSlot=" + pickUpSlot +
-                ", tickRate=" + tickRate +
+                ", trail=" + trail +
                 '}';
     }
 }

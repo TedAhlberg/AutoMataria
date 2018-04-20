@@ -20,7 +20,7 @@ import java.util.*;
 public class MapEditorUI {
     private final JColorChooser colorChooser;
     private JPanel container, gameGridPanel, editModePanel, wallPanel, gameObjectPanel;
-    private JTextField tfPlayerSpeedTick, tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
+    private JTextField tfPlayerSpeedMultiplier, tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
     private JButton loadMapButton, saveMapButton, deleteMapButton, btnChangeWallColor, btnChangeWallBorderColor, clearMapButton, generatePositionsButton, deleteGameObjectButton, addNewGameObjectButton;
     private JComboBox<String> mapsComboBox, backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox, editModeComboBox;
     private JRadioButton drawWallRadioButton, eraseWallRadioButton, addStartingPositionRadioButton, removeStartingPositionRadioButton;
@@ -80,6 +80,7 @@ public class MapEditorUI {
         });
         specialGameObjectComboBox.addActionListener(e -> {
             selectedObject = (SpecialGameObject) specialGameObjectComboBox.getSelectedItem();
+            if (selectedObject == null) return;
             spawnIntervalTextField.setText("" + selectedObject.getSpawnInterval());
             spawnLimitTextField.setText("" + selectedObject.getSpawnLimit());
             visibleTimeTextField.setText("" + selectedObject.getVisibleTime());
@@ -238,7 +239,7 @@ public class MapEditorUI {
                 gridSizeComboBox.setSelectedItem(key);
             }
         });
-        tfPlayerSpeedTick.setText(Double.toString(currentMap.getPlayerSpeed() / (double) Game.GRID_PIXEL_SIZE));
+        tfPlayerSpeedMultiplier.setText(Double.toString(currentMap.getPlayerSpeedMultiplier() / (double) Game.GRID_PIXEL_SIZE));
         specialGameObjectComboBox.removeAllItems();
         for (SpecialGameObject specialGameObject : specialGameObjectsToSave) {
             specialGameObjectComboBox.addItem(specialGameObject);
@@ -251,7 +252,7 @@ public class MapEditorUI {
             currentMap.setBackground((String) backgroundImageComboBox.getSelectedItem());
             currentMap.setMusicTrack((String) musicTrackComboBox.getSelectedItem());
             currentMap.setPlayers((int) playersComboBox.getSelectedItem());
-            currentMap.setPlayerSpeed(Double.parseDouble(tfPlayerSpeedTick.getText()));
+            currentMap.setPlayerSpeedMultiplier(Double.parseDouble(tfPlayerSpeedMultiplier.getText()));
             currentMap.setGrid(gridSizes.get(gridSizeComboBox.getSelectedItem()));
             currentMap.setStartingPositions(startingPositionsToSave.toArray(new Point[0]));
             currentMap.setGameMapObjects(specialGameObjectsToSave.toArray(new SpecialGameObject[0]));
@@ -278,8 +279,8 @@ public class MapEditorUI {
         Wall startingPositionsMarker = new Wall(Color.RED, Color.WHITE);
         startingPositionsMarker.setId(ID.getNext());
         for (Point point : startingPositionsToSave) {
-            Rectangle startingPosition = new Rectangle(point);
-            startingPosition.setLocation(startingPosition.x * Game.GRID_PIXEL_SIZE, startingPosition.y * Game.GRID_PIXEL_SIZE);
+            Rectangle startingPosition = new Rectangle();
+            startingPosition.setLocation(point.x * Game.GRID_PIXEL_SIZE, point.y * Game.GRID_PIXEL_SIZE);
             startingPosition.setSize(new Dimension(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE));
             startingPositionsMarker.add(startingPosition);
         }
@@ -319,7 +320,7 @@ public class MapEditorUI {
         gameGridPanel = new JPanel(new GridLayout(1, 1));
         gameGridPanel.add(gamePanel);
         gamePanel.toggleDebugInfo();
-        gamePanel.start(6);
+        gamePanel.start(15);
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 
@@ -330,10 +331,11 @@ public class MapEditorUI {
             public void mouseReleased(MouseEvent end) {
                 int spaceWidth = gamePanel.getSize().width / currentMap.getGrid().width;
                 int spaceHeight = gamePanel.getSize().height / currentMap.getGrid().height;
-                Point startPoint = new Point(start.getX() / spaceWidth, start.getY() / spaceHeight);
-                Point endPoint = new Point(end.getX() / spaceWidth, end.getY() / spaceHeight);
-                startPoint.setLocation(startPoint.x * Game.GRID_PIXEL_SIZE, startPoint.y * Game.GRID_PIXEL_SIZE);
-                endPoint.setLocation(endPoint.x * Game.GRID_PIXEL_SIZE, endPoint.y * Game.GRID_PIXEL_SIZE);
+                Point startGridPoint = new Point(start.getX() / spaceWidth, start.getY() / spaceHeight);
+                Point endGridPoint = new Point(end.getX() / spaceWidth, end.getY() / spaceHeight);
+                Point startPoint = new Point(startGridPoint.x * Game.GRID_PIXEL_SIZE, startGridPoint.y * Game.GRID_PIXEL_SIZE);
+                Point endPoint = new Point(endGridPoint.x * Game.GRID_PIXEL_SIZE, endGridPoint.y * Game.GRID_PIXEL_SIZE);
+
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
                     int width = Game.GRID_PIXEL_SIZE + endPoint.x - startPoint.x;
                     int height = Game.GRID_PIXEL_SIZE + endPoint.y - startPoint.y;
@@ -345,9 +347,9 @@ public class MapEditorUI {
                         wall.remove(rectangle);
                     }
                 } else if (paintMode == PaintMode.AddStartPosition) {
-                    startingPositionsToSave.add(endPoint);
+                    startingPositionsToSave.add(endGridPoint);
                 } else if (paintMode == PaintMode.RemoveStartPosition) {
-                    startingPositionsToSave.remove(endPoint);
+                    startingPositionsToSave.remove(endGridPoint);
                 } else if (selectedObject != null && paintMode == PaintMode.ChangeGameObjectPosition) {
                     selectedObject.getGameObject().setX(endPoint.x);
                     selectedObject.getGameObject().setY(endPoint.y);
@@ -386,21 +388,21 @@ public class MapEditorUI {
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label1, gbc);
         final JLabel label2 = new JLabel();
-        label2.setText("Player Speed (grids/tick)");
+        label2.setText("Player Speed Multiplier");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 12;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label2, gbc);
-        tfPlayerSpeedTick = new JTextField();
-        tfPlayerSpeedTick.setText("0.25");
+        tfPlayerSpeedMultiplier = new JTextField();
+        tfPlayerSpeedMultiplier.setText("1.0");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 12;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(tfPlayerSpeedTick, gbc);
+        panel1.add(tfPlayerSpeedMultiplier, gbc);
         final JLabel label3 = new JLabel();
         label3.setText("Map Name");
         gbc = new GridBagConstraints();

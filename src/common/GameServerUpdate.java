@@ -1,6 +1,7 @@
 package common;
 
 import gameobjects.GameObject;
+import gameobjects.Player;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -10,12 +11,11 @@ import java.util.Collection;
  */
 public class GameServerUpdate implements Serializable {
     public GameState state;
-    public double readyPercentage;
     public Collection<GameObject> gameObjects;
+    public Player player;
 
-    public GameServerUpdate(GameState state, double readyPercentage, Collection<GameObject> gameObjects) {
+    public GameServerUpdate(GameState state, Collection<GameObject> gameObjects) {
         this.state = state;
-        this.readyPercentage = readyPercentage;
         this.gameObjects = gameObjects;
     }
 }

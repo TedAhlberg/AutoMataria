@@ -55,6 +55,15 @@ public abstract class GameObject implements Serializable {
         this.y = y;
     }
 
+    public Point getPoint() {
+        return new Point(x, y);
+    }
+
+    public void setPoint(Point point) {
+        x = point.x;
+        y = point.y;
+    }
+
     public int getSpeed() {
         return speed;
     }

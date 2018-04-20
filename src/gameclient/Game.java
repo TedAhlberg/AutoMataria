@@ -3,10 +3,12 @@ package gameclient;
 import common.Action;
 import common.*;
 import gameclient.keyinput.KeyInput;
+import gameobjects.GameObject;
 import gameobjects.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
 
 /**
  * @author Johannes Bluml
@@ -18,6 +20,8 @@ public class Game {
 
     private GameServerConnection client;
     private Audio backgroundMusic;
+    private HashSet<Player> players = new HashSet<>();
+    private Player player;
 
     public Game() {
         this("127.0.0.1", 32000, null, 100);
@@ -32,8 +36,8 @@ public class Game {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
 
         Window window = new Window(TITLE, windowSize);
-
         gamePanel = new GamePanel(window.getSize());
+
         window.setContentPane(gamePanel);
         window.pack();
 
@@ -44,28 +48,47 @@ public class Game {
             }
 
             public void onDisconnect() {
-                backgroundMusic.stop();
+                if (backgroundMusic != null) {
+                    backgroundMusic.stop();
+                }
                 gamePanel.stop();
                 window.dispose();
             }
 
             public void onData(Object data) {
-                if (data instanceof Player) {
-                    gamePanel.setPlayer((Player) data);
-                    System.out.println("CLIENT: I am player: " + data);
-                } else if (data instanceof GameMap) {
-                    GameMap map = (GameMap) data;
-                    System.out.println("CLIENT: Got MAP from server: " + map.getName());
-                    gamePanel.setBackground(map.getBackground());
-                    gamePanel.setGrid(map.getGrid());
-                    gamePanel.start(framesPerSecond);
-                    backgroundMusic = Audio.getSound(map.getMusicTrack());
-                    backgroundMusic.play(99);
-                } else if (data instanceof GameServerUpdate) {
-                    gamePanel.updateGameObjects(((GameServerUpdate) data).gameObjects);
-                    gamePanel.setGameState(((GameServerUpdate) data).state);
-                    if (((GameServerUpdate) data).state == GameState.Warmup) {
-                        gamePanel.setReadyPlayers(((GameServerUpdate) data).readyPercentage);
+                if (data instanceof GameServerUpdate) {
+                    GameServerUpdate message = (GameServerUpdate) data;
+                    gamePanel.updateGameObjects(message.gameObjects);
+                    gamePanel.setGameState(message.state);
+                    if (message.state == GameState.Warmup) {
+                        for (GameObject gameObject : message.gameObjects) {
+                            if (gameObject instanceof Player) {
+                                if (gameObject.equals(player)) {
+                                    player = (Player) gameObject;
+                                } else {
+                                    players.add((Player) gameObject);
+                                }
+                            }
+                        }
+                        gamePanel.setReadyPlayers(Utility.getReadyPlayerPercentage(players));
+                    }
+                    player = message.player;
+                } else if (data instanceof ConnectionMessage) {
+                    ConnectionMessage message = (ConnectionMessage) data;
+                    if (message.success) {
+                        gamePanel.setServerTickRate(message.tickRate);
+                        gamePanel.setServerUpdateRate(message.updateRate);
+                        player = message.player;
+                        GameMap map = message.currentMap;
+                        gamePanel.setBackground(map.getBackground());
+                        gamePanel.setGrid(map.getGrid());
+                        gamePanel.start(framesPerSecond);
+                        backgroundMusic = Audio.getSound(map.getMusicTrack());
+                        backgroundMusic.play(99);
+                        System.out.println("CLIENT: Connected to server successfully");
+                    } else {
+                        gamePanel.stop();
+                        System.out.println("CLIENT: Failed to connect to server");
                     }
                 }
             }
@@ -76,12 +99,6 @@ public class Game {
         gamePanel.requestFocus();
 
         client.connect(serverIP, serverPort);
-    }
-
-    public static int clamp(int var, int min, int max) {
-        if (var >= max) return max;
-        if (var <= min) return min;
-        return var;
     }
 
     public void onKeyPress(Action action) {
@@ -102,5 +119,6 @@ public class Game {
 
     public void onKeyPress(Direction direction) {
         client.send(direction);
+        gamePanel.changeInterpolationDirection(player, direction);
     }
 }

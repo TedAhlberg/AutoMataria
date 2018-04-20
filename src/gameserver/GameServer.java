@@ -4,11 +4,12 @@ import common.*;
 import gameclient.Game;
 import gameobjects.*;
 
-import javax.swing.text.Position;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Johannes Blüml
@@ -18,9 +19,13 @@ public class GameServer implements ClientListener {
     private final StartingPositions startingPositions = new StartingPositions();
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
-    private final int tickRate, updateRate, gameStartCountdown, gameOverCountDown;
+    private final int tickRate;
+    private final int amountOfTickBetweenUpdates;
+    private final int gameStartCountdown;
+    private final int gameOverCountDown;
     private final String serverName;
     private final int serverPort;
+    private int playerSpeed;
     private GameState state = GameState.Warmup;
     private GameMap currentMap;
     private ServerConnection server;
@@ -28,11 +33,12 @@ public class GameServer implements ClientListener {
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
 
-    public GameServer(String serverName, int serverPort, int tickRate, int updateRate, GameMap map) {
+    public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
         this.serverPort = serverPort;
         this.tickRate = tickRate;
-        this.updateRate = updateRate;
+        this.amountOfTickBetweenUpdates = amountOfTickBetweenUpdates;
+        this.playerSpeed = playerSpeed;
         this.gameStartCountdown = 5000;
         this.gameOverCountDown = 10000;
         this.currentMap = map;
@@ -50,23 +56,21 @@ public class GameServer implements ClientListener {
     }
 
     private void gameLoop() {
+        int ticksSinceLastUpdate = 0;
         long tickRate = this.tickRate * 1000000;
-        long updateRate = this.updateRate * 1000000;
         long previousTickTime = System.nanoTime();
-        long previousUpdateTime = System.nanoTime();
         while (running) {
             long nowTime = System.nanoTime();
             long timeSinceLastTick = nowTime - previousTickTime;
-            long timeSinceLastUpdate = nowTime - previousUpdateTime;
 
             if (timeSinceLastTick > tickRate) {
                 previousTickTime = System.nanoTime() - (timeSinceLastTick - tickRate);
                 tick();
-            }
-
-            if (timeSinceLastUpdate > updateRate) {
-                previousUpdateTime = System.nanoTime() - (timeSinceLastUpdate - updateRate);
-                update();
+                ticksSinceLastUpdate += 1;
+                if (ticksSinceLastUpdate >= amountOfTickBetweenUpdates) {
+                    update();
+                    ticksSinceLastUpdate = 0;
+                }
             }
 
             // WAIT BEFORE CONTINUING WITH THE GAMELOOP
@@ -82,8 +86,10 @@ public class GameServer implements ClientListener {
     }
 
     private void update() {
-        GameServerUpdate update = new GameServerUpdate(state, getReadyPlayerPercentage(), gameObjects);
+        GameServerUpdate update = new GameServerUpdate(state, gameObjects);
+
         for (Client client : connectedClients.keySet()) {
+            update.player = connectedClients.get(client);
             client.send(update);
         }
     }
@@ -93,7 +99,7 @@ public class GameServer implements ClientListener {
             gameObject.tick();
         }
 
-        if (state == GameState.Warmup && getReadyPlayerPercentage() >= 1.0 && connectedClients.size() > 0) {
+        if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 0) {
             System.out.println("SERVER STATE: Warmup -> Countdown");
             players.clear();
             players.addAll(connectedClients.values());
@@ -131,30 +137,39 @@ public class GameServer implements ClientListener {
         placeGameMapObjects();
     }
 
+    /**
+     * Iterate over all gameobjects from the current map
+     * if the gameobject should be added it has to be instantiated and have a new ID set
+     */
     private void placeGameMapObjects() {
         if (currentMap.getGameMapObjects() == null) return;
         for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
             GameObject gameObject = gameMapObject.getGameObject();
-            if (gameObject.getId() == 0) {
-                gameObject.setId(ID.getNext());
-            }
             if (gameMapObject.getSpawnInterval() == 0) {
                 if (!gameObjects.contains(gameObject)) {
                     if (!intersectsAnyGameObject(gameObject.getBounds())) {
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(gameObject.getX() - quarterGridPixel);
                         gameObject.setY(gameObject.getY() - quarterGridPixel);
-                        System.out.println("Placing on map (Instant): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
+                        gameObject.setId(ID.getNext());
                         gameObjects.add(gameObject);
+                        System.out.println("Placing on map (Instant): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
                     }
                 }
                 continue;
             }
             if (gameMapObject.getTimer() <= 0) {
                 if (gameObjects.contains(gameObject)) {
-                    System.out.println("Removing from map (Timed out): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
-                    gameObjects.remove(gameMapObject.getGameObject());
-                    gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                    if (gameObject instanceof Pickup) {
+                        if (!((Pickup) gameObject).isTaken()) {
+                            System.out.println("Removing from map (Timed out): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
+                            gameObjects.remove(gameMapObject.getGameObject());
+                            gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                        }
+                    } else {
+                        gameObjects.remove(gameMapObject.getGameObject());
+                        gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                    }
                 } else {
                     if (gameMapObject.isSpawnRandom()) {
                         Point point = findRandomMapPosition();
@@ -162,13 +177,22 @@ public class GameServer implements ClientListener {
                         gameObject.setX(point.x - quarterGridPixel);
                         gameObject.setY(point.y - quarterGridPixel);
                     }
-                    System.out.println("Placing on map (Spawn time): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
+                    gameObject.setId(ID.getNext());
                     gameObjects.add(gameObject);
                     gameMapObject.setTimer(gameMapObject.getVisibleTime());
+                    System.out.println("Placing on map (Spawn time): " + gameObject + " Position: " + new Point(gameObject.getX(), gameObject.getY()));
                 }
             } else {
                 gameMapObject.setTimer(gameMapObject.getTimer() - tickRate);
             }
+        }
+    }
+
+    private GameObject getNewGameObject(GameObject gameObject) {
+        try {
+            return gameObject.getClass().getConstructor(gameObject.getClass()).newInstance(gameObject);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            return null;
         }
     }
 
@@ -190,8 +214,8 @@ public class GameServer implements ClientListener {
             player.setReady(false);
             player.setDead(false);
             player.setPickUp(null);
-            player.setSpeed(currentMap.getPlayerSpeed());
-            player.setDirection(Direction.Static);
+            player.setSpeed(playerSpeed);
+            player.setNextDirection(Direction.Static);
 
             Point nextPosition = findRandomMapPosition();
             player.setX(nextPosition.x);
@@ -221,8 +245,8 @@ public class GameServer implements ClientListener {
                 player.setReady(false);
                 player.setDead(false);
                 player.setPickUp(null);
-                player.setSpeed(currentMap.getPlayerSpeed());
-                player.setDirection(Direction.Static);
+                player.setSpeed(playerSpeed);
+                player.setNextDirection(Direction.Static);
 
                 Point nextPosition = startingPositions.getNext();
                 player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
@@ -252,23 +276,11 @@ public class GameServer implements ClientListener {
         return false;
     }
 
-    private double getReadyPlayerPercentage() {
-        int players = connectedClients.size();
-        int readyPlayers = 0;
-        for (Player player : connectedClients.values()) {
-            if (player.isReady()) {
-                readyPlayers += 1;
-            }
-        }
-        return ((double) readyPlayers / (double) players);
-    }
-
     private Player newPlayer(String name) {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
         player.setId(ID.getNext());
-        player.setSpeed(currentMap.getPlayerSpeed());
-        player.setTickRate(tickRate);
+        player.setSpeed(playerSpeed);
 
         if (state == GameState.Warmup) {
             Point position = findRandomMapPosition();
@@ -304,7 +316,7 @@ public class GameServer implements ClientListener {
         if (value instanceof Direction && connectedClients.containsKey(client)) {
             Direction direction = (Direction) value;
             Player player = connectedClients.get(client);
-            player.setDirection(direction);
+            player.setNextDirection(direction);
         } else if (value instanceof Action) {
             Player player = connectedClients.get(client);
             if (value == Action.UsePickup) {
@@ -320,12 +332,11 @@ public class GameServer implements ClientListener {
             Player player = newPlayer((String) value);
             if (player != null) {
                 player.setColor(colors.takeColor());
-                System.out.println("Player connected: " + player);
-                client.send(player);
-                client.send(currentMap);
-                client.send(gameObjects);
                 connectedClients.put(client, player);
+                client.send(new ConnectionMessage(currentMap, tickRate, tickRate * amountOfTickBetweenUpdates, player));
+                System.out.println("Player connected: " + player);
             } else {
+                client.send(new ConnectionMessage());
                 System.out.println("Client tried to connect but no slots are available.");
             }
         }

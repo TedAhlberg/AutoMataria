@@ -10,6 +10,7 @@ import java.awt.*;
 public class Trail extends Wall {
     private static final long serialVersionUID = 2;
     private Player player;
+    private Point previousPosition = new Point();
 
     Trail(Player player) {
         super(new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50),
@@ -20,6 +21,9 @@ public class Trail extends Wall {
     }
 
     public void grow(Point previousPosition, Point newPosition) {
+        if (previousPosition == null) {
+            previousPosition = this.previousPosition;
+        }
         Direction currentDirection = player.getDirection(),
                 previousDirection = player.getPreviousDirection();
 
@@ -75,6 +79,8 @@ public class Trail extends Wall {
             rectangle.addPoint(newPosition.x, newPosition.y);
             add(rectangle);
         }
+
+        this.previousPosition = newPosition;
     }
 
     public Player getPlayer() {

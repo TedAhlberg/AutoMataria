@@ -11,7 +11,8 @@ import java.io.Serializable;
 public class GameMap implements Serializable {
     private static final long serialVersionUID = 1;
     private String name, background, musicTrack;
-    private int players, playerSpeed;
+    private int players;
+    private double playerSpeedMultiplier;
     private Dimension grid;
     private Point[] startingPositions;
     private SpecialGameObject[] gameMapObjects;
@@ -19,12 +20,12 @@ public class GameMap implements Serializable {
     public GameMap() {
     }
 
-    public GameMap(String name, String background, String musicTrack, int players, int playerSpeed, Dimension grid, Point[] startingPositions, SpecialGameObject[] gameMapObjects) {
+    public GameMap(String name, String background, String musicTrack, int players, double playerSpeedMultiplier, Dimension grid, Point[] startingPositions, SpecialGameObject[] gameMapObjects) {
         this.name = name;
         this.background = background;
         this.musicTrack = musicTrack;
         this.players = players;
-        this.playerSpeed = playerSpeed;
+        this.playerSpeedMultiplier = playerSpeedMultiplier;
         this.grid = grid;
         this.startingPositions = startingPositions;
         this.gameMapObjects = gameMapObjects;
@@ -62,16 +63,12 @@ public class GameMap implements Serializable {
         this.players = players;
     }
 
-    public int getPlayerSpeed() {
-        return playerSpeed;
+    public double getPlayerSpeedMultiplier() {
+        return playerSpeedMultiplier;
     }
 
-    public void setPlayerSpeed(int playerSpeed) {
-        this.playerSpeed = playerSpeed;
-    }
-
-    public void setPlayerSpeed(double playerSpeed) {
-        this.playerSpeed = (int) Math.round(Game.GRID_PIXEL_SIZE * playerSpeed);
+    public void setPlayerSpeedMultiplier(double playerSpeedMultiplier) {
+        this.playerSpeedMultiplier = playerSpeedMultiplier;
     }
 
     public Dimension getGrid() {

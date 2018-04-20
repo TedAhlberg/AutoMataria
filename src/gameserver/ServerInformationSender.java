@@ -46,7 +46,7 @@ public class ServerInformationSender extends Thread {
     }
     
     public static void main(String[] args) throws SocketException {
-        GameServer gameServer = new GameServer("Best Server", 3000, 10, 10, Maps.getInstance().get("Small Map 1"));
+        GameServer gameServer = new GameServer("Best Server", 3000, 10, 10, 50, Maps.getInstance().get("Small Map 1"));
         ServerInformationSender sis = new ServerInformationSender(gameServer);
         sis.start();
     }
