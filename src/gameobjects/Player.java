@@ -38,7 +38,6 @@ public class Player extends GameObject {
         g.setColor(color);
         g.fillRect(x, y, width, height);
         g.setColor(color.darker());
-        /*
         Font font = new Font("Orbitron", Font.BOLD, 100);
         g.setFont(font);
         String displayName = name.toUpperCase();
@@ -46,7 +45,6 @@ public class Player extends GameObject {
         int stringWidth = fontMetrics.stringWidth(displayName);
         if (dead) displayName += " (DEAD)";
         g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
-        */
     }
 
     public void tick() {
@@ -174,12 +172,10 @@ public class Player extends GameObject {
                     setDead(true);
                 } else if (gameObject instanceof InstantPickup) {
                     ((InstantPickup) gameObject).use(this, gameObjects);
-                    gameObjects.remove(gameObject);
-                    System.out.println("Player " + name + " used pickup " + gameObject);
+                    System.out.println("Player " + name + "used pickup " + gameObject);
                 } else if (gameObject instanceof Pickup) {
-                    this.setPickUp((Pickup) gameObject);
-                    gameObjects.remove(gameObject);
-                    System.out.println("Player " + name + " picked up " + gameObject);
+                    ((Pickup) gameObject).take(this);
+                    System.out.println("Player " + name + "picked up " + gameObject);
                 }
             }
         }
