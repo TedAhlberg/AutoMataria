@@ -8,61 +8,83 @@ import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.InstantPickup;
 import gameobjects.Player;
-import gameobjects.Trail;
+
+/**
+ * @author Dante Håkansson
+ * @author Johannes Blüml
+ * 
+ */
 
 public class SlowEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
-    private int timer = 30;
+    private int timer;
     private ConcurrentLinkedQueue<GameObject> gameObjects;
     private Player player;
 
     public SlowEnemiesPickup() {
-        this(0, 0);
+        this(0, 0, 60);
     }
 
-    public SlowEnemiesPickup(int x, int y) {
+    public SlowEnemiesPickup(int x, int y, int timer) {
         super(x, y);
+        this.timer = timer;
+    }
+
+    public SlowEnemiesPickup(SelfSpeedPickup object) {
+        this(object.getX(), object.getY(), object.getTimer());
+
     }
 
     public void tick() {
-        if (player == null) {
+        if (!taken || used) {
             return;
         }
+        
         timer--;
         if (timer <= 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player) {
                     if (!gameObject.equals(player)) {
-                        System.out.println("före"+gameObject.getSpeed());
-                        gameObject.setSpeed(gameObject.getSpeed() * 2);
-                        System.out.print("efter"+gameObject.getSpeed());
-
+                        int speed = gameObject.getSpeed();
+                        gameObject.setSpeed((int) (speed * 2));
+                        gameObjects.remove(this);
+                        used = true;
                     }
                 }
             }
-            player.setPickUp(null);
-            player = null;
-        } 
+        }    
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        
+        if(taken) {
+            return;
+        }
+        
         this.player = player;
         this.gameObjects = gameObjects;
+        
+        
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player) {
                 if (!gameObject.equals(player)) {
                     int speed = gameObject.getSpeed();
                     gameObject.setSpeed((int) (speed * 0.5));
                 }
-
             }
         }
-
+        taken = true;
     }
 
-    @Override
+    /**
+     * 
+     * @see gameobjects.GameObject#render(java.awt.Graphics2D)
+     */
     public void render(Graphics2D g) {
+        if (taken) {
+            return;
+        }
         BufferedImage image = Resources.getImage("SlowEnemiesPickup.png");
         g.drawImage(image, x, y, width, height, null);
 

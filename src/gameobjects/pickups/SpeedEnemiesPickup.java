@@ -11,7 +11,8 @@ import gameobjects.Player;
 
 /**
  * 
- * @author Erik Lundow
+ * @author Erik Lundow Pickup som vid upplockning ökar alla motståndares
+ *         hastighet.
  *
  */
 public class SpeedEnemiesPickup extends InstantPickup {
@@ -22,31 +23,40 @@ public class SpeedEnemiesPickup extends InstantPickup {
     private Player player;
 
     public SpeedEnemiesPickup() {
-        this(0, 0);
+        this(0, 0, 60);
     }
 
-    public SpeedEnemiesPickup(int x, int y) {
+    public SpeedEnemiesPickup(int x, int y, int timer) {
         super(x, y);
+        this.timer = timer;
     }
 
     public void tick() {
-        if (player == null)
+
+        if (!taken || !used)
             return;
 
         timer--;
-        if (timer <= 0) {
+        if (timer == 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player && !gameObject.equals(player)) {
-                    gameObject.setSpeed(gameObject.getSpeed() / 2);
+                    gameObject.setSpeed((gameObject.getSpeed() / 2));
+                    player.setPickUp(null);
+                    gameObjects.remove(this);
+                    System.out.println("blablabla");
                 }
             }
-            
+
             player.setPickUp(null);
-            player = null;
+            // player = null;
+
         }
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        if (taken) {
+            return;
+        }
         this.player = player;
         this.gameObjects = gameObjects;
 
@@ -56,11 +66,15 @@ public class SpeedEnemiesPickup extends InstantPickup {
                 gameObject.setSpeed((int) (speed * 2));
             }
         }
-
+        taken = true;
+        used = true;
     }
 
     public void render(Graphics2D g) {
-        BufferedImage image = Resources.getImage("PlaceHolder.png");
+        if (taken) {
+            return;
+        }
+        BufferedImage image = Resources.getImage("EnemiesSpeedUp.png");
         g.drawImage(image, x, y, width, height, null);
 
     }

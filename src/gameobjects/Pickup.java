@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class Pickup extends GameObject {
     private static final long serialVersionUID = 1;
+    protected boolean used, taken;
 
     public Pickup() {
         this(0, 0);
@@ -21,6 +22,21 @@ public abstract class Pickup extends GameObject {
     }
 
     public void tick() {
+    }
+
+    public boolean isTaken() {
+        return taken;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+    public void take(Player player) {
+        if(taken) {
+            return;
+        }
+        player.setPickUp(this);
+        taken = true;
     }
 
     public abstract void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects);
