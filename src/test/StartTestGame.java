@@ -9,6 +9,7 @@ import java.awt.*;
 import java.util.Arrays;
 
 import gameobjects.pickups.EraserPickup;
+import gameobjects.pickups.SelfSlowPickup;
 import gameobjects.pickups.SelfSpeedPickup;
 import gameobjects.pickups.SlowEnemiesPickup;
 import gameobjects.pickups.SpeedEnemiesPickup;
@@ -22,12 +23,14 @@ public class StartTestGame {
         // Create a map
         GameMap map = Maps.getInstance().get("Small Map 1");
         System.out.println(map);
-        SpecialGameObject[] gameMapObjects = Arrays.copyOf(map.getGameMapObjects(), map.getGameMapObjects().length + 1);
-        gameMapObjects[gameMapObjects.length - 1] = new SpecialGameObject(new SlowEnemiesPickup(200, 200, 60), 10000, 0, true, 15000);
-        gameMapObjects[gameMapObjects.length-1]= new SpecialGameObject(new SpeedEnemiesPickup(200,200,60),10000,0,true,15000);
+        SpecialGameObject[] gameMapObjects = new SpecialGameObject[3];
+        gameMapObjects[0] = new SpecialGameObject(new SlowEnemiesPickup(200, 200, 65), 10000, 0, true, 15000);
+        gameMapObjects[1]= new SpecialGameObject(new SpeedEnemiesPickup(200,200,65),10000,0,true,15000);
+        gameMapObjects[2] = new SpecialGameObject(new SelfSlowPickup(200,200,60), 10000,0,true,15000);
         map.setGameMapObjects(gameMapObjects);
         // Start a game server
-        new GameServer("AM-test-server", 32000, 50, 150, map);
+        map.setPlayerSpeed(0.5);
+        new GameServer("AM-test-server", 32000, 100, 150, map);
 
         // Start a game client
 //        new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);

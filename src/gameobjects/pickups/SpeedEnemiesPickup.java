@@ -11,7 +11,8 @@ import gameobjects.Player;
 
 /**
  * 
- * @author Erik Lundow
+ * @author Erik Lundow Pickup som vid upplockning ökar alla motståndares
+ *         hastighet.
  *
  */
 public class SpeedEnemiesPickup extends InstantPickup {
@@ -31,23 +32,31 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken || used)
+
+        if (!taken || !used)
             return;
 
         timer--;
-        if (timer <= 0) {
+        if (timer == 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player && !gameObject.equals(player)) {
-                    gameObject.setSpeed(gameObject.getSpeed() / 2);
+                    gameObject.setSpeed((gameObject.getSpeed() / 2));
+                    player.setPickUp(null);
+                    gameObjects.remove(this);
+                    System.out.println("blablabla");
                 }
             }
 
             player.setPickUp(null);
             // player = null;
+
         }
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+        if (taken) {
+            return;
+        }
         this.player = player;
         this.gameObjects = gameObjects;
 
@@ -57,10 +66,14 @@ public class SpeedEnemiesPickup extends InstantPickup {
                 gameObject.setSpeed((int) (speed * 2));
             }
         }
-
+        taken = true;
+        used = true;
     }
 
     public void render(Graphics2D g) {
+        if (taken) {
+            return;
+        }
         BufferedImage image = Resources.getImage("EnemiesSpeedUp.png");
         g.drawImage(image, x, y, width, height, null);
 
