@@ -29,7 +29,7 @@ public class Buttons extends JButton implements MouseListener {
 
     public Buttons(String filenamePressed, String filenameUnpressed) {
         this.setOpaque(false);
-        setPreferredSize(new Dimension(10, 10));
+        this.setBorder(null);
 
         this.imagePressed = Resources.getButtonImage(filenamePressed);
         this.imageUnpressed = Resources.getButtonImage(filenameUnpressed);
@@ -74,13 +74,19 @@ public class Buttons extends JButton implements MouseListener {
 
     public void setWidth(int width) {
         this.width = width;
+        setSize();
         repaint();
     }
 
     public void setHeight(int height) {
         this.height = height;
+        setSize();
         repaint();
 
+    }
+    
+    public void setSize() {
+        this.setPreferredSize(new Dimension(width, height));
     }
 
     public boolean isPressed() {
