@@ -5,8 +5,8 @@ import common.Utility;
 import gameobjects.*;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.concurrent.*;
 
 /**
  * Interpolation handles the smooth movement of a character between updates from the server
@@ -18,91 +18,41 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Interpolation {
     private final ConcurrentHashMap<GameObject, Point> currentPositions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<GameObject, Point> targetPositions = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<GameObject, Direction> clientDirection = new ConcurrentHashMap<>();
-    private int tickRate = 100, updateRate = 200;
+    private int tickRate = 100;
     private double currentDeltaTime;
 
     /**
      * Adds a target that a current object will be interpolated towards
      *
-     * @param gameObject A gameobject that will be used as target for the same gameobjects current position
+     * @param player A gameobject that will be used as target for the same gameobjects current position
      */
-    public void addTarget(GameObject gameObject) {
-        currentPositions.put(gameObject, gameObject.getPoint());
-
-        if (clientDirection.containsKey(gameObject)) {
-            // If player has changed direction locally check if we can change direction then change the interpolation target
-            if (clientDirection.get(gameObject) != gameObject.getDirection()) {
-                Point canChange = Utility.canChangeDirection(clientDirection.get(gameObject), gameObject.getPoint(), gameObject.getSpeed());
-                if (canChange != null) {
-                    gameObject.setPoint(canChange);
-                    gameObject.setDirection(clientDirection.get(gameObject));
-                    System.out.println("----> CLIENT CHANGED DIRECTION TO " + gameObject.getDirection());
-                }
-            }
+    public void addTarget(Player player) {
+        if (targetPositions.get(player) == null) {
+            targetPositions.put(player, player.getPoint());
         }
-
-        int distanceToNextUpdate = gameObject.getSpeed() * (updateRate / tickRate);
-        Point targetPoint = gameObject.getPoint();
-        switch (gameObject.getDirection()) {
-            case Up:
-                targetPoint.y -= distanceToNextUpdate;
-                break;
-            case Down:
-                targetPoint.y += distanceToNextUpdate;
-                break;
-            case Left:
-                targetPoint.x -= distanceToNextUpdate;
-                break;
-            case Right:
-                targetPoint.x += distanceToNextUpdate;
-                break;
-        }
-        targetPositions.put(gameObject, targetPoint);
-    }
-
-    public void changeDirection(GameObject gameObject, Direction direction) {
-        clientDirection.put(gameObject, direction);
+        currentPositions.put(player, targetPositions.get(player));
+        targetPositions.put(player, player.getPoint());
     }
 
     /**
      * Interpolate current position towards target position
      *
-     * @param gameObject The GameObject to interpolate (Move closer to target position)
+     * @param player The Player to interpolate (Move closer to target position)
      */
-    public void interpolate(GameObject gameObject) {
+    public void interpolate(Player player) {
+        Point current = currentPositions.get(player);
+        Point target = targetPositions.get(player);
 
-        Point current = currentPositions.get(gameObject);
+        if (target == null) return;
 
-        if (clientDirection.containsKey(gameObject)) {
-            // If player has changed direction locally check if we can change direction then change the interpolation target
-            if (clientDirection.get(gameObject) != gameObject.getDirection()) {
-                Point canChange = Utility.canChangeDirection(clientDirection.get(gameObject), current, gameObject.getSpeed());
-                if (canChange != null) {
-                    current = canChange;
-                    gameObject.setPoint(canChange);
-                    gameObject.setDirection(clientDirection.get(gameObject));
-                    System.out.println("----> CLIENT CHANGED DIRECTION TO " + gameObject.getDirection());
-                    addTarget(gameObject);
-                }
-            }
-        }
-
-        Point target = targetPositions.get(gameObject);
-
-        int speedPerSecond = (1000 / tickRate) * gameObject.getSpeed();
+        int speedPerSecond = (1000 / tickRate) * player.getSpeed();
         double interpolation = currentDeltaTime * speedPerSecond;
         double interpolatedX = approach(current.x, target.x, interpolation);
         double interpolatedY = approach(current.y, target.y, interpolation);
-        if (gameObject instanceof Player) {
-            Trail trail = ((Player) gameObject).getTrail();
-            if (trail != null) {
-                trail.grow(current, new Point((int) Math.ceil(interpolatedX), (int) Math.ceil(interpolatedY)));
-            }
-        }
+
         current.x = (int) Math.ceil(interpolatedX);
         current.y = (int) Math.ceil(interpolatedY);
-        gameObject.setPoint(current);
+        player.setPoint(current);
     }
 
     /**
@@ -123,13 +73,6 @@ public class Interpolation {
      */
     public void setTickRate(int tickRate) {
         this.tickRate = tickRate;
-    }
-
-    /**
-     * @param updateRate Update rate from server in milliseconds
-     */
-    public void setUpdateRate(int updateRate) {
-        this.updateRate = updateRate;
     }
 
     /**

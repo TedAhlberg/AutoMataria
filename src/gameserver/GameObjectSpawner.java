@@ -1,23 +1,19 @@
 package gameserver;
 
-import java.awt.Point;
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import common.GameMap;
-import common.ID;
-import common.SpecialGameObject;
-import common.Utility;
+import common.*;
 import gameclient.Game;
 import gameobjects.GameObject;
 import gameobjects.Pickup;
 
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * Spawns game objects from the map into the gameObjects collection.
- * 
+ *
  * @author Dante Håkansson
  * @author Johannes Blüml
- * 
  */
 
 public class GameObjectSpawner {
@@ -31,21 +27,19 @@ public class GameObjectSpawner {
         this.currentMap = currentMap;
         this.tickRate = tickRate;
     }
-    
+
     /**
      * Iterate over all gameobjects from the current map
      * if the gameobject should be added it has to be instantiated and have a new ID set
      */
-
     public void tick() {
-
         if (currentMap.getGameMapObjects() == null)
             return;
         for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
             GameObject gameObject = gameMapObject.getGameObject();
             if (gameMapObject.getSpawnInterval() == 0) {
                 if (!gameObjects.contains(gameObject)) {
-                    if (!Utility.intersectsAnyGameObject(gameObject.getBounds(), gameObjects)) {
+                    if (Utility.intersectsNoGameObject(gameObject.getBounds(), gameObjects)) {
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(gameObject.getX() - quarterGridPixel);
                         gameObject.setY(gameObject.getY() - quarterGridPixel);
@@ -72,7 +66,7 @@ public class GameObjectSpawner {
                     }
                 } else {
                     if (gameMapObject.isSpawnRandom()) {
-                        Point point = Utility.findRandomMapPosition(currentMap.getGrid());
+                        Point point = Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects);
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(point.x - quarterGridPixel);
                         gameObject.setY(point.y - quarterGridPixel);

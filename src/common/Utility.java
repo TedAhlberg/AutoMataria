@@ -1,9 +1,7 @@
 package common;
 
 import gameclient.Game;
-import gameobjects.GameObject;
-import gameobjects.Player;
-import gameobjects.Wall;
+import gameobjects.*;
 
 import java.awt.*;
 import java.util.Collection;
@@ -13,8 +11,8 @@ import java.util.Random;
  * @author Johannes Blüml
  */
 public class Utility {
-    
-    private static Random random =  new Random();
+
+    private static Random random = new Random();
 
     public static int clamp(int var, int min, int max) {
         if (var >= max)
@@ -39,66 +37,100 @@ public class Utility {
         return readyPlayerPercentage;
     }
 
-    public static Point findRandomMapPosition(Dimension grid) {
-
-        Rectangle rectangle = new Rectangle(getOneRandom(grid));
-        rectangle.x *= Game.GRID_PIXEL_SIZE;
-        rectangle.y *= Game.GRID_PIXEL_SIZE;
-        rectangle.width = Game.GRID_PIXEL_SIZE;
-        rectangle.height = Game.GRID_PIXEL_SIZE;
-
-        return rectangle.getLocation();
-
-    }
-
-    public static boolean intersectsAnyGameObject(Rectangle rect, Collection<GameObject> gameObjects) {
-        for (GameObject object : gameObjects) {
-            if ((object instanceof Player) && rect.getBounds().intersects(object.getBounds())) {
-                return true;
-            } else if ((object instanceof Wall) && ((Wall) object).intersects(rect.getBounds())) {
-                return true;
+    public static Point getRandomUniquePosition(Dimension grid, Collection<GameObject> gameObjects) {
+        Rectangle rectangle = getGridRectangle();
+        while (true) {
+            rectangle.setLocation(convertFromGrid(getRandomPosition(grid)));
+            System.out.println(rectangle);
+            if (intersectsNoGameObject(rectangle, gameObjects)) {
+                return rectangle.getLocation();
             }
         }
-        return false;
     }
 
-    public static Point getOneRandom(Dimension grid) {
+    public static boolean intersectsNoGameObject(Rectangle rect, Collection<GameObject> gameObjects) {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Wall) {
+                if (((Wall) gameObject).intersects(rect)) {
+                    return false;
+                }
+            } else if (rect.intersects(gameObject.getBounds())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Point getRandomPosition(Dimension grid) {
         int x = random.nextInt(grid.width);
         int y = random.nextInt(grid.height);
         return new Point(x, y);
     }
 
-    public static Point canChangeDirection(Direction direction, Point point, int speed) {
-        switch (direction) {
-        case Up:
-            for (int i = 0; i < speed; i++) {
-                if ((point.y - i) % Game.GRID_PIXEL_SIZE == 0) {
-                    return new Point(point.x, point.y - i);
-                }
+    /**
+     * Checks if there is a position in the future (but limited by the speed)
+     * where it is possible to change direction (only very close to grid boundaries)
+     *
+     * @param direction Direction that you want to change to
+     * @param point Current Position
+     * @param speed Speed that object is traveling at (used to limit grid change)
+     * @return -1 if not possible otherwise amount of pixels where direction change can happen
+     */
+    public static int canChangeDirection(Direction direction, Point point, int speed) {
+        if (point == null || direction == null) return -1;
+        int gridSize = Game.GRID_PIXEL_SIZE;
+        for (int i = 0; i < speed; i++) {
+            switch (direction) {
+                case Up:
+                    if ((point.y - i) % gridSize == 0) {
+                        return i;
+                    }
+                    break;
+                case Down:
+                    if ((point.y + i) % gridSize == 0) {
+                        return i;
+                    }
+                    break;
+                case Left:
+                    if ((point.x - i) % gridSize == 0) {
+                        return i;
+                    }
+                    break;
+                case Right:
+                    if ((point.x + i) % gridSize == 0) {
+                        return i;
+                    }
+                    break;
             }
-            break;
-        case Down:
-            for (int i = 0; i < speed; i++) {
-                if ((point.y + i) % Game.GRID_PIXEL_SIZE == 0) {
-                    return new Point(point.x, point.y + i);
-                }
-            }
-            break;
-        case Left:
-            for (int i = 0; i < speed; i++) {
-                if ((point.x - i) % Game.GRID_PIXEL_SIZE == 0) {
-                    return new Point(point.x - i, point.y);
-                }
-            }
-            break;
-        case Right:
-            for (int i = 0; i < speed; i++) {
-                if ((point.x + i) % Game.GRID_PIXEL_SIZE == 0) {
-                    return new Point(point.x + i, point.y);
-                }
-            }
-            break;
         }
-        return null;
+        return -1;
+    }
+
+    public static Point convertToGrid(Point point) {
+        int x = point.x / Game.GRID_PIXEL_SIZE;
+        int y = point.y / Game.GRID_PIXEL_SIZE;
+        return new Point(x, y);
+    }
+
+    public static Point convertFromGrid(Point point) {
+        int x = point.x * Game.GRID_PIXEL_SIZE;
+        int y = point.y * Game.GRID_PIXEL_SIZE;
+        return new Point(x, y);
+    }
+
+    public static Dimension convertToGrid(Dimension dimension) {
+        int width = dimension.width / Game.GRID_PIXEL_SIZE;
+        int height = dimension.height / Game.GRID_PIXEL_SIZE;
+        return new Dimension(width, height);
+    }
+
+    public static Dimension convertFromGrid(Dimension dimension) {
+        int width = dimension.width * Game.GRID_PIXEL_SIZE;
+        int height = dimension.height * Game.GRID_PIXEL_SIZE;
+        return new Dimension(width, height);
+    }
+
+    public static Rectangle getGridRectangle() {
+        return new Rectangle(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
     }
 }

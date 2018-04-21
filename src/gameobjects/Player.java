@@ -48,30 +48,24 @@ public class Player extends GameObject {
     }
 
     public void tick() {
-        if (pickUpSlot != null) {
-            pickUpSlot.tick();
-        }
         if (dead) return;
 
         updateDirection();
-        move(speed);
-
         checkCollisions();
     }
 
     private boolean teleportIfOutsideMap() {
-        int width = currentMap.getGrid().width * Game.GRID_PIXEL_SIZE;
-        int height = currentMap.getGrid().height * Game.GRID_PIXEL_SIZE;
+        Dimension map = Utility.convertFromGrid(currentMap.getGrid());
         if (x < 0) {
-            x = width;
+            x = map.width;
             return true;
-        } else if (x > width) {
+        } else if (x > map.width) {
             x = 0;
             return true;
         } else if (y < 0) {
-            y = height;
+            y = map.height;
             return true;
-        } else if (y > height) {
+        } else if (y > map.height) {
             y = 0;
             return true;
         }
@@ -80,63 +74,37 @@ public class Player extends GameObject {
 
     private void updateDirection() {
         previousDirection = direction;
-        if (inputQueue.isEmpty()) return;
 
+        if (inputQueue.isEmpty()) {
+            move(speed);
+            return;
+        }
         while (inputQueue.peek() == direction || inputQueue.size() > 2) {
             inputQueue.remove();
         }
-
-        if (inputQueue.isEmpty()) return;
-
-        switch (direction) {
-            case Up:
-                for (int i = 0; i < speed; i++) {
-                    if ((y - i) % Game.GRID_PIXEL_SIZE == 0) {
-                        move(i);
-                        previousDirection = direction;
-                        direction = inputQueue.remove();
-                        break;
-                    }
-                }
-                break;
-            case Down:
-                for (int i = 0; i < speed; i++) {
-                    if ((y + i) % Game.GRID_PIXEL_SIZE == 0) {
-                        move(i);
-                        previousDirection = direction;
-                        direction = inputQueue.remove();
-                        break;
-                    }
-                }
-                break;
-            case Left:
-                for (int i = 0; i < speed; i++) {
-                    if ((x - i) % Game.GRID_PIXEL_SIZE == 0) {
-                        move(i);
-                        previousDirection = direction;
-                        direction = inputQueue.remove();
-                        break;
-                    }
-                }
-                break;
-            case Right:
-                for (int i = 0; i < speed; i++) {
-                    if ((x + i) % Game.GRID_PIXEL_SIZE == 0) {
-                        move(i);
-                        previousDirection = direction;
-                        direction = inputQueue.remove();
-                        break;
-                    }
-                }
-                break;
-            default:
-                previousDirection = direction;
-                direction = inputQueue.remove();
+        if (inputQueue.isEmpty()) {
+            move(speed);
+            return;
         }
 
+        int canMoveIn = Utility.canChangeDirection(direction, getPoint(), speed);
+        if (canMoveIn > 0) {
+            // Moves player forward to closest grid boundary
+            move(canMoveIn);
+            previousDirection = direction;
+            direction = inputQueue.remove();
+        } else if (canMoveIn == 0 || direction == Direction.Static) {
+            // Moves player forward in the new direction
+            previousDirection = direction;
+            direction = inputQueue.remove();
+            move(speed);
+        } else {
+            // No direction change so just continue moving
+            move(speed);
+        }
     }
 
-    private void move(int amount) {
+    public void move(int amount) {
         Point previousPosition = new Point(x, y);
         switch (direction) {
             case Up:

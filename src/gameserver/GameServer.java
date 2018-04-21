@@ -5,7 +5,6 @@ import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class GameServer implements ClientListener {
     private final GameColors colors = new GameColors();
-    private final StartingPositions startingPositions = new StartingPositions();
+    private final StartingPositions startingPositions;
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private final int tickRate;
@@ -47,8 +46,11 @@ public class GameServer implements ClientListener {
         server = new ServerConnection(serverPort);
         new Thread(server).start();
         server.addListener(this);
+
         gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
-        
+        startingPositions = new StartingPositions();
+        startingPositions.generate(map.getGrid(), map.getPlayers());
+
         new Thread(() -> gameLoop()).start();
     }
 
@@ -101,21 +103,7 @@ public class GameServer implements ClientListener {
             gameObject.tick();
         }
 
-        if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 0) {
-            System.out.println("SERVER STATE: Warmup -> Countdown");
-            players.clear();
-            players.addAll(connectedClients.values());
-            state = GameState.Countdown;
-            currentCountdown = gameStartCountdown;
-        } else if (state == GameState.Countdown) {
-            if (currentCountdown <= 0) {
-                System.out.println("SERVER STATE: Countdown -> Running");
-                state = GameState.Running;
-                startNewGame();
-            } else {
-                currentCountdown -= tickRate;
-            }
-        } else if (state == GameState.Running) {
+        if (state == GameState.Running) {
             int alivePlayers = 0;
             for (Player player : players) {
                 if (!player.isDead()) {
@@ -126,6 +114,20 @@ public class GameServer implements ClientListener {
                 System.out.println("SERVER STATE: Running -> Game Over");
                 state = GameState.GameOver;
                 currentCountdown = gameOverCountDown;
+            }
+        } else if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
+                System.out.println("SERVER STATE: Warmup -> Countdown");
+                players.clear();
+                players.addAll(connectedClients.values());
+                state = GameState.Countdown;
+                currentCountdown = gameStartCountdown;
+        } else if (state == GameState.Countdown) {
+            if (currentCountdown <= 0) {
+                System.out.println("SERVER STATE: Countdown -> Running");
+                state = GameState.Running;
+                startNewGame();
+            } else {
+                currentCountdown -= tickRate;
             }
         } else if (state == GameState.GameOver) {
             if (currentCountdown <= 0) {
@@ -139,13 +141,9 @@ public class GameServer implements ClientListener {
         gameObjectSpawner.tick();
     }
 
-    
-    
-    
-
     private void startNewWarmup() {
         System.out.println("Starting Warmup");
-        Rectangle mapRectangle = getMapRectangle();
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
             GameObject gameObject = iterator.next();
@@ -155,7 +153,11 @@ public class GameServer implements ClientListener {
                 iterator.remove();
             }
         }
-
+        if (currentMap.getStartingPositions() != null) {
+            startingPositions.set(currentMap.getStartingPositions());
+        } else {
+            startingPositions.generate(currentMap.getGrid(), currentMap.getPlayers());
+        }
         connectedClients.forEach((client, player) -> {
             player.setInvincible(true);
             player.setReady(false);
@@ -163,13 +165,9 @@ public class GameServer implements ClientListener {
             player.setPickUp(null);
             player.setSpeed(playerSpeed);
             player.setNextDirection(Direction.Static);
-
-            Point nextPosition = Utility.findRandomMapPosition(currentMap.getGrid());
-            player.setX(nextPosition.x);
-            player.setY(nextPosition.y);
-
+            player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
             gameObjects.add(player);
-            System.out.println("Placing player " + player.getName() + " at " + nextPosition);
+            System.out.println("Placing player " + player.getName() + " at " + player.getPoint());
         });
     }
 
@@ -181,24 +179,20 @@ public class GameServer implements ClientListener {
             startingPositions.generate(currentMap.getGrid(), connectedClients.size());
         }
 
-        Rectangle mapRectangle = getMapRectangle();
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
         Iterator<GameObject> iterator = gameObjects.iterator();
         while (iterator.hasNext()) {
             GameObject gameObject = iterator.next();
             if (gameObject instanceof Player) {
                 Player player = (Player) gameObject;
-
                 player.setInvincible(false);
                 player.setReady(false);
                 player.setDead(false);
                 player.setPickUp(null);
                 player.setSpeed(playerSpeed);
                 player.setNextDirection(Direction.Static);
-
-                Point nextPosition = startingPositions.getNext();
-                player.setX(nextPosition.x * Game.GRID_PIXEL_SIZE);
-                player.setY(nextPosition.y * Game.GRID_PIXEL_SIZE);
-                System.out.println("Placing player " + player.getName() + " at " + nextPosition);
+                player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
+                System.out.println("Placing player " + player.getName() + " at " + player.getPoint());
             } else if (gameObject instanceof Trail) {
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
@@ -207,30 +201,24 @@ public class GameServer implements ClientListener {
         }
     }
 
-    private Rectangle getMapRectangle() {
-        Dimension grid = currentMap.getGrid();
-        return new Rectangle(grid.width * Game.GRID_PIXEL_SIZE, grid.height * Game.GRID_PIXEL_SIZE);
-    }
-
-   
-
     private Player newPlayer(String name) {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
         player.setId(ID.getNext());
         player.setSpeed(playerSpeed);
-
         if (state == GameState.Warmup) {
-            Point position = Utility.findRandomMapPosition(currentMap.getGrid());
-            player.setX(position.x);
-            player.setY(position.y);
+            player.setInvincible(true);
+            player.setReady(false);
+            player.setDead(false);
+            player.setPickUp(null);
+            player.setSpeed(playerSpeed);
+            player.setNextDirection(Direction.Static);
+            player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
         }
         return player;
     }
-
-   
 
     @Override
     public void onConnect(Client client) {
@@ -263,7 +251,7 @@ public class GameServer implements ClientListener {
                 System.out.println("Player connected: " + player);
             } else {
                 client.send(new ConnectionMessage());
-                System.out.println("Client tried to connect but no slots are available.");
+                System.out.println(value + " tried to connect but no slots are available.");
             }
         }
     }

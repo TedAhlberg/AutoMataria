@@ -89,7 +89,7 @@ public class GamePanel extends JComponent {
         for (GameObject updated : updatedGameObjects) {
             gameObjects.add(updated);
             if (updated instanceof Player && interpolateMovement) {
-                interpolation.addTarget(updated);
+                interpolation.addTarget((Player) updated);
             }
         }
         updatedGameObjects.clear();
@@ -188,7 +188,7 @@ public class GamePanel extends JComponent {
 
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player && interpolateMovement) {
-                interpolation.interpolate(gameObject);
+                interpolation.interpolate((Player) gameObject);
             }
             gameObject.render(g2);
         }
@@ -313,13 +313,5 @@ public class GamePanel extends JComponent {
 
     public void setServerTickRate(int tickRate) {
         interpolation.setTickRate(tickRate);
-    }
-
-    public void setServerUpdateRate(int updateRate) {
-        interpolation.setUpdateRate(updateRate);
-    }
-
-    public void changeInterpolationDirection(GameObject gameObject, Direction direction) {
-        interpolation.changeDirection(gameObject, direction);
     }
 }

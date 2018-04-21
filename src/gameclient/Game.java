@@ -77,7 +77,6 @@ public class Game {
                     ConnectionMessage message = (ConnectionMessage) data;
                     if (message.success) {
                         gamePanel.setServerTickRate(message.tickRate);
-                        gamePanel.setServerUpdateRate(message.updateRate);
                         player = message.player;
                         GameMap map = message.currentMap;
                         gamePanel.setBackground(map.getBackground());
@@ -119,6 +118,5 @@ public class Game {
 
     public void onKeyPress(Direction direction) {
         client.send(direction);
-        gamePanel.changeInterpolationDirection(player, direction);
     }
 }
