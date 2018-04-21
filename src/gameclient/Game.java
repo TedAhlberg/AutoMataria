@@ -82,7 +82,7 @@ public class Game {
                         gamePanel.setBackground(map.getBackground());
                         gamePanel.setGrid(map.getGrid());
                         gamePanel.start(framesPerSecond);
-                        backgroundMusic = Audio.getSound(map.getMusicTrack());
+                        backgroundMusic = Audio.getTrack(map.getMusicTrack());
                         backgroundMusic.play(99);
                         System.out.println("CLIENT: Connected to server successfully");
                     } else {

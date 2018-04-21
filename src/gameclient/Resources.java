@@ -11,11 +11,13 @@ import java.util.HashMap;
 /**
  * @author Dante Håkansson
  * @author Johannes Bluml
+ * @author Erik Lundow
  */
 public class Resources {
     public static Path imagePath = FileSystems.getDefault().getPath("resources", "images");
     public static Path musicPath = FileSystems.getDefault().getPath("resources", "Music");
     public static Path buttonPath = FileSystems.getDefault().getPath("resources", "images", "Buttons");
+    public static Path sfxPath = FileSystems.getDefault().getPath("resources", "SFX");
     private static HashMap<String, BufferedImage> images = new HashMap<>();
 
     private Resources() {
@@ -36,6 +38,7 @@ public class Resources {
             return null;
         }
     }
+
 
     public static BufferedImage getButtonImage(String name) {
         return getImage(buttonPath, name);
@@ -90,7 +93,8 @@ public class Resources {
         }
 
         // Create a compatible image
-        BufferedImage compatibleImage = config.createCompatibleImage(image.getWidth(), image.getHeight(), image.getTransparency());
+        BufferedImage compatibleImage = config.createCompatibleImage(image.getWidth(), image.getHeight(),
+                image.getTransparency());
         Graphics2D g2d = (Graphics2D) compatibleImage.getGraphics();
         g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
