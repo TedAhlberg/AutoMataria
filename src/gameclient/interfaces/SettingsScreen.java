@@ -15,8 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import gameclient.Audio;
 import gameclient.Buttons;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
 
@@ -63,6 +65,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSpacing = new JLabel(" ");
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
+    private SoundFx sfx = new SoundFx();
 
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -156,7 +159,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         lblMusic.setForeground(Color.white);
         ;
         pnlMusic.add(lblMusic, c);
-        
+
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
@@ -229,7 +232,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
-
+            sfx.menuSelect();
             if (lblMusic.getText() == "ON")
                 lblMusic.setText("OFF");
             else
@@ -238,17 +241,23 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnSFX) {
-
-            if (lblSFX.getText() == "ON")
+            if (lblSFX.getText() == "ON") {
+                sfx.menuSelect();
+                Audio.sfxOff();
                 lblSFX.setText("OFF");
-            else
-                lblSFX.setText("ON");
+            }
 
+            else {
+                lblSFX.setText("ON");
+                Audio.sfxOff();
+                sfx.menuSelect();
+
+            }
         }
 
         if (e.getSource() == btnChange) {
+            sfx.menuSelect();
             user = JOptionPane.showInputDialog("Input new username");
-
             if (user != null)
                 lblUserName.setText("USER: " + user);
 
