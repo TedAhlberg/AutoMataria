@@ -20,10 +20,10 @@ import java.util.*;
 public class MapEditorUI {
     private final JColorChooser colorChooser;
     private Dimension windowSize;
-    private JPanel container, editModePanel, wallPanel, gameObjectPanel;
-    private JTextField tfPlayerSpeedMultiplier, tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
+    private JPanel container, wallPanel, gameObjectPanel;
+    private JTextField tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
     private JButton loadMapButton, saveMapButton, deleteMapButton, btnChangeWallColor, btnChangeWallBorderColor, clearMapButton, generatePositionsButton, deleteGameObjectButton, addNewGameObjectButton;
-    private JComboBox<String> mapsComboBox, backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox, editModeComboBox;
+    private JComboBox<String> mapsComboBox, backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox;
     private JRadioButton drawWallRadioButton, eraseWallRadioButton, addStartingPositionRadioButton, removeStartingPositionRadioButton;
     private JComboBox<Integer> playersComboBox;
     private JComboBox<SpecialGameObject> specialGameObjectComboBox;
@@ -34,19 +34,22 @@ public class MapEditorUI {
     private JPanel pickupPanel;
     private JRadioButton setFixedPositionRadioButton;
     private JPanel gamePanelContainer;
+    private JComboBox<Double> playerSpeedComboBox;
 
     private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
     private ArrayList<SpecialGameObject> specialGameObjectsToSave = new ArrayList<>();
     private HashSet<Point> startingPositionsToSave = new HashSet<>();
     private GamePanel gamePanel;
-    private GameMap currentMap = new GameMap();
+    private GameMap currentMap;
     private PaintMode paintMode = PaintMode.AddStartPosition;
     private SpecialGameObject selectedObject;
 
     private HashMap<String, Dimension> gridSizes;
 
     public MapEditorUI(Dimension windowSize) {
+        currentMap = new GameMap();
+        currentMap.setGrid(new Dimension(75, 75));
         this.windowSize = windowSize;
         $$$setupUI$$$();
 
@@ -240,7 +243,7 @@ public class MapEditorUI {
                 gridSizeComboBox.setSelectedItem(key);
             }
         });
-        tfPlayerSpeedMultiplier.setText(Double.toString(currentMap.getPlayerSpeedMultiplier()));
+        playerSpeedComboBox.setSelectedItem(currentMap.getPlayerSpeedMultiplier());
         specialGameObjectComboBox.removeAllItems();
         for (SpecialGameObject specialGameObject : specialGameObjectsToSave) {
             specialGameObjectComboBox.addItem(specialGameObject);
@@ -253,13 +256,15 @@ public class MapEditorUI {
             currentMap.setBackground((String) backgroundImageComboBox.getSelectedItem());
             currentMap.setMusicTrack((String) musicTrackComboBox.getSelectedItem());
             currentMap.setPlayers((int) playersComboBox.getSelectedItem());
-            currentMap.setPlayerSpeedMultiplier(Double.parseDouble(tfPlayerSpeedMultiplier.getText()));
+            currentMap.setPlayerSpeedMultiplier((Double) playerSpeedComboBox.getSelectedItem());
             currentMap.setGrid(gridSizes.get(gridSizeComboBox.getSelectedItem()));
             currentMap.setStartingPositions(startingPositionsToSave.toArray(new Point[0]));
             currentMap.setGameMapObjects(specialGameObjectsToSave.toArray(new SpecialGameObject[0]));
 
         } catch (NumberFormatException error) {
             JOptionPane.showMessageDialog(container, "Please enter only numbers.");
+        } catch (NullPointerException error) {
+            error.printStackTrace();
         }
     }
 
@@ -314,8 +319,16 @@ public class MapEditorUI {
         gridSizeComboBox = new JComboBox<>(new String[]{
                 "Huge", "Large", "Normal", "Small", "Tiny"
         });
+        gridSizeComboBox.setSelectedItem(currentMap.getGrid());
 
-        playersComboBox = new JComboBox<>(new Integer[]{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
+        playersComboBox = new JComboBox<>(new Integer[]{
+                2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        });
+        playersComboBox.setSelectedItem(4);
+        playerSpeedComboBox = new JComboBox<>(new Double[]{
+                0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0
+        });
+        playerSpeedComboBox.setSelectedItem(1.0);
 
         gamePanelContainer = new JPanel(null);
         gamePanel = new GamePanel(windowSize);
@@ -336,8 +349,6 @@ public class MapEditorUI {
                 Point endGridPoint = new Point(end.getX() / spaceWidth, end.getY() / spaceHeight);
                 Point startPoint = Utility.convertFromGrid(startGridPoint);
                 Point endPoint = Utility.convertFromGrid(endGridPoint);
-                //Point startPoint = new Point(startGridPoint.x * Game.GRID_PIXEL_SIZE, startGridPoint.y * Game.GRID_PIXEL_SIZE);
-                //Point endPoint = new Point(endGridPoint.x * Game.GRID_PIXEL_SIZE, endGridPoint.y * Game.GRID_PIXEL_SIZE);
 
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
                     int width = Game.GRID_PIXEL_SIZE + endPoint.x - startPoint.x;
@@ -378,7 +389,7 @@ public class MapEditorUI {
         panel1.setLayout(new GridBagLayout());
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
-        gbc.gridx = 0;
+        gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -392,20 +403,12 @@ public class MapEditorUI {
         panel1.add(label1, gbc);
         final JLabel label2 = new JLabel();
         label2.setText("Player Speed Multiplier");
+        label2.setToolTipText("Increases (above 1.0) or decreases (below 1.0) all players speed on this map");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 12;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label2, gbc);
-        tfPlayerSpeedMultiplier = new JTextField();
-        tfPlayerSpeedMultiplier.setText("1.0");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 12;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(tfPlayerSpeedMultiplier, gbc);
         final JLabel label3 = new JLabel();
         label3.setText("Map Name");
         gbc = new GridBagConstraints();
@@ -486,6 +489,7 @@ public class MapEditorUI {
         gbc.gridx = 4;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 30;
         panel1.add(spacer6, gbc);
         final JLabel label6 = new JLabel();
         label6.setText("Grid Size");
@@ -520,13 +524,6 @@ public class MapEditorUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(gridSizeComboBox, gbc);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 10;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(playersComboBox, gbc);
         deleteMapButton = new JButton();
         deleteMapButton.setText("Delete Map");
         gbc = new GridBagConstraints();
@@ -635,9 +632,12 @@ public class MapEditorUI {
         gameObjectComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("gameobjects.Wall");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.EraserPickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.ReversePickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.SelfSlowPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.SelfSpeedPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.SlowEnemiesPickup");
-        defaultComboBoxModel1.addElement("gameobjects.pickups.EraserPickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.SpeedEnemiesPickup");
         gameObjectComboBox.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -913,12 +913,33 @@ public class MapEditorUI {
         gbc.fill = GridBagConstraints.VERTICAL;
         panel1.add(spacer28, gbc);
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
+        gbc.gridx = 2;
+        gbc.gridy = 10;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(playersComboBox, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 12;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(playerSpeedComboBox, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         container.add(gamePanelContainer, gbc);
+        final JPanel spacer29 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 30;
+        container.add(spacer29, gbc);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(drawWallRadioButton);

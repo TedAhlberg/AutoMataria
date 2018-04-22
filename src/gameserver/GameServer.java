@@ -38,7 +38,7 @@ public class GameServer implements ClientListener {
         this.serverPort = serverPort;
         this.tickRate = tickRate;
         this.amountOfTickBetweenUpdates = amountOfTickBetweenUpdates;
-        this.playerSpeed = playerSpeed;
+        this.playerSpeed = (int) Math.round(playerSpeed * map.getPlayerSpeedMultiplier());
         this.gameStartCountdown = 5000;
         this.gameOverCountDown = 10000;
         this.currentMap = map;

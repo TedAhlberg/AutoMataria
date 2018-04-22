@@ -11,7 +11,7 @@
     <children>
       <grid id="a9661" layout-manager="GridBagLayout">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="1.0"/>
         </constraints>
         <properties/>
@@ -33,17 +33,7 @@
             </constraints>
             <properties>
               <text value="Player Speed Multiplier"/>
-            </properties>
-          </component>
-          <component id="abd9d" class="javax.swing.JTextField" binding="tfPlayerSpeedMultiplier">
-            <constraints>
-              <grid row="12" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="1.0"/>
+              <toolTipText value="Increases (above 1.0) or decreases (below 1.0) all players speed on this map"/>
             </properties>
           </component>
           <component id="c1075" class="javax.swing.JLabel">
@@ -132,7 +122,7 @@
           <hspacer id="f3e57">
             <constraints>
               <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
+              <gridbag weightx="0.0" weighty="0.0" ipadx="30"/>
             </constraints>
           </hspacer>
           <component id="50d8b" class="javax.swing.JLabel">
@@ -165,13 +155,6 @@
           <component id="eff4" class="javax.swing.JComboBox" binding="gridSizeComboBox" custom-create="true">
             <constraints>
               <grid row="8" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="f5d8b" class="javax.swing.JComboBox" binding="playersComboBox" custom-create="true">
-            <constraints>
-              <grid row="10" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties/>
@@ -309,9 +292,12 @@
                     <properties>
                       <model>
                         <item value="gameobjects.Wall"/>
+                        <item value="gameobjects.pickups.EraserPickup"/>
+                        <item value="gameobjects.pickups.ReversePickup"/>
+                        <item value="gameobjects.pickups.SelfSlowPickup"/>
                         <item value="gameobjects.pickups.SelfSpeedPickup"/>
                         <item value="gameobjects.pickups.SlowEnemiesPickup"/>
-                        <item value="gameobjects.pickups.EraserPickup"/>
+                        <item value="gameobjects.pickups.SpeedEnemiesPickup"/>
                       </model>
                     </properties>
                   </component>
@@ -643,17 +629,37 @@
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
           </vspacer>
+          <component id="6f7e3" class="javax.swing.JComboBox" binding="playersComboBox" custom-create="true">
+            <constraints>
+              <grid row="10" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="4fd10" class="javax.swing.JComboBox" binding="playerSpeedComboBox" custom-create="true">
+            <constraints>
+              <grid row="12" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
         </children>
       </grid>
       <grid id="f9cb1" binding="gamePanelContainer" custom-create="true" layout-manager="GridBagLayout">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <gridbag weightx="1.0" weighty="1.0"/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children/>
       </grid>
+      <hspacer id="fbb3d">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0" ipadx="30"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
   <buttonGroups>

@@ -253,7 +253,21 @@ public class GamePanel extends JComponent {
      */
     private void drawBackground(Graphics2D g2) {
         if (background != null) {
-            g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+            double ratio = Math.max((double) getWidth() / background.getWidth(), (double) getHeight() / background.getHeight());
+            int width = (int) Math.round(background.getWidth() * ratio);
+            int height = (int) Math.round(background.getHeight() * ratio);
+
+            int x = 0;
+            if (width > getWidth()) {
+                x = -((width - getWidth()) / 2);
+            }
+            int y = 0;
+            if (height > getHeight()) {
+                y = -((height - getHeight()) / 2);
+            }
+
+            //g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+            g2.drawImage(background, x, y, width, height, null);
         } else {
             g2.setColor(backgroundColor);
             g2.fillRect(0, 0, getWidth(), getHeight());
