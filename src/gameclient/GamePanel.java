@@ -1,8 +1,8 @@
 package gameclient;
 
-import common.Direction;
 import common.GameState;
-import gameobjects.*;
+import gameobjects.GameObject;
+import gameobjects.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,22 +22,19 @@ import java.util.LinkedList;
  * @author Johannes Blüml
  */
 public class GamePanel extends JComponent {
+    private final Object lock = new Object();
     private final LinkedList<GameObject> gameObjects = new LinkedList<>();
-    private final LinkedList<GameObject> updatedGameObjects = new LinkedList<>();
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
-    private double scale = 1.0;
     private BufferedImage background, gridBuffer;
     private Color backgroundColor = Color.BLACK;
-    private long timeBetweenRenders;
-    private int fps, frameCounter;
-    private boolean interpolateMovement = true, showDebugInfo = true, updateReady = false;
     private GameState gameState = GameState.Warmup;
-    private double playerReadyPercentage;
     private Dimension windowSize;
-    private int maxFPS;
-    private long lastUpdateTime;
+    private double scale = 1.0, playerReadyPercentage;
+    private long timeBetweenRenders;
+    private int fps, frameCounter, maxFPS;
+    private boolean interpolateMovement = true, showDebugInfo = true;
 
     /**
      * The GamePanel will always try to match the provided size depending on the grid size of the game
@@ -80,20 +77,15 @@ public class GamePanel extends JComponent {
      * @param updatedGameObjects Collection of updated GameObjects
      */
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
-        this.updatedGameObjects.addAll(updatedGameObjects);
-        updateReady = true;
-    }
-
-    private void updateGameObjects() {
-        gameObjects.clear();
-        for (GameObject updated : updatedGameObjects) {
-            gameObjects.add(updated);
-            if (updated instanceof Player && interpolateMovement) {
-                interpolation.addTarget((Player) updated);
+        synchronized (lock) {
+            gameObjects.clear();
+            for (GameObject updated : updatedGameObjects) {
+                gameObjects.add(updated);
+                if (updated instanceof Player && interpolateMovement) {
+                    interpolation.addTarget((Player) updated);
+                }
             }
         }
-        updatedGameObjects.clear();
-        updateReady = false;
     }
 
     /**
@@ -111,8 +103,8 @@ public class GamePanel extends JComponent {
             int width = gridWidth * gridSize.width;
             int height = gridHeight * gridSize.height;
             Dimension panelSize = new Dimension(width, height);
-
             setSize(panelSize);
+
             gridBuffer = createCompatibleImage(panelSize);
             Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
             g2.setPaint(new Color(1, 1, 1, 0.05f));
@@ -150,7 +142,9 @@ public class GamePanel extends JComponent {
             }
 
             // Render the game to the panel
-            paintImmediately(new Rectangle(getSize()));
+            synchronized (lock) {
+                paintImmediately(new Rectangle(getSize()));
+            }
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
@@ -162,7 +156,6 @@ public class GamePanel extends JComponent {
 
             // Wait until timeBetweenRenders nanoseconds have elapsed since the render began
             while (nowTime - previousTime < timeBetweenRenders) {
-                if (updateReady) updateGameObjects();
                 Thread.yield();
                 try {
                     Thread.sleep(1);
