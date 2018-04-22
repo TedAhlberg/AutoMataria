@@ -5,6 +5,7 @@ import gameclient.*;
 import gameclient.Window;
 import gameobjects.*;
 import gameserver.StartingPositions;
+import jdk.jshell.execution.Util;
 
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
@@ -19,7 +20,8 @@ import java.util.*;
  */
 public class MapEditorUI {
     private final JColorChooser colorChooser;
-    private JPanel container, gameGridPanel, editModePanel, wallPanel, gameObjectPanel;
+    private Dimension windowSize;
+    private JPanel container, editModePanel, wallPanel, gameObjectPanel;
     private JTextField tfPlayerSpeedMultiplier, tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
     private JButton loadMapButton, saveMapButton, deleteMapButton, btnChangeWallColor, btnChangeWallBorderColor, clearMapButton, generatePositionsButton, deleteGameObjectButton, addNewGameObjectButton;
     private JComboBox<String> mapsComboBox, backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox, editModeComboBox;
@@ -32,6 +34,7 @@ public class MapEditorUI {
     private JPanel gameObjectSettingsPanel;
     private JPanel pickupPanel;
     private JRadioButton setFixedPositionRadioButton;
+    private JPanel gamePanelContainer;
 
     private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
@@ -44,8 +47,8 @@ public class MapEditorUI {
 
     private HashMap<String, Dimension> gridSizes;
 
-    public MapEditorUI(GamePanel gamePanel) {
-        this.gamePanel = gamePanel;
+    public MapEditorUI(Dimension windowSize) {
+        this.windowSize = windowSize;
         $$$setupUI$$$();
 
         addNewGameObjectButton.addActionListener(e -> {
@@ -168,8 +171,7 @@ public class MapEditorUI {
 
     public static void main(String[] args) {
         Window window = new Window("Auto-Mataria Map Editor", null);
-        GamePanel gamePanel = new GamePanel(window.getSize());
-        window.setContentPane(new MapEditorUI(gamePanel).container);
+        window.setContentPane(new MapEditorUI(window.getSize()).container);
         window.pack();
     }
 
@@ -239,7 +241,7 @@ public class MapEditorUI {
                 gridSizeComboBox.setSelectedItem(key);
             }
         });
-        tfPlayerSpeedMultiplier.setText(Double.toString(currentMap.getPlayerSpeedMultiplier() / (double) Game.GRID_PIXEL_SIZE));
+        tfPlayerSpeedMultiplier.setText(Double.toString(currentMap.getPlayerSpeedMultiplier()));
         specialGameObjectComboBox.removeAllItems();
         for (SpecialGameObject specialGameObject : specialGameObjectsToSave) {
             specialGameObjectComboBox.addItem(specialGameObject);
@@ -279,8 +281,7 @@ public class MapEditorUI {
         Wall startingPositionsMarker = new Wall(Color.RED, Color.WHITE);
         startingPositionsMarker.setId(ID.getNext());
         for (Point point : startingPositionsToSave) {
-            Rectangle startingPosition = new Rectangle();
-            startingPosition.setLocation(point.x * Game.GRID_PIXEL_SIZE, point.y * Game.GRID_PIXEL_SIZE);
+            Rectangle startingPosition = new Rectangle(Utility.convertFromGrid(point));
             startingPosition.setSize(new Dimension(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE));
             startingPositionsMarker.add(startingPosition);
         }
@@ -317,8 +318,9 @@ public class MapEditorUI {
 
         playersComboBox = new JComboBox<>(new Integer[]{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
 
-        gameGridPanel = new JPanel(new GridLayout(1, 1));
-        gameGridPanel.add(gamePanel);
+        gamePanelContainer = new JPanel(null);
+        gamePanel = new GamePanel(windowSize);
+        gamePanelContainer.add(gamePanel);
         gamePanel.toggleDebugInfo();
         gamePanel.start(15);
         gamePanel.addMouseListener(new MouseAdapter() {
@@ -333,8 +335,10 @@ public class MapEditorUI {
                 int spaceHeight = gamePanel.getSize().height / currentMap.getGrid().height;
                 Point startGridPoint = new Point(start.getX() / spaceWidth, start.getY() / spaceHeight);
                 Point endGridPoint = new Point(end.getX() / spaceWidth, end.getY() / spaceHeight);
-                Point startPoint = new Point(startGridPoint.x * Game.GRID_PIXEL_SIZE, startGridPoint.y * Game.GRID_PIXEL_SIZE);
-                Point endPoint = new Point(endGridPoint.x * Game.GRID_PIXEL_SIZE, endGridPoint.y * Game.GRID_PIXEL_SIZE);
+                Point startPoint = Utility.convertFromGrid(startGridPoint);
+                Point endPoint = Utility.convertFromGrid(endGridPoint);
+                //Point startPoint = new Point(startGridPoint.x * Game.GRID_PIXEL_SIZE, startGridPoint.y * Game.GRID_PIXEL_SIZE);
+                //Point endPoint = new Point(endGridPoint.x * Game.GRID_PIXEL_SIZE, endGridPoint.y * Game.GRID_PIXEL_SIZE);
 
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
                     int width = Game.GRID_PIXEL_SIZE + endPoint.x - startPoint.x;
@@ -909,15 +913,13 @@ public class MapEditorUI {
         gbc.gridy = 15;
         gbc.fill = GridBagConstraints.VERTICAL;
         panel1.add(spacer28, gbc);
-        gameGridPanel.setMinimumSize(new Dimension(0, 0));
-        gameGridPanel.setPreferredSize(new Dimension(0, 0));
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        container.add(gameGridPanel, gbc);
+        container.add(gamePanelContainer, gbc);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(drawWallRadioButton);

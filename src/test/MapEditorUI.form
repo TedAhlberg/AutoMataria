@@ -645,15 +645,12 @@
           </vspacer>
         </children>
       </grid>
-      <grid id="6099b" binding="gameGridPanel" custom-create="true" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="f9cb1" binding="gamePanelContainer" custom-create="true" layout-manager="GridBagLayout">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <gridbag weightx="1.0" weighty="1.0"/>
         </constraints>
-        <properties>
-          <minimumSize width="0" height="0"/>
-          <preferredSize width="0" height="0"/>
-        </properties>
+        <properties/>
         <border type="none"/>
         <children/>
       </grid>
