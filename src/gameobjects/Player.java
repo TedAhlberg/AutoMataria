@@ -56,17 +56,17 @@ public class Player extends GameObject {
 
     private boolean teleportIfOutsideMap() {
         Dimension map = Utility.convertFromGrid(currentMap.getGrid());
-        if (x < 0) {
-            x = map.width;
+        if (x <= -width) {
+            x += map.width;
             return true;
-        } else if (x > map.width) {
-            x = 0;
+        } else if (x >= map.width) {
+            x -= map.width + width;
             return true;
-        } else if (y < 0) {
-            y = map.height;
+        } else if (y <= -height) {
+            y += map.height;
             return true;
-        } else if (y > map.height) {
-            y = 0;
+        } else if (y >= map.height) {
+            y -= map.height + height;
             return true;
         }
         return false;
