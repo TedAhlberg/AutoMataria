@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author Johannes Blüml
  */
-public class GameServer implements ClientListener {
+public class GameServer implements ClientListener, MessageListener{
     private final GameColors colors = new GameColors();
     private final StartingPositions startingPositions;
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
@@ -204,6 +204,7 @@ public class GameServer implements ClientListener {
     private Player newPlayer(String name) {
         if (connectedClients.size() > currentMap.getPlayers()) return null;
         Player player = new Player(name, gameObjects, currentMap);
+        player.setListener(this);
         player.setId(ID.getNext());
         player.setSpeed(playerSpeed);
         if (state == GameState.Warmup) {
@@ -282,5 +283,11 @@ public class GameServer implements ClientListener {
                 + connectedClients.size() + "\0";
 
         return string.getBytes();
+    }
+
+
+    public void newMessage(Message message) {
+        connectedClients.forEach( (client, player) -> { client.send(message); });
+        
     }
 }

@@ -17,6 +17,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @Erik Lundow
  */
 public class Audio implements Runnable {
+    
     private SourceDataLine line;
     private AudioInputStream currentDecoded;
     private AudioInputStream encoded;

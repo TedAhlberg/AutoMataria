@@ -90,6 +90,12 @@ public class Game {
                         System.out.println("CLIENT: Failed to connect to server");
                     }
                 }
+                else if(data instanceof SoundMessage) {
+                   
+                    if(((SoundMessage)data).sfx.equals("crash")) {
+                        SoundFx.getInstance().crash();
+                    }
+                }
             }
         });
 

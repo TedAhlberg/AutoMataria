@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import gameclient.Buttons;
@@ -89,14 +90,16 @@ public class TestStartScreen extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        // JFrame frame = new JFrame();
-        // frame.setMinimumSize(new Dimension(400, 400));
-        // frame.setPreferredSize(new Dimension(930, 800));
-        //// TestStartScreen sc = new TestStartScreen();
-        // frame.add(sc);
-        // frame.pack();
-        // frame.setVisible(true);
-        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         JFrame frame = new JFrame();
+        UserInterface userInterface = new UserInterface();
+//         frame.setMinimumSize(new Dimension(400, 400));
+//         frame.setPreferredSize(new Dimension(930, 800));
+         TestStartScreen sc = new TestStartScreen(userInterface);
+         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+         frame.add(sc);
+         frame.pack();
+         frame.setVisible(true);
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void addListeners() {
