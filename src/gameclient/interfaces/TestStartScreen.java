@@ -105,11 +105,16 @@ public class TestStartScreen extends JPanel implements ActionListener {
     public void addListeners() {
         btnSettings.addActionListener(this);
         btnExit.addActionListener(this);
+        btnCreate.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSettings) {
             userInterface.changeScreen("SettingsScreen");
+        }
+        
+        if(e.getSource()==btnCreate) {
+            userInterface.changeScreen("ServerScreen");
         }
         
         if(e.getSource()==btnExit) {

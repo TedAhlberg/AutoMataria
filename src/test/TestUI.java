@@ -13,7 +13,7 @@ import java.awt.event.MouseEvent;
  * @author Johannes Blüml
  */
 public class TestUI {
-    private JPanel container;
+    public JPanel container;
     private JTextField tfClientIP, tfClientPort, tfServerPort;
     private JButton btnStartGame, btnStartServer, btnStopServer;
     private JCheckBox checkFullscreen;
@@ -39,7 +39,7 @@ public class TestUI {
             playerSpeed = 50;
     private boolean fullscreen;
 
-    TestUI() {
+    public TestUI() {
         $$$setupUI$$$();
         container.addMouseListener(new MouseAdapter() {
             @Override
