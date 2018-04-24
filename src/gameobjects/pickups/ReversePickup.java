@@ -10,7 +10,8 @@ import gameobjects.InstantPickup;
 import gameobjects.Player;
 
 /**
- * Pickup that reverses left and right directions for all opponents.
+ * Pickup that reverses all movements for a short amount of time for all
+ * opponents.
  * 
  * @author Dante Håkansson
  *
@@ -35,11 +36,10 @@ public class ReversePickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken) {
+        if (!taken || used) {
             return;
         }
         timer--;
-        System.out.println(timer);
         if (timer == 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player) {
@@ -48,9 +48,8 @@ public class ReversePickup extends InstantPickup {
                     }
                 }
             }
+            used = true;
         }
-        used = true;
-        taken = true;
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
