@@ -1,10 +1,22 @@
 package gameobjects;
 
-import common.*;
-import gameclient.Game;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import common.Direction;
+import common.GameMap;
+import common.ID;
+import common.GameEventMessage;
+import common.Utility;
+import gameclient.Game;
+import gameclient.SoundFx;
+import gameserver.MessageListener;
 
 /**
  * @author Johannes Blüml
@@ -20,7 +32,8 @@ public class Player extends GameObject {
     private boolean dead, ready, invincible, reversed;
     private Direction previousDirection;
     private Pickup pickUpSlot;
-   
+    transient private MessageListener listener;
+    
 
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -33,6 +46,12 @@ public class Player extends GameObject {
         previousDirection = direction;
         trail = new Trail(this);
         trail.setId(ID.getNext());
+        
+    }
+    
+    public void setListener(MessageListener listener) {
+        this.listener=listener;
+        
     }
 
     public void render(Graphics2D g) {
@@ -134,13 +153,17 @@ public class Player extends GameObject {
             if (gameObject instanceof Wall) {
                 if (((Wall) gameObject).intersects(playerRectangle)) {
                     setDead(true);
+                    listener.newMessage(new GameEventMessage("crash"));
                 }
             } else if (playerRectangle.intersects(gameObject.getBounds())) {
                 if (gameObject instanceof Player) {
                     if (gameObject.equals(this)) continue;
                     setDead(true);
+                    listener.newMessage(new GameEventMessage("crash"));
+                    ((Player) gameObject).setDead(true);
                 } else if (gameObject instanceof InstantPickup) {
                     ((InstantPickup) gameObject).use(this, gameObjects);
+                    listener.newMessage(new GameEventMessage(gameObject.getClass().getName()));
                     System.out.println("Player " + name + "used pickup " + gameObject);
                 } else if (gameObject instanceof Pickup) {
                     ((Pickup) gameObject).take(this);

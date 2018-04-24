@@ -18,12 +18,17 @@ import gameobjects.Player;
 public class SelfSlowPickup extends Pickup {
     private static final long serialVersionUID = 1;
 
-    private int timer;
+    private int timer = 60;
     private Player player;
     private ConcurrentLinkedQueue<GameObject> gameObjects;
 
     public SelfSlowPickup() {
         this(0, 0, 60);
+    }
+
+    public SelfSlowPickup(SelfSlowPickup object) {
+        this(object.getX(), object.getY(), object.getTimer());
+
     }
 
     public SelfSlowPickup(int x, int y, int timer) {
@@ -63,5 +68,9 @@ public class SelfSlowPickup extends Pickup {
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
         used = true;
+    }
+
+    private int getTimer() {
+        return timer;
     }
 }

@@ -28,6 +28,10 @@ import gameclient.keyinput.KeyBindingsPanel;
 
 public class SettingsScreen extends JPanel implements ActionListener {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
@@ -65,7 +69,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSpacing = new JLabel(" ");
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
-    private SoundFx sfx = new SoundFx();
 
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -110,8 +113,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.ipadx = 10;
-        btnChange.setWidth(60);
-        btnChange.setHeight(25);
+        btnChange.setPreferredSize(new Dimension(60,25));
         pnlUserName.add(btnChange, c);
 
         // Add UserNamePanel
@@ -145,8 +147,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 1;
         c.ipadx = 10;
-        btnMusic.setWidth(60);
-        btnMusic.setHeight(25);
+        btnMusic.setPreferredSize(new Dimension(60,25));
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -172,8 +173,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 4;
         c.ipadx = 10;
-        btnSFX.setWidth(60);
-        btnSFX.setHeight(25);
+        btnSFX.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnSFX, c);
 
         // Add SFXLabel
@@ -206,8 +206,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 8;
         c.gridx = 1;
         c.anchor = GridBagConstraints.SOUTH;
-        btnExit.setWidth(60);
-        btnExit.setHeight(25);
+        btnExit.setPreferredSize(new Dimension(60,25));
         pnlHead.add(btnExit, c);
         add(pnlHead);
 
@@ -232,7 +231,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
-            sfx.menuSelect();
             if (lblMusic.getText() == "ON")
                 lblMusic.setText("OFF");
             else
@@ -242,7 +240,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         if (e.getSource() == btnSFX) {
             if (lblSFX.getText() == "ON") {
-                sfx.menuSelect();
                 Audio.sfxOff();
                 lblSFX.setText("OFF");
             }
@@ -250,21 +247,20 @@ public class SettingsScreen extends JPanel implements ActionListener {
             else {
                 lblSFX.setText("ON");
                 Audio.sfxOff();
-                sfx.menuSelect();
 
             }
         }
 
         if (e.getSource() == btnChange) {
-            sfx.menuSelect();
             user = JOptionPane.showInputDialog("Input new username");
             if (user != null)
                 lblUserName.setText("USER: " + user);
 
         }
 
-        if (e.getSource() == btnExit)
+        if (e.getSource() == btnExit) {
             userInterface.changeScreen("StartScreen");
+        }
 
     }
 

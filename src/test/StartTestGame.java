@@ -18,8 +18,10 @@ public class StartTestGame {
         SpecialGameObject[] gameMapObjects = new SpecialGameObject[4];
         gameMapObjects[0] = new SpecialGameObject(new SlowEnemiesPickup(200, 200, 65), 10000, 0, true, 15000);
         gameMapObjects[1] = new SpecialGameObject(new SpeedEnemiesPickup(200, 200, 65), 10000, 0, true, 15000);
-        gameMapObjects[2] = new SpecialGameObject(new SelfSpeedPickup(200, 200, 60), 10000, 0, true, 15000);
-        gameMapObjects[3] = new SpecialGameObject(new ReversePickup(200, 200, 100), 10000, 0, true, 15000);
+        gameMapObjects[2] = new SpecialGameObject(new ReversePickup(200, 200, 100), 10000, 0, true, 15000);
+        gameMapObjects[3] = new SpecialGameObject(new SelfSlowPickup(200, 200, 60), 10000, 0, true, 15000);
+        gameMapObjects[4] = new SpecialGameObject(new SelfSpeedPickup(200, 200, 60), 1000, 0, true, 15000);
+
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server
@@ -27,7 +29,7 @@ public class StartTestGame {
 
         // Start a game client
         new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 60);
-        //new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
-        //new Game("127.0.0.1", 32000, 100);
+        // new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
+        // new Game("127.0.0.1", 32000, 100);
     }
 }

@@ -2,6 +2,7 @@ package gameclient.interfaces;
 import java.awt.CardLayout;
 import javax.swing.JPanel;
 import gameclient.Window;
+import test.TestUI;
 
 public class UserInterface extends JPanel {
 
@@ -12,9 +13,9 @@ public class UserInterface extends JPanel {
 
     public UserInterface() {
         setLayout(cardLayout);
-
         add(new TestStartScreen(this), "StartScreen");
         add(new SettingsScreen(this), "SettingsScreen");
+        add(new TestUI().container,"ServerScreen");
 
     }
 

@@ -90,6 +90,9 @@ public class Game {
                         System.out.println("CLIENT: Failed to connect to server");
                     }
                 }
+                else if(data instanceof GameEventMessage) {
+                   readGameEventMessage((GameEventMessage) data);
+                }
             }
         });
 
@@ -116,6 +119,15 @@ public class Game {
         }
     }
 
+    public void readGameEventMessage(GameEventMessage message) {
+        if((message).data.equals("crash")) {
+            SoundFx.getInstance().crash();
+        }
+        else if((message).data.equals("SelfSpeedPickup")) {
+            SoundFx.getInstance().SelfSpeedPickup();
+        }
+        
+    }
     public void onKeyPress(Direction direction) {
         client.send(direction);
     }
