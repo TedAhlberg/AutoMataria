@@ -113,8 +113,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.weighty = 1;
         c.anchor = GridBagConstraints.EAST;
         c.ipadx = 10;
-        btnChange.setWidth(60);
-        btnChange.setHeight(25);
+        btnChange.setPreferredSize(new Dimension(60,25));
         pnlUserName.add(btnChange, c);
 
         // Add UserNamePanel
@@ -148,8 +147,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 1;
         c.ipadx = 10;
-        btnMusic.setWidth(60);
-        btnMusic.setHeight(25);
+        btnMusic.setPreferredSize(new Dimension(60,25));
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -175,8 +173,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 4;
         c.ipadx = 10;
-        btnSFX.setWidth(60);
-        btnSFX.setHeight(25);
+        btnSFX.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnSFX, c);
 
         // Add SFXLabel
@@ -209,8 +206,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 8;
         c.gridx = 1;
         c.anchor = GridBagConstraints.SOUTH;
-        btnExit.setWidth(60);
-        btnExit.setHeight(25);
+        btnExit.setPreferredSize(new Dimension(60,25));
         pnlHead.add(btnExit, c);
         add(pnlHead);
 
