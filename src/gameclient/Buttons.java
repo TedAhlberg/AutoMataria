@@ -15,16 +15,16 @@ import javax.swing.JButton;
 public class Buttons extends JButton implements MouseListener {
     private BufferedImage imagePressed;
     private BufferedImage imageUnpressed;
-    private int width = 100, height = 50;
     private boolean isPressed = false;
-    private States state = States.Unpressed;
 
-    private enum States {
-        Pressed, Unpressed;
-    };
+    public Buttons(String text) {
+        this("Blank_Pressed.png", "Blank_Unpressed.png");
+        this.setText(text);
+    }
 
     public Buttons(String filenamePressed, String filenameUnpressed) {
         this.setOpaque(false);
+        this.setContentAreaFilled(false);
         this.setBorder(null);
 
         this.imagePressed = Resources.getButtonImage(filenamePressed);
@@ -33,59 +33,35 @@ public class Buttons extends JButton implements MouseListener {
         this.addMouseListener(this);
     }
 
-    public void mouseClicked(MouseEvent play) {
+    public void mouseClicked(MouseEvent event) {
 
     }
 
-    public void mouseEntered(MouseEvent play) {
+    public void mouseEntered(MouseEvent event) {
 
     }
 
-    public void mouseExited(MouseEvent play) {
+    public void mouseExited(MouseEvent event) {
 
     }
 
-    public void mousePressed(MouseEvent play) {
-        state = States.Pressed;
+    public void mousePressed(MouseEvent event) {
         isPressed = true;
         repaint();
     }
 
-    public void mouseReleased(MouseEvent play) {
-        state = States.Unpressed;
+    public void mouseReleased(MouseEvent event) {
         isPressed = false;
         repaint();
     }
 
     protected void paintComponent(Graphics g) {
-        if (state == States.Pressed) {
-            g.drawImage(imagePressed, 0, 0, width, height, null);
+        if (isPressed) {
+            g.drawImage(imagePressed, 0, 0, getWidth(), getHeight(), null);
 
-        } else if (state == States.Unpressed) {
-            g.drawImage(imageUnpressed, 0, 0, width, height, null);
-
+        } else {
+            g.drawImage(imageUnpressed, 0, 0, getWidth(), getHeight(), null);
         }
-
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-        setSize();
-        repaint();
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-        setSize();
-        repaint();
-
-    }
-    
-    public void setSize() {
-        this.setPreferredSize(new Dimension(width, height));
-    }
-
-    public boolean isPressed() {
-        return isPressed;
+        super.paintComponent(g);
     }
 }
