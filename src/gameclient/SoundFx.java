@@ -11,6 +11,7 @@ public class SoundFx {
 
     private Audio menuSelect;
     private Audio crash;
+    private Audio selfSpeedPickup;
     private static SoundFx instance = null;
 
     protected SoundFx() {
@@ -33,6 +34,11 @@ public class SoundFx {
         crash = Audio.getSFX("Crash.mp3");
         play(crash);
 
+    }
+    
+    public void SelfSpeedPickup() {
+        selfSpeedPickup=Audio.getSFX("SelfSpeedPickup.mp3");
+        play(selfSpeedPickup);
     }
 
     public void play(Audio sfx) {

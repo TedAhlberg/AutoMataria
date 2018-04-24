@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import common.Direction;
 import common.GameMap;
 import common.ID;
-import common.SoundMessage;
+import common.GameEventMessage;
 import common.Utility;
 import gameclient.Game;
 import gameclient.SoundFx;
@@ -152,17 +152,17 @@ public class Player extends GameObject {
             if (gameObject instanceof Wall) {
                 if (((Wall) gameObject).intersects(playerRectangle)) {
                     setDead(true);
-                    listener.newMessage(new SoundMessage("crash"));
+                    listener.newMessage(new GameEventMessage("crash"));
                 }
             } else if (playerRectangle.intersects(gameObject.getBounds())) {
                 if (gameObject instanceof Player) {
                     if (gameObject.equals(this)) continue;
                     setDead(true);
-                    listener.newMessage(new SoundMessage("crash"));
+                    listener.newMessage(new GameEventMessage("crash"));
                     ((Player) gameObject).setDead(true);
                 } else if (gameObject instanceof InstantPickup) {
                     ((InstantPickup) gameObject).use(this, gameObjects);
-                    listener.newMessage(new SoundMessage(gameObject.getClass().getName()));
+                    listener.newMessage(new GameEventMessage(gameObject.getClass().getName()));
                     System.out.println("Player " + name + "used pickup " + gameObject);
                 } else if (gameObject instanceof Pickup) {
                     ((Pickup) gameObject).take(this);

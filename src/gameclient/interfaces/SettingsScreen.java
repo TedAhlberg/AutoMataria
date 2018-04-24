@@ -28,6 +28,10 @@ import gameclient.keyinput.KeyBindingsPanel;
 
 public class SettingsScreen extends JPanel implements ActionListener {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
@@ -65,7 +69,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSpacing = new JLabel(" ");
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
-
 
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -232,7 +235,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
-            SoundFx.getInstance().menuSelect();
             if (lblMusic.getText() == "ON")
                 lblMusic.setText("OFF");
             else
@@ -242,7 +244,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         if (e.getSource() == btnSFX) {
             if (lblSFX.getText() == "ON") {
-                SoundFx.getInstance().menuSelect();
                 Audio.sfxOff();
                 lblSFX.setText("OFF");
             }
@@ -250,21 +251,20 @@ public class SettingsScreen extends JPanel implements ActionListener {
             else {
                 lblSFX.setText("ON");
                 Audio.sfxOff();
-                SoundFx.getInstance().menuSelect();
 
             }
         }
 
         if (e.getSource() == btnChange) {
-            SoundFx.getInstance().menuSelect();
             user = JOptionPane.showInputDialog("Input new username");
             if (user != null)
                 lblUserName.setText("USER: " + user);
 
         }
 
-        if (e.getSource() == btnExit)
+        if (e.getSource() == btnExit) {
             userInterface.changeScreen("StartScreen");
+        }
 
     }
 

@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import gameclient.Buttons;
 import gameclient.Resources;
+import gameclient.SoundFx;
 
 /**
  * @author Henrik Olofsson & Erik Lundow
@@ -111,13 +112,16 @@ public class TestStartScreen extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSettings) {
             userInterface.changeScreen("SettingsScreen");
+            SoundFx.getInstance().menuSelect();
         }
         
         if(e.getSource()==btnCreate) {
             userInterface.changeScreen("ServerScreen");
+            SoundFx.getInstance().menuSelect();
         }
         
         if(e.getSource()==btnExit) {
+            SoundFx.getInstance().menuSelect();
             System.exit(0);
         }
 

@@ -6,14 +6,15 @@ import java.io.Serializable;
  * @author eriklundow
  *
  */
-public class SoundMessage extends Message {
+public class GameEventMessage extends Message {
 
-    public String sfx;
+    public String data;
     private static final long serialVersionUID = 1L;
 
-   public SoundMessage(String sfx) {
-       this.sfx=sfx;  
+   public GameEventMessage(String data) {
+       this.data=data;  
    }
+
 
 
 
