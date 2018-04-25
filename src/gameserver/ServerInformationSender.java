@@ -21,8 +21,12 @@ public class ServerInformationSender extends Thread {
     private GameServer gameServer;
 
     
-    public ServerInformationSender(GameServer gameServer) throws SocketException {
-        socket = new DatagramSocket();
+    public ServerInformationSender(GameServer gameServer) {
+        try {
+            socket = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         this.gameServer = gameServer;
     }
     
