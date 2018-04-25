@@ -11,13 +11,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import gameclient.Buttons;
+import gameclient.MusicManager;
 import gameclient.Resources;
+import gameclient.SoundFx;
 
 /**
  * @author Henrik Olofsson & Erik Lundow
  */
 public class TestStartScreen extends JPanel implements ActionListener {
-
     private BufferedImage bfImage;
     private String playFilenamePressed = "Play_Pressed.png";
     private String playFilenameUnpressed = "Play_Unpressed.png";
@@ -43,35 +44,35 @@ public class TestStartScreen extends JPanel implements ActionListener {
 
     public TestStartScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-
+        MusicManager.getInstance().gameTrack1();
         bfImage = Resources.getImage(("Auto-Mataria.png"));
 
-        btnPlay.setMinimumSize(new Dimension(120, 120));
-        btnPlay.setPreferredSize(new Dimension(120, 120));
+        btnPlay.setMinimumSize(new Dimension(120, 100));
+        btnPlay.setPreferredSize(new Dimension(120, 100));
         // add(btnPlay);
         pnlGrid.add(btnPlay);
 
-        btnBrowse.setMinimumSize(new Dimension(120, 120));
-        btnBrowse.setPreferredSize(new Dimension(120, 120));
+        btnBrowse.setMinimumSize(new Dimension(120, 100));
+        btnBrowse.setPreferredSize(new Dimension(120, 100));
         // add(btnBrowse);
         pnlGrid.add(btnBrowse);
 
-        btnCreate.setMinimumSize(new Dimension(120, 120));
-        btnCreate.setPreferredSize(new Dimension(120, 120));
+        btnCreate.setMinimumSize(new Dimension(120, 100));
+        btnCreate.setPreferredSize(new Dimension(120, 100));
         // add(btnCreate);
         pnlGrid.add(btnCreate);
 
-        btnSettings.setMinimumSize(new Dimension(120, 120));
-        btnSettings.setPreferredSize(new Dimension(120, 120));
+        btnSettings.setMinimumSize(new Dimension(120, 100));
+        btnSettings.setPreferredSize(new Dimension(120, 100));
         // add(btnSettings);
         pnlGrid.add(btnSettings);
 
-        btnHighScore.setMinimumSize(new Dimension(120, 120));
-        btnHighScore.setPreferredSize(new Dimension(120, 120));
+        btnHighScore.setMinimumSize(new Dimension(120, 100));
+        btnHighScore.setPreferredSize(new Dimension(120, 100));
         pnlGrid.add(btnHighScore);
         
-        btnExit.setMinimumSize(new Dimension(120, 120));
-        btnExit.setMaximumSize(new Dimension(120, 120));
+        btnExit.setMinimumSize(new Dimension(120, 100));
+        btnExit.setMaximumSize(new Dimension(120, 100));
         pnlGrid.add(btnExit);
         // add(btnHighScore);
         pnlGrid.setOpaque(false);
@@ -85,7 +86,7 @@ public class TestStartScreen extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(bfImage, 0, 0, getWidth(), getHeight(), null);
-        pnlGrid.setLocation(getWidth() / 6, getHeight() - getHeight() / 4);
+        pnlGrid.setLocation((getWidth() / 6)+60, getHeight() - getHeight() / 4);
 
     }
 
@@ -111,11 +112,13 @@ public class TestStartScreen extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSettings) {
             userInterface.changeScreen("SettingsScreen");
+
         }
         
         if(e.getSource()==btnCreate) {
             userInterface.changeScreen("ServerScreen");
         }
+
         
         if(e.getSource()==btnExit) {
             System.exit(0);

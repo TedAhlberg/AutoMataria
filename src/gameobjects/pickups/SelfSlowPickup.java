@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.GameObject;
 import gameobjects.Pickup;
 import gameobjects.Player;
@@ -38,10 +39,9 @@ public class SelfSlowPickup extends Pickup {
 
     public void tick() {
 
-        if (!taken || !used)
-
+        if (!taken || !used) {
             return;
-
+        }
         timer--;
         if (timer == 0) {
             player.setSpeed(player.getSpeed() * 2);
@@ -68,6 +68,7 @@ public class SelfSlowPickup extends Pickup {
         this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
+        SoundFx.getInstance().selfSlowPickup();
         used = true;
     }
 

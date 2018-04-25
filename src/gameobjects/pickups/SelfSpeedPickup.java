@@ -1,6 +1,7 @@
 package gameobjects.pickups;
 
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
@@ -64,6 +65,7 @@ public class SelfSpeedPickup extends Pickup {
         this.gameObjects = gameObjects;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 2));
+        SoundFx.getInstance().SelfSpeedPickup();
         used = true;
     }
 

@@ -23,11 +23,13 @@ public class Audio implements Runnable {
     private AudioInputStream encoded;
     private AudioFormat encodedFormat;
     private AudioFormat decodedFormat;
+    private static final Object lock = new Object();
     private boolean started = false;
     private boolean stopped = false;
     private boolean paused = false;
     private static boolean on = true;
     private static boolean sfxOff = false;
+    private static boolean musicStopped;
     private int times;
     private final int BUFFERSIZE = 4096;
     private URL url;
@@ -84,6 +86,13 @@ public class Audio implements Runnable {
      * sound can only be started once.
      */
     public synchronized void play(int times) {
+       if(!on) {
+           try {
+            lock.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+       }
         if (!started && on) {
             setLoop(times);
             new Thread(this).start();
@@ -110,6 +119,11 @@ public class Audio implements Runnable {
         setStopped(true);
         setPaused(false);
         notify();
+    }
+    
+    public static void setMusicStopped() {
+        musicStopped=true;
+        musicStopped=false;
     }
 
     /**
@@ -209,14 +223,21 @@ public class Audio implements Runnable {
     public static void sfxOff() {
         sfxOff = !sfxOff;
         
-
-
+    }
+    
+    public static void on() {
+        setMusicStopped();
+        on=!on;
+        try {
+        lock.notifyAll();
+        }catch (Exception e){}
+        
     }
 
     public static void main(String[] args) {
         Audio audio = Audio.getTrack("AM-GameTrack.mp3");
         audio.play(1);
-        audio.setVolume(1);
+//        audio.setVolume(1);
 
     }
 

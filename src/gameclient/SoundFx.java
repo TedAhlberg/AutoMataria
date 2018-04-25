@@ -9,8 +9,9 @@ import java.awt.event.ActionEvent;
  */
 public class SoundFx {
 
-    private Audio menuSelect;
-    private Audio crash;
+    
+    private Audio sfx;
+    
     private static SoundFx instance = null;
 
     protected SoundFx() {
@@ -25,14 +26,19 @@ public class SoundFx {
 
     
     public void menuSelect() {
-        menuSelect = Audio.getSFX("Menu_Select.mp3");
-        play(menuSelect);
+        sfx = Audio.getSFX("Menu_Select.mp3");
+        play(sfx);
     }
 
     public void crash() {
-        crash = Audio.getSFX("Crash.mp3");
-        play(crash);
+        sfx = Audio.getSFX("Crash.mp3");
+        play(sfx);
 
+    }
+    
+    public void SelfSpeedPickup() {
+        sfx=Audio.getSFX("SelfSpeedPickup.mp3");
+        play(sfx);
     }
 
     public void play(Audio sfx) {
@@ -48,5 +54,11 @@ public class SoundFx {
 
     public static void main(String[] args) {
         SoundFx.getInstance().crash();
+    }
+
+    public void selfSlowPickup() {
+        sfx=Audio.getSFX("SelfSlowPickup.mp3");
+        play(sfx);
+        
     }
 }

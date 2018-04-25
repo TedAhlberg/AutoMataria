@@ -13,7 +13,7 @@ import gameserver.ServerInformation;
 /**
  * Denna klassen ska ta emot UDP packet ifrån servern
  * och dela in dessa i en lista av hashmaps.
- * @author Henrik & Johannes
+ * @author Henrik Olofsson & Johannes Blüml
  *
  */
 
