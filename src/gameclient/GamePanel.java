@@ -28,13 +28,14 @@ public class GamePanel extends JComponent {
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
     private BufferedImage background, gridBuffer;
-    private Color backgroundColor = Color.BLACK;
     private GameState gameState = GameState.Warmup;
+    private Color backgroundColor = Color.BLACK;
     private Dimension windowSize;
     private double scale = 1.0, playerReadyPercentage;
     private long timeBetweenRenders;
     private int fps, frameCounter, maxFPS;
     private boolean interpolateMovement = true, showDebugInfo = true;
+    private GamePanelText gamePanelText = new GamePanelText();
 
     /**
      * The GamePanel will always try to match the provided size depending on the grid size of the game
@@ -186,64 +187,13 @@ public class GamePanel extends JComponent {
             gameObject.render(g2);
         }
 
-        if (showDebugInfo) drawDebugInfo(g2);
-        if (gameState == GameState.Countdown) drawNewGameCountdown(g2);
-        if (gameState == GameState.GameOver) drawGameOverInfo(g2);
+        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps, playerReadyPercentage );
+        if (gameState == GameState.Countdown) gamePanelText.drawNewGameCountdown(g2);;
+        if (gameState == GameState.GameOver) gamePanelText.drawGameOverInfo(g2);;
 
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
         frameCounter += 1;
-    }
-
-    private void drawDebugInfo(Graphics2D g2) {
-        g2.setColor(new Color(255, 255, 255, 200));
-        g2.setFont(new Font("Orbitron", Font.PLAIN, 100));
-
-        String state = "STATE: " + gameState.toString().toUpperCase() + " ";
-        if (gameState == GameState.Warmup) {
-            state += Math.round(playerReadyPercentage * 100) + "% READY";
-            //state += (player != null && player.isReady()) ? " | YOU ARE READY" : " | PRESS R TO READY UP";
-        }
-        g2.drawString(fps + "/" + maxFPS + " FPS | " + state, 40, 120);
-
-        String keyHelp = "TOGGLE COLOR : C | TOGGLE HELP : F1";
-        keyHelp += (interpolateMovement) ? " | INTERP ON : I" : " | INTERP OFF : I";
-        g2.drawString(keyHelp, 40, 240);
-    }
-
-    private void drawNewGameCountdown(Graphics2D g2) {
-        String infoText = "GAME IS ABOUT TO BEGIN";
-        String infoText2 = "GET READY";
-        Font font = new Font("Orbitron", Font.BOLD, 200);
-        g2.setFont(font);
-        g2.setColor(new Color(255, 255, 255, 200));
-        FontMetrics fontMetrics = g2.getFontMetrics();
-        Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
-        Rectangle2D infoText2Bounds = fontMetrics.getStringBounds(infoText2, g2);
-        int width = g2.getClipBounds().width;
-        int height = g2.getClipBounds().height;
-        int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
-        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)) - 100);
-        int infoText2Width = (int) ((width / 2) - (infoText2Bounds.getWidth() / 2));
-        int infoText2Height = (int) (((height / 2) - (infoText2Bounds.getHeight() / 2)) + 100);
-
-        g2.drawString(infoText, infoTextWidth, infoTextHeight);
-        g2.drawString(infoText2, infoText2Width, infoText2Height);
-    }
-
-    private void drawGameOverInfo(Graphics2D g2) {
-        String infoText = "GAME OVER";
-        Font font = new Font("Orbitron", Font.BOLD, 300);
-        g2.setFont(font);
-        g2.setColor(new Color(255, 255, 255, 200));
-        FontMetrics fontMetrics = g2.getFontMetrics();
-        Rectangle2D infoTextBounds = fontMetrics.getStringBounds(infoText, g2);
-        int width = g2.getClipBounds().width;
-        int height = g2.getClipBounds().height;
-        int infoTextWidth = (int) ((width / 2) - (infoTextBounds.getWidth() / 2));
-        int infoTextHeight = (int) (((height / 2) - (infoTextBounds.getHeight() / 2)));
-
-        g2.drawString(infoText, infoTextWidth, infoTextHeight);
     }
 
     /**
