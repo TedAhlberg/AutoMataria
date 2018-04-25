@@ -14,11 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import gameclient.Audio;
 import gameclient.Buttons;
+import gameclient.MusicManager;
 import gameclient.Resources;
-import gameclient.SoundFx;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
 
@@ -35,6 +36,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
+    private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
     private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
     private Font fontText = new Font("Orbitron", Font.BOLD, 25);
@@ -51,8 +53,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private String fileSfxPressed = "SFX_Pressed.png";
     private String fileSfxUnpressed = "SFX_Unpressed.png";
     private String user = "Testperson";
+    
 
-    private Buttons btnChange = new Buttons(fileChangePressed, fileChangeUnpressed);
+    private Buttons btnChange = new Buttons(fileChangePressed,fileChangeUnpressed);
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
     private Buttons btnMusic = new Buttons(fileMusicPressed, fileMusicUnpressed);
     private Buttons btnExit = new Buttons(fileExitPressed, fileExitUnpressed);
@@ -115,6 +118,17 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.ipadx = 10;
         btnChange.setPreferredSize(new Dimension(60,25));
         pnlUserName.add(btnChange, c);
+       
+        //Add text Field
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 3;
+        c.weightx = 3;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.CENTER;
+        c.ipadx = 10;
+        tfUserName.setPreferredSize(new Dimension(100,25));
+        pnlUserName.add(tfUserName, c);
 
         // Add UserNamePanel
         c = new GridBagConstraints();
@@ -231,10 +245,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
+            MusicManager.stop();
             if (lblMusic.getText() == "ON")
                 lblMusic.setText("OFF");
-            else
+            else {
                 lblMusic.setText("ON");
+                MusicManager.getInstance().gameTrack1();
+            }
 
         }
 
@@ -252,9 +269,10 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnChange) {
-            user = JOptionPane.showInputDialog("Input new username");
-            if (user != null)
-                lblUserName.setText("USER: " + user);
+            
+
+                lblUserName.setText("USER: " + tfUserName.getText());
+                tfUserName.setText("");
 
         }
 
