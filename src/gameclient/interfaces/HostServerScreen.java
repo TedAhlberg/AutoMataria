@@ -12,7 +12,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class HostServerScreen extends JPanel {
-    private Buttons startButton, stopButton, exitButton;
+    private Buttons startButton, stopButton, exitButton, joinGameButton;
     private JComboBox<String> profileComboBox;
     private JSlider playerSpeedSlider, tickRateSlider, ticksPerUpdateSlider;
     private JComboBox<String> mapsComboBox;
@@ -45,23 +45,43 @@ public class HostServerScreen extends JPanel {
 
         setLayout(new GridBagLayout());
 
+        JPanel topPanel = new JPanel(new GridBagLayout());
+        topPanel.setOpaque(false);
+
         JLabel headerLabel = new JLabel("HOST A SERVER");
         headerLabel.setFont(new Font("Orbitron", Font.BOLD, 40));
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 0;
+        c.weightx = 10;
         c.insets = new Insets(0, 50, 0, 0);
         c.anchor = GridBagConstraints.WEST;
-        add(headerLabel, c);
+        topPanel.add(headerLabel, c);
+
+        joinGameButton = new Buttons("JOIN GAME");
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.ipadx = 80;
+        c.ipady = 40;
+        c.insets = new Insets(0, 0, 0, 10);
+        c.anchor = GridBagConstraints.EAST;
+        topPanel.add(joinGameButton, c);
 
         exitButton = new Buttons("EXIT");
         c = new GridBagConstraints();
-        c.gridx = 1;
-        c.gridy = 0;
+        c.gridx = 2;
         c.ipadx = 80;
         c.ipady = 40;
+        c.insets = new Insets(0, 0, 0, 50);
         c.anchor = GridBagConstraints.EAST;
-        add(exitButton, c);
+        topPanel.add(exitButton, c);
+
+
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        add(topPanel, c);
 
         JPanel leftPanel = createLeftPanel();
         c = new GridBagConstraints();
@@ -264,6 +284,10 @@ public class HostServerScreen extends JPanel {
         });
 
         exitButton.addActionListener(e -> {
+            userInterface.changeScreen("StartScreen");
+        });
+
+        joinGameButton.addActionListener(e -> {
             userInterface.changeScreen("StartScreen");
         });
     }

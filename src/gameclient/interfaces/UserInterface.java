@@ -1,8 +1,10 @@
 package gameclient.interfaces;
-import java.awt.CardLayout;
+import java.awt.*;
 import javax.swing.JPanel;
+
+import gameclient.Resources;
 import gameclient.Window;
-import test.TestUI;
+import test.MapEditorUI;
 
 public class UserInterface extends JPanel {
 
@@ -11,25 +13,30 @@ public class UserInterface extends JPanel {
      */
     private CardLayout cardLayout = new CardLayout();
 
-    public UserInterface() {
+    public UserInterface(Dimension windowSize) {
         setLayout(cardLayout);
-        add(new TestStartScreen(this), "StartScreen");
-        add(new SettingsScreen(this), "SettingsScreen");
-        add(new HostServerScreen(this),"ServerScreen");
+        setPreferredSize(windowSize);
 
+        add(new StartScreen(this), "StartScreen");
+        add(new SettingsScreen(this), "SettingsScreen");
+        add(new HostServerScreen(this),"HostServerScreen");
+        add(new MapEditorUI(windowSize).container, "MapEditorScreen");
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawImage(Resources.getImage("Stars.png"), 0, 0, getWidth(), getHeight(), null);
     }
 
     public static void main(String[] args) {
-        Window window = new Window("test");
-        UserInterface userInterface = new UserInterface();
-        userInterface.setPreferredSize(window.getSize());
+        Window window = new Window("Auto-Mataria");
+        UserInterface userInterface = new UserInterface(window.getSize());
         window.setContentPane(userInterface);
         window.pack();
-
     }
 
     public void changeScreen(String screen) {
         cardLayout.show(this, screen);
-
     }
 }

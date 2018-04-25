@@ -285,7 +285,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setPreferredSize(new Dimension(500, 750));
-        frame.add(new SettingsScreen(new UserInterface()));
+        frame.add(new SettingsScreen(new UserInterface(frame.getSize())));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
         frame.pack();
