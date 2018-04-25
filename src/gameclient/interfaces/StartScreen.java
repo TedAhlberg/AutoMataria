@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
  */
 public class StartScreen extends JPanel {
     private JPanel buttonsPanel = new JPanel(new GridBagLayout());
+    private Font buttonFont = new Font("Orbitron", Font.BOLD, 30);
 
     private UserInterface userInterface;
 
@@ -63,6 +64,7 @@ public class StartScreen extends JPanel {
     private void addButton(String buttonText, ActionListener actionListener) {
         Buttons button = new Buttons(buttonText);
         button.addActionListener(actionListener);
+        button.setFont(buttonFont);
 
         GridBagConstraints c = new GridBagConstraints();
         c.ipadx = 50;
