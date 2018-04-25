@@ -51,6 +51,7 @@ public class Buttons extends JButton implements MouseListener {
 
     public void mouseReleased(MouseEvent event) {
         isPressed = false;
+        SoundFx.getInstance().menuSelect();
         repaint();
     }
 

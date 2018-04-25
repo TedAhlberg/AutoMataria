@@ -13,9 +13,10 @@ public class ServerInformation {
     private String gameState;
     private int serverPort;
     private int connectedClients;
+    private int maxPlayers;
     
     public ServerInformation(String ip, String serverName, String mapName, String gameState, int serverPort,
-            int connectedClients) {
+            int connectedClients, int maxPlayers) {
         super();
         this.ip = ip;
         this.serverName = serverName;
@@ -23,6 +24,7 @@ public class ServerInformation {
         this.gameState = gameState;
         this.serverPort = serverPort;
         this.connectedClients = connectedClients;
+        this.maxPlayers = maxPlayers;
     }
 
     public String getIp() {
@@ -47,6 +49,10 @@ public class ServerInformation {
 
     public int getConnectedClients() {
         return connectedClients;
+    }
+    
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     public int hashCode() {

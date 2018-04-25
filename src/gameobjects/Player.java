@@ -20,6 +20,7 @@ import gameserver.MessageListener;
 
 /**
  * @author Johannes Blüml
+ * @author Dante Håkansson
  */
 public class Player extends GameObject {
     private static final long serialVersionUID = 2;
@@ -29,11 +30,11 @@ public class Player extends GameObject {
     private final String name;
     private final Trail trail;
     private Color color;
-    private boolean dead, ready, invincible;
+    private boolean dead, ready, invincible, reversed;
     private Direction previousDirection;
     private Pickup pickUpSlot;
     transient private MessageListener listener;
-    
+
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
         this.gameObjects = gameObjects;
@@ -45,12 +46,12 @@ public class Player extends GameObject {
         previousDirection = direction;
         trail = new Trail(this);
         trail.setId(ID.getNext());
-        
+
     }
-    
+
     public void setListener(MessageListener listener) {
-        this.listener=listener;
-        
+        this.listener = listener;
+
     }
 
     public void render(Graphics2D g) {
@@ -62,12 +63,14 @@ public class Player extends GameObject {
         String displayName = name.toUpperCase();
         FontMetrics fontMetrics = g.getFontMetrics(font);
         int stringWidth = fontMetrics.stringWidth(displayName);
-        if (dead) displayName += " (DEAD)";
+        if (dead)
+            displayName += " (DEAD)";
         g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
     }
 
     public void tick() {
-        if (dead) return;
+        if (dead)
+            return;
 
         updateDirection();
         checkCollisions();
@@ -126,18 +129,18 @@ public class Player extends GameObject {
     public void move(int amount) {
         Point previousPosition = new Point(x, y);
         switch (direction) {
-            case Up:
-                y -= amount;
-                break;
-            case Down:
-                y += amount;
-                break;
-            case Left:
-                x -= amount;
-                break;
-            case Right:
-                x += amount;
-                break;
+        case Up:
+            y -= amount;
+            break;
+        case Down:
+            y += amount;
+            break;
+        case Left:
+            x -= amount;
+            break;
+        case Right:
+            x += amount;
+            break;
         }
         boolean hasTeleported = teleportIfOutsideMap();
         if (!hasTeleported) {
@@ -156,7 +159,8 @@ public class Player extends GameObject {
                 }
             } else if (playerRectangle.intersects(gameObject.getBounds())) {
                 if (gameObject instanceof Player) {
-                    if (gameObject.equals(this)) continue;
+                    if (gameObject.equals(this))
+                        continue;
                     setDead(true);
                     listener.newMessage(new GameEventMessage("crash"));
                     ((Player) gameObject).setDead(true);
@@ -185,9 +189,24 @@ public class Player extends GameObject {
     public void setInvincible(boolean invincible) {
         this.invincible = invincible;
     }
+    public boolean isInvincible() {
+        return invincible;
+    }
 
     public void setNextDirection(Direction direction) {
-        inputQueue.add(direction);
+        if (reversed) {
+            if (direction == Direction.Left) {
+                inputQueue.add(Direction.Right);
+            } else if (direction == Direction.Right) {
+                inputQueue.add(Direction.Left);
+            } else if (direction == Direction.Up) {
+                inputQueue.add(Direction.Down);
+            } else if (direction == Direction.Down) {
+                inputQueue.add(Direction.Up);
+            }
+        } else {
+            inputQueue.add(direction);
+        }
     }
 
     public void setPickUp(Pickup pickUp) {
@@ -196,6 +215,14 @@ public class Player extends GameObject {
 
     public boolean isDead() {
         return dead;
+    }
+
+    public boolean isReversed() {
+        return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public void setDead(boolean dead) {
@@ -240,22 +267,9 @@ public class Player extends GameObject {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color=" + color +
-                ", x=" + x +
-                ", y=" + y +
-                ", width=" + width +
-                ", height=" + height +
-                ", speed=" + speed +
-                ", previousDirection=" + previousDirection +
-                ", direction=" + direction +
-                ", dead=" + dead +
-                ", ready=" + ready +
-                ", invincible=" + invincible +
-                ", pickUpSlot=" + pickUpSlot +
-                ", trail=" + trail +
-                '}';
+        return "Player{" + "id=" + id + ", name='" + name + '\'' + ", color=" + color + ", x=" + x + ", y=" + y
+                + ", width=" + width + ", height=" + height + ", speed=" + speed + ", previousDirection="
+                + previousDirection + ", direction=" + direction + ", dead=" + dead + ", ready=" + ready
+                + ", invincible=" + invincible + ", pickUpSlot=" + pickUpSlot + ", trail=" + trail + '}';
     }
 }

@@ -32,6 +32,7 @@ public class GameServer implements ClientListener, MessageListener{
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
     private GameObjectSpawner gameObjectSpawner;
+    private ServerInformationSender serverSender = new ServerInformationSender(this);
 
     public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
@@ -52,6 +53,7 @@ public class GameServer implements ClientListener, MessageListener{
         startingPositions.generate(map.getGrid(), map.getPlayers());
 
         new Thread(() -> gameLoop()).start();
+        serverSender.start();
     }
 
     public void stop() {
@@ -280,7 +282,8 @@ public class GameServer implements ClientListener, MessageListener{
                 + currentMap.getName() + "\n"
                 + state + "\n"
                 + serverPort + "\n"
-                + connectedClients.size() + "\0";
+                + connectedClients.size() + "\n"
+                + currentMap.getPlayers() + "\0";
 
         return string.getBytes();
     }
