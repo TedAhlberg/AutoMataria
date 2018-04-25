@@ -23,6 +23,7 @@ public class HostServerScreen extends JPanel {
 
     public HostServerScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
+        setOpaque(false);
         createLayout();
         addListeners();
         profileComboBox.setSelectedIndex(2);
@@ -32,12 +33,6 @@ public class HostServerScreen extends JPanel {
         Window window = new Window("HostServerScreen", new Dimension(1440, 800));
         window.setContentPane(new HostServerScreen(null));
         window.pack();
-    }
-
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        g.drawImage(Resources.getImage("Stars.png"), 0, 0, getWidth(), getHeight(), null);
     }
 
     private void createLayout() {
