@@ -39,10 +39,9 @@ public class SelfSlowPickup extends Pickup {
 
     public void tick() {
 
-        if (!taken || !used)
-
+        if (!taken || !used) {
             return;
-
+        }
         timer--;
         if (timer == 0) {
             player.setSpeed(player.getSpeed() * 2);

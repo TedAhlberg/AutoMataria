@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Dante Håkansson
  * 
  */
-
 public class EraserPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 

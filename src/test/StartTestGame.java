@@ -15,11 +15,13 @@ public class StartTestGame {
         // Create a map
         GameMap map = Maps.getInstance().get("Small Map 1");
         System.out.println(map);
-        SpecialGameObject[] gameMapObjects = new SpecialGameObject[4];
+        SpecialGameObject[] gameMapObjects = new SpecialGameObject[5];
         gameMapObjects[0] = new SpecialGameObject(new SlowEnemiesPickup(200, 200, 65), 10000, 0, true, 15000);
         gameMapObjects[1] = new SpecialGameObject(new SpeedEnemiesPickup(200, 200, 65), 10000, 0, true, 15000);
-        gameMapObjects[2] = new SpecialGameObject(new SelfSlowPickup(200, 200, 60), 10000, 0, true, 15000);
-        gameMapObjects[3] = new SpecialGameObject(new SelfSpeedPickup(200, 200, 60), 1000, 0, true, 15000);
+        gameMapObjects[2] = new SpecialGameObject(new ReversePickup(200, 200, 65), 10000, 0, true, 15000);
+        gameMapObjects[3] = new SpecialGameObject(new SelfSlowPickup(200, 200, 60), 10000, 0, true, 15000);
+        gameMapObjects[4] = new SpecialGameObject(new SelfSpeedPickup(200, 200, 60), 1000, 0, true, 15000);
+
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server

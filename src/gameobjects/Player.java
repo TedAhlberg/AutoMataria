@@ -29,11 +29,12 @@ public class Player extends GameObject {
     private final String name;
     private final Trail trail;
     private Color color;
-    private boolean dead, ready, invincible;
+    private boolean dead, ready, invincible, reversed;
     private Direction previousDirection;
     private Pickup pickUpSlot;
     transient private MessageListener listener;
     
+
     public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
         this.gameObjects = gameObjects;
@@ -187,7 +188,23 @@ public class Player extends GameObject {
     }
 
     public void setNextDirection(Direction direction) {
-        inputQueue.add(direction);
+        if(reversed) {
+            if(direction==Direction.Left) {
+                inputQueue.add(Direction.Right);
+            }
+            else if(direction==Direction.Right) {
+                inputQueue.add(Direction.Left);
+            } 
+            else if(direction==Direction.Up) {
+                inputQueue.add(Direction.Down);
+            }
+            else if(direction==Direction.Down) {
+                inputQueue.add(Direction.Up);
+            }
+        }
+        else {
+            inputQueue.add(direction);
+        }
     }
 
     public void setPickUp(Pickup pickUp) {
@@ -196,6 +213,12 @@ public class Player extends GameObject {
 
     public boolean isDead() {
         return dead;
+    }
+    public boolean isReversed() {
+        return reversed;
+    }
+    public void setReversed(boolean reversed) {
+       this.reversed = reversed;
     }
 
     public void setDead(boolean dead) {
