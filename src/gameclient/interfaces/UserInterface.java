@@ -15,7 +15,7 @@ public class UserInterface extends JPanel {
         setLayout(cardLayout);
         add(new TestStartScreen(this), "StartScreen");
         add(new SettingsScreen(this), "SettingsScreen");
-        add(new TestUI().container,"ServerScreen");
+        add(new HostServerScreen(this),"ServerScreen");
 
     }
 

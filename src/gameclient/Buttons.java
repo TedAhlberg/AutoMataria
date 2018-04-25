@@ -1,16 +1,13 @@
 package gameclient;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import javax.swing.JButton;
 
 /**
- * 
  * @author Henrik Olofsson & Erik Lundow
- *
  */
 public class Buttons extends JButton implements MouseListener {
     private BufferedImage imagePressed;
@@ -23,6 +20,7 @@ public class Buttons extends JButton implements MouseListener {
     }
 
     public Buttons(String filenamePressed, String filenameUnpressed) {
+        this.setFocusPainted(false);
         this.setOpaque(false);
         this.setContentAreaFilled(false);
         this.setBorder(null);
