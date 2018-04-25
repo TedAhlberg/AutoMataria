@@ -46,10 +46,7 @@ public class Trail extends Wall {
                 playerMovingDownLeft = previousDirection == Direction.Down && currentDirection == Direction.Left,
                 playerMovingDownRight = previousDirection == Direction.Down && currentDirection == Direction.Right;
 */
-        if(player.isInvincible() == true) {
-            return;
-        }
-        else if (playerMovingLeft) {
+        if (playerMovingLeft) {
             newPosition.x = newPosition.x + player.getWidth();
             previousPosition.x = previousPosition.x + player.getWidth();
             Polygon rectangle = new Polygon();
