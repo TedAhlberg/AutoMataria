@@ -81,6 +81,10 @@ public class Window extends JFrame {
     }
 
     private void modifyLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.metal");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
 
         UIManager.put("Panel.background", backgroundColor);
