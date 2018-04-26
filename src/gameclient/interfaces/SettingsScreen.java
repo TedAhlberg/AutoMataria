@@ -8,9 +8,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.swing.JLabel;
@@ -45,7 +47,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
-    private String user = "Testperson";
+    private String user;
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
@@ -56,7 +58,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
 
-    private JLabel lblUserName = new JLabel("USER: " + user);
+    private JLabel lblUserName = new JLabel("USER: " + readSettings());
     private JLabel lblMusic = new JLabel("ON");
     private JLabel lblSFX = new JLabel("ON");
     private JLabel lblSettings = new JLabel("SETTINGS");
@@ -209,14 +211,32 @@ public class SettingsScreen extends JPanel implements ActionListener {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(username);
             oos.close();
-            System.out.println(username);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
+    public String readSettings(){
+        try {
+            FileInputStream fis = new FileInputStream("resources/settings/username.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);         
+            user=(String) ois.readObject();
+            ois.close();
+            return user;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+      }
+        return "Player";
+        
+          
+      }
 
     public void addListeners() {
         btnKeyBinder.addActionListener(this);
