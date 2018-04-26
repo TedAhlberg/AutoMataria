@@ -131,8 +131,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
         // Add musicButton
         c = new GridBagConstraints();
         c.gridy = 1;
+        c.ipadx=10;
+        c.ipady=10;
         c.gridx = 1;
-        c.ipadx = 10;
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -155,13 +156,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 4;
-        c.ipadx = 10;
+        c.ipadx=10;
+        c.ipady=10;
         pnlMusic.add(btnSFX, c);
 
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
-        c.ipadx = 10;
+        c.ipadx=10;
+        c.ipady=10;
         pnlMusic.add(btnExit, c);
         
       

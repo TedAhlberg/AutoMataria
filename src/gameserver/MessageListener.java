@@ -1,6 +1,6 @@
 package gameserver;
 
-import common.Message;
+import common.messages.Message;
 /**
  * 
  * @author eriklundow
