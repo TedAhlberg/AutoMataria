@@ -8,6 +8,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 /**
  * @author Johannes Blüml
@@ -82,8 +84,8 @@ public class Window extends JFrame {
 
     private void modifyLookAndFeel() {
         try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            UIManager.setLookAndFeel(new MetalLookAndFeel()); 
+        } catch (UnsupportedLookAndFeelException e) {e.printStackTrace();
         }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
 
