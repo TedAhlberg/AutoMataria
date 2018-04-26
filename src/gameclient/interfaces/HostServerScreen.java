@@ -210,7 +210,7 @@ public class HostServerScreen extends JPanel {
     private void addListeners() {
         profileComboBox.addActionListener(e -> {
             String profile = (String) profileComboBox.getSelectedItem();
-
+            
             if (profile.equals("CUSTOM")) {
                 playerSpeedSlider.setEnabled(true);
                 tickRateSlider.setEnabled(true);

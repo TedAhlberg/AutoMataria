@@ -46,6 +46,7 @@ public class Window extends JFrame {
 
         if (windowSize == null) {
             env.getDefaultScreenDevice().setFullScreenWindow(this);
+            this.setVisible(true);
         } else {
             this.setPreferredSize(windowSize);
             this.setMinimumSize(windowSize);
