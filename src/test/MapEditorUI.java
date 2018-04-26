@@ -936,7 +936,7 @@ public class MapEditorUI {
         gbc.gridx = 9;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipadx = 30;
+        gbc.ipadx = 10;
         panel1.add(spacer11, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
@@ -950,7 +950,7 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.ipadx = 30;
+        gbc.ipadx = 10;
         container.add(spacer12, gbc);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
