@@ -76,8 +76,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
         backgroundImage = Resources.getImage("Stars.png");
-        // setLayout(new GridBagLayout());
-        // pnlHead.setPreferredSize(new Dimension(500, 500));
         pnlHead.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
 
@@ -190,6 +188,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
         btnSFX.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnSFX, c);
 
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 3;
+        c.ipadx = 10;
+//        c.anchor = GridBagConstraints.SOUTH;
+        btnExit.setPreferredSize(new Dimension(60,25));
+        pnlMusic.add(btnExit, c);
+        
+      
         // Add SFXLabel
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -208,6 +215,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlHead.add(pnlMusic, c);
 
         // Add spacing
+      
         lblSpacing.setFont(fontHead);
         c.gridy = 7;
         c.gridx = 1;
@@ -215,13 +223,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.weightx = 11;
         c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(lblSpacing, c);
-
-        c = new GridBagConstraints();
-        c.gridy = 8;
-        c.gridx = 1;
-        c.anchor = GridBagConstraints.SOUTH;
-        btnExit.setPreferredSize(new Dimension(60,25));
-        pnlHead.add(btnExit, c);
         add(pnlHead);
 
         addListeners();
@@ -250,7 +251,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
                 lblMusic.setText("OFF");
             else {
                 lblMusic.setText("ON");
-                MusicManager.getInstance().gameTrack1();
+                MusicManager.getInstance().menuTrack();
             }
 
         }

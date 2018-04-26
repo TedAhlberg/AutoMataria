@@ -44,7 +44,7 @@ public class TestStartScreen extends JPanel implements ActionListener {
 
     public TestStartScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        MusicManager.getInstance().gameTrack1();
+        MusicManager.getInstance().menuTrack();
         bfImage = Resources.getImage(("Auto-Mataria.png"));
 
         btnPlay.setMinimumSize(new Dimension(120, 100));
