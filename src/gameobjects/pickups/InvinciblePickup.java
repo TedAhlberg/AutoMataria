@@ -39,7 +39,7 @@ public class InvinciblePickup extends InstantPickup {
             return;
         }
         timer--;
-        System.out.println(timer);
+        
         if (timer == 0) {
             player.setInvincible(false);
         }

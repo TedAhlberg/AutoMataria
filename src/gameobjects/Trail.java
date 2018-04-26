@@ -1,6 +1,7 @@
 package gameobjects;
 
 import common.Direction;
+import common.GameState;
 
 import java.awt.*;
 
@@ -24,32 +25,36 @@ public class Trail extends Wall {
         if (previousPosition == null) {
             previousPosition = this.previousPosition;
         }
-        Direction currentDirection = player.getDirection(),
-                previousDirection = player.getPreviousDirection();
+        Direction currentDirection = player.getDirection(), previousDirection = player.getPreviousDirection();
 
         boolean sameDirection = true || previousDirection == currentDirection,
                 playerMovingLeft = currentDirection == Direction.Left && sameDirection,
                 playerMovingRight = currentDirection == Direction.Right && sameDirection,
                 playerMovingUp = currentDirection == Direction.Up && sameDirection,
                 playerMovingDown = currentDirection == Direction.Down && sameDirection;
-/*
-        boolean playerMovingStaticUp = previousDirection == Direction.Static && currentDirection == Direction.Up,
-                playerMovingStaticDown = previousDirection == Direction.Static && currentDirection == Direction.Down,
-                playerMovingStaticLeft = previousDirection == Direction.Static && currentDirection == Direction.Left,
-                playerMovingStaticRight = previousDirection == Direction.Static && currentDirection == Direction.Right,
-                playerMovingLeftUp = previousDirection == Direction.Left && currentDirection == Direction.Up,
-                playerMovingLeftDown = previousDirection == Direction.Left && currentDirection == Direction.Down,
-                playerMovingRightUp = previousDirection == Direction.Right && currentDirection == Direction.Up,
-                playerMovingRightDown = previousDirection == Direction.Right && currentDirection == Direction.Down,
-                playerMovingUpLeft = previousDirection == Direction.Up && currentDirection == Direction.Left,
-                playerMovingUpRight = previousDirection == Direction.Up && currentDirection == Direction.Right,
-                playerMovingDownLeft = previousDirection == Direction.Down && currentDirection == Direction.Left,
-                playerMovingDownRight = previousDirection == Direction.Down && currentDirection == Direction.Right;
-*/
-        if(player.isInvincible() == true) {
+        /*
+         * boolean playerMovingStaticUp = previousDirection == Direction.Static &&
+         * currentDirection == Direction.Up, playerMovingStaticDown = previousDirection
+         * == Direction.Static && currentDirection == Direction.Down,
+         * playerMovingStaticLeft = previousDirection == Direction.Static &&
+         * currentDirection == Direction.Left, playerMovingStaticRight =
+         * previousDirection == Direction.Static && currentDirection == Direction.Right,
+         * playerMovingLeftUp = previousDirection == Direction.Left && currentDirection
+         * == Direction.Up, playerMovingLeftDown = previousDirection == Direction.Left
+         * && currentDirection == Direction.Down, playerMovingRightUp =
+         * previousDirection == Direction.Right && currentDirection == Direction.Up,
+         * playerMovingRightDown = previousDirection == Direction.Right &&
+         * currentDirection == Direction.Down, playerMovingUpLeft = previousDirection ==
+         * Direction.Up && currentDirection == Direction.Left, playerMovingUpRight =
+         * previousDirection == Direction.Up && currentDirection == Direction.Right,
+         * playerMovingDownLeft = previousDirection == Direction.Down &&
+         * currentDirection == Direction.Left, playerMovingDownRight = previousDirection
+         * == Direction.Down && currentDirection == Direction.Right;
+         */
+
+        if (player.isInvincible() == true) {
             return;
-        }
-        else if (playerMovingLeft) {
+        } else if (playerMovingLeft) {
             newPosition.x = newPosition.x + player.getWidth();
             previousPosition.x = previousPosition.x + player.getWidth();
             Polygon rectangle = new Polygon();
