@@ -3,7 +3,6 @@ package test;
 import common.*;
 import gameclient.*;
 import gameclient.Window;
-import gameclient.interfaces.UserInterface;
 import gameobjects.*;
 import gameserver.StartingPositions;
 
@@ -334,8 +333,8 @@ public class MapEditorUI {
         });
         playerSpeedComboBox.setSelectedItem(1.0);
 
-        gamePanelContainer = new JPanel(null);
-        gamePanel = new GamePanel(windowSize);
+        gamePanelContainer = new JPanel(new GridLayout(1, 1));
+        gamePanel = new GamePanel();
         gamePanelContainer.add(gamePanel);
         gamePanel.toggleDebugInfo();
         gamePanel.start(15);

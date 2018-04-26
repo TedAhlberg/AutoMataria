@@ -1,11 +1,11 @@
 package gameclient.interfaces;
-import java.awt.*;
-import javax.swing.JPanel;
 
-import gameclient.BrowseServers;
-import gameclient.Resources;
+import gameclient.*;
 import gameclient.Window;
 import test.MapEditorUI;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class UserInterface extends JPanel {
 
@@ -19,21 +19,15 @@ public class UserInterface extends JPanel {
     public UserInterface(Dimension windowSize) {
         setLayout(cardLayout);
         setPreferredSize(windowSize);
-        
+
         add(new StartScreen(this), "StartScreen");
         add(new SettingsScreen(this), "SettingsScreen");
-        add(new HostServerScreen(this),"HostServerScreen");
+        add(new HostServerScreen(this), "HostServerScreen");
         add(new MapEditorUI(windowSize).container, "MapEditorScreen");
-        add(new BrowseServers(),"BrowseScreen");
-        gameScreen= new GameScreen();
-        add(gameScreen,"GameScreen");
-        
-    }
+        add(new BrowseServers(), "BrowseScreen");
+        gameScreen = new GameScreen(this);
+        add(gameScreen, "GameScreen");
 
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        g.drawImage(Resources.getImage("Stars.png"), 0, 0, getWidth(), getHeight(), null);
     }
 
     public static void main(String[] args) {
@@ -44,6 +38,12 @@ public class UserInterface extends JPanel {
         window.pack();
     }
 
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawImage(Resources.getImage("Stars.png"), 0, 0, getWidth(), getHeight(), null);
+    }
+
     public void changeScreen(String screen) {
         cardLayout.show(this, screen);
     }
@@ -52,6 +52,6 @@ public class UserInterface extends JPanel {
         gameScreen.connect(ip, port, username);
         cardLayout.show(this, "GameScreen");
     }
-    
+
 
 }

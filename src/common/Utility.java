@@ -4,6 +4,7 @@ import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Random;
 
@@ -72,8 +73,8 @@ public class Utility {
      * where it is possible to change direction (only very close to grid boundaries)
      *
      * @param direction Direction that you want to change to
-     * @param point Current Position
-     * @param speed Speed that object is traveling at (used to limit grid change)
+     * @param point     Current Position
+     * @param speed     Speed that object is traveling at (used to limit grid change)
      * @return -1 if not possible otherwise amount of pixels where direction change can happen
      */
     public static int canChangeDirection(Direction direction, Point point, int speed) {
@@ -132,5 +133,18 @@ public class Utility {
 
     public static Rectangle getGridRectangle() {
         return new Rectangle(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
+    }
+
+    /**
+     * Creates a compatible BufferedImage that can be used to paint on
+     *
+     * @param size Dimension of the BufferedImage that is created
+     * @return A BufferedImage
+     */
+    public static BufferedImage createCompatibleImage(Dimension size) {
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
+        return config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
     }
 }

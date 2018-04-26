@@ -1,12 +1,12 @@
 package gameclient;
 
 import common.GameState;
+import common.Utility;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,23 +29,12 @@ public class GamePanel extends JComponent {
     private boolean gameLoopRunning;
     private BufferedImage background, gridBuffer;
     private GameState gameState = GameState.Warmup;
-    private Color backgroundColor = Color.BLACK;
-    private Dimension windowSize;
+    private Color backgroundColor = Color.RED;
     private double scale = 1.0, playerReadyPercentage;
     private long timeBetweenRenders;
-    private int fps, frameCounter, maxFPS;
+    private int fps, frameCounter;
     private boolean interpolateMovement = true, showDebugInfo = true;
     private GamePanelText gamePanelText = new GamePanelText();
-
-    /**
-     * The GamePanel will always try to match the provided size depending on the grid size of the game
-     *
-     * @param size Size of the GamePanel
-     */
-    public GamePanel(Dimension size) {
-        this.windowSize = size;
-        setSize(size);
-    }
 
     /**
      * Starts the game loop with the provided maximum FPS
@@ -53,7 +42,6 @@ public class GamePanel extends JComponent {
      * @param maxFPS Maximum frames per second to render each second
      */
     public void start(int maxFPS) {
-        this.maxFPS = maxFPS;
         timeBetweenRenders = (1000 / maxFPS) * 1000000;
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop());
@@ -97,34 +85,29 @@ public class GamePanel extends JComponent {
      * @param gridSize Amount of vertical and horizontal grid lines to draw
      */
     public void setGrid(Dimension gridSize) {
-        if (gridSize != null) {
-            int forceSize = Math.min(windowSize.width, windowSize.height);
-            int gridWidth = forceSize / gridSize.width;
-            int gridHeight = forceSize / gridSize.height;
-            int width = gridWidth * gridSize.width;
-            int height = gridHeight * gridSize.height;
-            Dimension panelSize = new Dimension(width, height);
-            setSize(panelSize);
+        if (gridSize == null || getWidth() == 0 || getHeight() == 0) return;
+        int width = gridSize.width * Game.GRID_PIXEL_SIZE;
+        int height = gridSize.height * Game.GRID_PIXEL_SIZE;
 
-            gridBuffer = createCompatibleImage(panelSize);
-            Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
-            g2.setPaint(new Color(1, 1, 1, 0.05f));
+        // Calculate the scaling of GameObjects to the GamePanel size (Usually downscaling)
+        scale = Math.min((double) getWidth() / width, (double) getHeight() / height);
 
-            for (int i = 0; i <= width; i += gridWidth) {
-                g2.drawLine(i, 0, i, height);
-            }
+        Dimension scaledSize = new Dimension((int) Math.round(width * scale), (int) Math.round(height * scale));
 
-            for (int i = 0; i <= height; i += gridHeight) {
-                g2.drawLine(0, i, width, i);
-            }
+        gridBuffer = Utility.createCompatibleImage(scaledSize);
+        Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
+        g2.scale(scale, scale);
+        g2.setPaint(new Color(1, 1, 1, 0.05f));
 
-            g2.dispose();
-
-            // Calculate the scaling of GameObjects to the GamePanel size (Usually downscaling)
-            int gameObjectsWidth = gridSize.width * Game.GRID_PIXEL_SIZE;
-            int gameObjectsHeight = gridSize.height * Game.GRID_PIXEL_SIZE;
-            scale = Math.min((double) panelSize.width / gameObjectsWidth, (double) panelSize.height / gameObjectsHeight);
+        for (int i = Game.GRID_PIXEL_SIZE; i < width; i += Game.GRID_PIXEL_SIZE) {
+            g2.drawLine(i, 0, i, height);
         }
+
+        for (int i = Game.GRID_PIXEL_SIZE; i < height; i += Game.GRID_PIXEL_SIZE) {
+            g2.drawLine(0, i, width, i);
+        }
+
+        g2.dispose();
     }
 
     /**
@@ -187,9 +170,9 @@ public class GamePanel extends JComponent {
             gameObject.render(g2);
         }
 
-        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps, playerReadyPercentage );
-        if (gameState == GameState.Countdown) gamePanelText.drawNewGameCountdown(g2);;
-        if (gameState == GameState.GameOver) gamePanelText.drawGameOverInfo(g2);;
+        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps, playerReadyPercentage);
+        if (gameState == GameState.Countdown) gamePanelText.drawNewGameCountdown(g2);
+        else if (gameState == GameState.GameOver) gamePanelText.drawGameOverInfo(g2);
 
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
@@ -202,22 +185,8 @@ public class GamePanel extends JComponent {
      * @param g2 Graphics2D object to draw on
      */
     private void drawBackground(Graphics2D g2) {
-        if (background != null) {
-            double ratio = Math.max((double) getWidth() / background.getWidth(), (double) getHeight() / background.getHeight());
-            int width = (int) Math.round(background.getWidth() * ratio);
-            int height = (int) Math.round(background.getHeight() * ratio);
-
-            int x = 0;
-            if (width > getWidth()) {
-                x = -((width - getWidth()) / 2);
-            }
-            int y = 0;
-            if (height > getHeight()) {
-                y = -((height - getHeight()) / 2);
-            }
-
-            //g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
-            g2.drawImage(background, x, y, width, height, null);
+        if (background != null && gridBuffer != null) {
+            g2.drawImage(background, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
         } else {
             g2.setColor(backgroundColor);
             g2.fillRect(0, 0, getWidth(), getHeight());
@@ -231,21 +200,8 @@ public class GamePanel extends JComponent {
      */
     private void drawGridBuffer(Graphics2D g2) {
         if (gridBuffer != null) {
-            g2.drawImage(gridBuffer, 0, 0, getWidth(), getHeight(), null);
+            g2.drawImage(gridBuffer, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
         }
-    }
-
-    /**
-     * Creates a compatible BufferedImage that can be used to paint on
-     *
-     * @param size Dimension of the BufferedImage that is created
-     * @return A BufferedImage
-     */
-    private BufferedImage createCompatibleImage(Dimension size) {
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice device = env.getDefaultScreenDevice();
-        GraphicsConfiguration config = device.getDefaultConfiguration();
-        return config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
     }
 
     public void setGameState(GameState state) {

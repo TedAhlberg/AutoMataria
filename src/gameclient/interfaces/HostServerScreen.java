@@ -1,7 +1,7 @@
 package gameclient.interfaces;
 
 import common.Maps;
-import gameclient.*;
+import gameclient.Buttons;
 import gameclient.Window;
 import gameserver.GameServer;
 
@@ -210,7 +210,7 @@ public class HostServerScreen extends JPanel {
     private void addListeners() {
         profileComboBox.addActionListener(e -> {
             String profile = (String) profileComboBox.getSelectedItem();
-            
+
             if (profile.equals("CUSTOM")) {
                 playerSpeedSlider.setEnabled(true);
                 tickRateSlider.setEnabled(true);
@@ -283,7 +283,9 @@ public class HostServerScreen extends JPanel {
         });
 
         joinGameButton.addActionListener(e -> {
-            userInterface.changeScreen("StartScreen");
+            if (server != null) {
+                userInterface.startGame("127.0.0.1", Integer.parseInt(portTextField.getText()), "Player");
+            }
         });
     }
 }

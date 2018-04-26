@@ -1,33 +1,21 @@
 package gameclient.interfaces;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.KeyboardFocusManager;
-import java.util.HashSet;
-
-import javax.swing.JPanel;
-
 import common.Action;
-import common.Direction;
-import common.GameMap;
-import common.GameServerUpdate;
-import common.GameState;
-import common.Utility;
+import common.*;
 import common.messages.ConnectionMessage;
 import common.messages.PlayerMessage;
-import gameclient.Audio;
-import gameclient.GamePanel;
-import gameclient.GameServerConnection;
-import gameclient.GameServerListener;
-import gameclient.MusicManager;
-import gameclient.SoundFx;
+import gameclient.*;
 import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashSet;
+
 public class GameScreen extends JPanel {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     private GamePanel gamePanel;
@@ -36,19 +24,58 @@ public class GameScreen extends JPanel {
     private Audio backgroundMusic;
     private HashSet<Player> players = new HashSet<>();
     private int framesPerSecond = 60;
+    private UserInterface userInterface;
 
-    public GameScreen() {
+    public GameScreen(UserInterface userInterface) {
+        this.userInterface = userInterface;
         setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        add(createLeftPanel(), gbc);
+
+        gamePanel = new GamePanel();
+        gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.weightx = 3;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        add(gamePanel, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        add(createRightPanel(), gbc);
+
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
+    }
+
+    private JPanel createRightPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        Buttons exitButton = new Buttons("EXIT");
+        exitButton.addActionListener(e -> {
+            client.disconnect();
+            gamePanel.stop();
+            userInterface.changeScreen("StartScreen");
+        });
+        c.ipadx = 20;
+        c.ipady = 20;
+        c.anchor = GridBagConstraints.NORTHEAST;
+        panel.add(exitButton, c);
+
+        return panel;
+    }
+
+    private JPanel createLeftPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        return panel;
     }
 
 
     public void connect(String ip, int port, String username) {
-        if (gamePanel == null) {
-            gamePanel = new GamePanel(getSize());
-            add(gamePanel);
-            revalidate();
-        }
         client = new GameServerConnection(new GameServerListener() {
             public void onConnect() {
                 System.out.println("Connected to server.");
@@ -98,28 +125,25 @@ public class GameScreen extends JPanel {
                     }
                 } else if (data instanceof PlayerMessage) {
                     PlayerMessage playerMessage = (PlayerMessage) data;
-                  
+
                     if (playerMessage.getEvent() == (PlayerMessage.Event.Connected)) {
                         System.out.println(playerMessage.getPlayer().getName() + " has connected.");
-                    
+
                     } else if (playerMessage.getEvent() == PlayerMessage.Event.Disconnected) {
                         System.out.println(playerMessage.getPlayer().getName() + " has disconnected.");
-                    
+
                     } else if (playerMessage.getEvent() == PlayerMessage.Event.Crashed) {
                         System.out.println(playerMessage.getPlayer().getName() + " has crashed.");
                         SoundFx.getInstance().crash();
-                   
+
                     } else if (playerMessage.getEvent() == PlayerMessage.Event.ColorChange) {
                         System.out.println(playerMessage.getPlayer().getName() + " has changed Color to " + playerMessage.getPlayerColor());
-                    }
-                    
-                    else if(playerMessage.getEvent() == PlayerMessage.Event.Ready) {
+                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Ready) {
                         System.out.println(playerMessage.getPlayer().getName() + " is ready.");
-                    }
-                    else if(playerMessage.getEvent() == PlayerMessage.Event.Unready) {
+                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Unready) {
                         System.out.println(playerMessage.getPlayer().getName() + " is not ready.");
                     }
-                   
+
                 }
             }
         });

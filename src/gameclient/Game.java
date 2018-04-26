@@ -1,10 +1,9 @@
 package gameclient;
 
 import common.Action;
+import common.*;
 import common.messages.ConnectionMessage;
 import common.messages.GameEventMessage;
-import common.*;
-import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
@@ -37,7 +36,7 @@ public class Game {
         String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
 
         Window window = new Window(TITLE, windowSize);
-        gamePanel = new GamePanel(window.getSize());
+        gamePanel = new GamePanel();
 
         window.setContentPane(gamePanel);
         window.pack();
@@ -90,9 +89,8 @@ public class Game {
                         gamePanel.stop();
                         System.out.println("CLIENT: Failed to connect to server");
                     }
-                }
-                else if(data instanceof GameEventMessage) {
-                   readGameEventMessage((GameEventMessage) data);
+                } else if (data instanceof GameEventMessage) {
+                    readGameEventMessage((GameEventMessage) data);
                 }
             }
         });
@@ -121,14 +119,14 @@ public class Game {
     }
 
     public void readGameEventMessage(GameEventMessage message) {
-        if((message).data.equals("crash")) {
+        if ((message).data.equals("crash")) {
             SoundFx.getInstance().crash();
-        }
-        else if((message).data.equals("SelfSpeedPickup")) {
+        } else if ((message).data.equals("SelfSpeedPickup")) {
             SoundFx.getInstance().SelfSpeedPickup();
         }
-        
+
     }
+
     public void onKeyPress(Direction direction) {
         client.send(direction);
     }
