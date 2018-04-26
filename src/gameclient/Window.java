@@ -55,7 +55,7 @@ public class Window extends JFrame {
     }
 
     private void changeDefaultFont() {
-        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 20);
+        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 15);
 
         Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -83,9 +83,6 @@ public class Window extends JFrame {
 
         UIManager.put("ComboBox.selectionBackground", backgroundColor);
         UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
-
-        UIManager.put("Button.background", backgroundColor);
-        UIManager.put("Button.foreground", new ColorUIResource(255, 255, 255));
 
         UIManager.put("Slider.background", backgroundColor);
     }

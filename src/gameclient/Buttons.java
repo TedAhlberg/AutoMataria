@@ -24,6 +24,7 @@ public class Buttons extends JButton implements MouseListener {
         this.setOpaque(false);
         this.setContentAreaFilled(false);
         this.setBorder(null);
+        this.setForeground(Color.WHITE);
 
         this.imagePressed = Resources.getButtonImage(filenamePressed);
         this.imageUnpressed = Resources.getButtonImage(filenameUnpressed);
