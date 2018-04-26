@@ -12,21 +12,21 @@ import java.awt.event.ActionListener;
  */
 public class StartScreen extends JPanel {
     private JPanel buttonsPanel = new JPanel(new GridBagLayout());
-    private Font buttonFont = new Font("Orbitron", Font.BOLD, 30);
+    private Font buttonFont = new Font("Orbitron", Font.BOLD, 20);
 
     private UserInterface userInterface;
 
     public StartScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        MusicManager.getInstance().gameTrack1();
+        MusicManager.getInstance().menuTrack();
         setLayout(new GridBagLayout());
         setOpaque(false);
 
         // Top spacing
         GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
-        c.weighty = 5;
-        add(new JPanel(), c);
+        c.weighty = 6;
+        add(new JComponent() {}, c);
 
         addButton("PLAY", "");
         addButton("HOST A GAME", "HostServerScreen");
@@ -43,14 +43,14 @@ public class StartScreen extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridy = 1;
         c.weightx = 1;
-        c.ipady = 40;
+        c.ipady = 20;
         add(buttonsPanel, c);
 
         // Bottom spacing
         c = new GridBagConstraints();
         c.gridy = 2;
         c.weighty = 1;
-        add(new JPanel(), c);
+        add(new JComponent() {}, c);
     }
 
     private void addButton(String buttonText, String screenName) {
@@ -67,8 +67,8 @@ public class StartScreen extends JPanel {
         button.setFont(buttonFont);
 
         GridBagConstraints c = new GridBagConstraints();
-        c.ipadx = 50;
-        c.ipady = 50;
+        c.ipadx = 30;
+        c.ipady = 30;
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
 

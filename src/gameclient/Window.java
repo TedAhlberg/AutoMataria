@@ -4,8 +4,7 @@ import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -45,7 +44,25 @@ public class Window extends JFrame {
         });
 
         if (windowSize == null) {
-            env.getDefaultScreenDevice().setFullScreenWindow(this);
+            GraphicsDevice dev = env.getDefaultScreenDevice();
+            this.dispose(); // Restarts the JFrame
+            this.setResizable(false);
+            this.setUndecorated(true);
+            this.setVisible(true);
+            this.revalidate();
+            this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+            try {
+                if (System.getProperty("os.name").contains("Mac OS X")) {
+
+                }
+                else { dev.setFullScreenWindow(this);
+                }
+                this.repaint();
+                this.revalidate();
+            } catch (Exception e) {
+                dev.setFullScreenWindow(null);
+            }
+            this.requestFocus();
         } else {
             this.setPreferredSize(windowSize);
             this.setMinimumSize(windowSize);
@@ -55,7 +72,7 @@ public class Window extends JFrame {
     }
 
     private void changeDefaultFont() {
-        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 20);
+        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 15);
 
         Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -83,9 +100,6 @@ public class Window extends JFrame {
 
         UIManager.put("ComboBox.selectionBackground", backgroundColor);
         UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
-
-        UIManager.put("Button.background", backgroundColor);
-        UIManager.put("Button.foreground", new ColorUIResource(255, 255, 255));
 
         UIManager.put("Slider.background", backgroundColor);
     }

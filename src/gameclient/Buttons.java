@@ -17,6 +17,10 @@ public class Buttons extends JButton implements MouseListener {
     public Buttons(String text) {
         this("Blank_Pressed.png", "Blank_Unpressed.png");
         this.setText(text);
+        this.setFocusPainted(false);
+        this.setOpaque(false);
+        this.setContentAreaFilled(false);
+        this.setBorder(null);
     }
 
     public Buttons(String filenamePressed, String filenameUnpressed) {
@@ -24,6 +28,7 @@ public class Buttons extends JButton implements MouseListener {
         this.setOpaque(false);
         this.setContentAreaFilled(false);
         this.setBorder(null);
+        this.setForeground(Color.WHITE);
 
         this.imagePressed = Resources.getButtonImage(filenamePressed);
         this.imageUnpressed = Resources.getButtonImage(filenameUnpressed);
