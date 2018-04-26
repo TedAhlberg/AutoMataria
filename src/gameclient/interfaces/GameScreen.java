@@ -5,6 +5,7 @@ import java.awt.KeyboardFocusManager;
 import java.util.HashSet;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import common.Action;
 import common.Direction;
@@ -14,10 +15,12 @@ import common.GameState;
 import common.Utility;
 import common.messages.ConnectionMessage;
 import common.messages.GameEventMessage;
+import common.messages.PlayerMessage;
 import gameclient.Audio;
 import gameclient.GamePanel;
 import gameclient.GameServerConnection;
 import gameclient.GameServerListener;
+import gameclient.MusicManager;
 import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;
 import gameobjects.Player;
@@ -41,7 +44,7 @@ public class GameScreen extends JPanel {
     }
 
     public void connect(String ip, int port, String username) {
-        if(gamePanel==null) {
+        if (gamePanel == null) {
             gamePanel = new GamePanel(getSize());
             add(gamePanel);
             revalidate();
@@ -53,9 +56,9 @@ public class GameScreen extends JPanel {
             }
 
             public void onDisconnect() {
-                // if (backgroundMusic != null) {
-                // backgroundMusic.stop();
-                // }
+                 if (backgroundMusic != null) {
+                 backgroundMusic.stop();
+                 }
                 gamePanel.stop();
             }
 
@@ -86,21 +89,26 @@ public class GameScreen extends JPanel {
                         gamePanel.setBackground(map.getBackground());
                         gamePanel.setGrid(map.getGrid());
                         gamePanel.start(framesPerSecond);
-                        backgroundMusic = Audio.getTrack(map.getMusicTrack());
-                        backgroundMusic.play(99);
+                        MusicManager.changeTrack();
+                        MusicManager.getInstance().gameTrack1();
+//                        backgroundMusic = Audio.getTrack(map.getMusicTrack());
+//                        backgroundMusic.play(99);
                         System.out.println("CLIENT: Connected to server successfully");
                     } else {
                         gamePanel.stop();
                         System.out.println("CLIENT: Failed to connect to server");
                     }
-                } else if (data instanceof GameEventMessage) {
+                } else if (data instanceof PlayerMessage) {
+                   PlayerMessage playerMessage = (PlayerMessage)data;
+                    if (playerMessage.getEvent() == (PlayerMessage.Event.Connected)) {
+                           System.out.println(playerMessage.getPlayer() + " has connected.");
+                    }
                 }
             }
         });
         client.connect(ip, port);
         gamePanel.requestFocus();
     }
-
 
     public void onKeyPress(Action action) {
         if (action == Action.ExitGame) {
