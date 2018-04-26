@@ -18,7 +18,7 @@ public class StartScreen extends JPanel {
 
     public StartScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        MusicManager.getInstance().gameTrack1();
+        MusicManager.getInstance().menuTrack();
         setLayout(new GridBagLayout());
         setOpaque(false);
 

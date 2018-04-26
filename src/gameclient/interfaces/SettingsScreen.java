@@ -43,23 +43,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private Font fontSmall = new Font("Orbitron", Font.BOLD, 20);
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
-    private String fileMusicPressed = "Music_Pressed.png";
-    private String fileMusicUnpressed = "Music_Unpressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
-    private String fileChangePressed = "Change_Pressed.png";
-    private String fileChangeUnpressed = "Change_Unpressed.png";
-    private String fileExitPressed = "Exit_Pressed.png";
-    private String fileExitUnpressed = "Exit_Unpressed.png";
-    private String fileSfxPressed = "SFX_Pressed.png";
-    private String fileSfxUnpressed = "SFX_Unpressed.png";
     private String user = "Testperson";
     
 
-    private Buttons btnChange = new Buttons(fileChangePressed,fileChangeUnpressed);
+    private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
-    private Buttons btnMusic = new Buttons(fileMusicPressed, fileMusicUnpressed);
-    private Buttons btnExit = new Buttons(fileExitPressed, fileExitUnpressed);
-    private Buttons btnSFX = new Buttons(fileSfxPressed, fileSfxUnpressed);
+    private Buttons btnMusic = new Buttons("MUSIC");
+    private Buttons btnExit = new Buttons("EXIT");
+    private Buttons btnSFX = new Buttons("SFX");
 
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
@@ -80,8 +72,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
         GridBagConstraints c = new GridBagConstraints();
 
         // Add Headline
-        lblSettings.setFont(fontHead);
-        lblSettings.setForeground(Color.white);
+        
+//        lblSettings.setFont(fontHead);
+//        lblSettings.setForeground(Color.white);
         c.gridy = 1;
         c.gridx = 1;
         c.weighty = 1;
@@ -100,9 +93,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         c.ipadx = 20;
         c.ipady = 50;
-        lblUserName.setFont(fontText);
-        lblUserName.setForeground(Color.white);
-        pnlUserName.setSize(60, 25);
+//        lblUserName.setFont(fontText);
+//        lblUserName.setForeground(Color.white);
+//        pnlUserName.setSize(60, 25);
         pnlUserName.add(lblUserName, c);
         pnlUserName.setOpaque(false);
 
@@ -110,11 +103,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 5;
-        c.weightx = 3;
-        c.weighty = 1;
+        c.weightx = 20;
+        c.weighty = 20;
         c.anchor = GridBagConstraints.EAST;
         c.ipadx = 10;
-        btnChange.setPreferredSize(new Dimension(60,25));
+//        btnChange.setPreferredSize(new Dimension(60,25));
         pnlUserName.add(btnChange, c);
        
         //Add text Field
@@ -125,7 +118,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.weighty = 1;
         c.anchor = GridBagConstraints.CENTER;
         c.ipadx = 10;
-        tfUserName.setPreferredSize(new Dimension(100,25));
+//        tfUserName.setPreferredSize(new Dimension(100,25));
         pnlUserName.add(tfUserName, c);
 
         // Add UserNamePanel
@@ -142,8 +135,8 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 1;
         c.gridy = 3;
         c.ipady = 10;
-        lblControls.setFont(fontText);
-        lblControls.setForeground(Color.white);
+//        lblControls.setFont(fontText);
+//        lblControls.setForeground(Color.white);
         pnlHead.add(lblControls, c);
 
         // Add keybinderPanel
@@ -159,7 +152,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 1;
         c.ipadx = 10;
-        btnMusic.setPreferredSize(new Dimension(60,25));
+//        btnMusic.setPreferredSize(new Dimension(60,25));
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -168,8 +161,8 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 2;
         c.ipadx = 10;
-        lblMusic.setFont(fontSmall);
-        lblMusic.setForeground(Color.white);
+//        lblMusic.setFont(fontSmall);
+//        lblMusic.setForeground(Color.white);
         ;
         pnlMusic.add(lblMusic, c);
 
@@ -185,7 +178,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 4;
         c.ipadx = 10;
-        btnSFX.setPreferredSize(new Dimension(60,25));
+//        btnSFX.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnSFX, c);
 
         c = new GridBagConstraints();
@@ -193,7 +186,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 3;
         c.ipadx = 10;
 //        c.anchor = GridBagConstraints.SOUTH;
-        btnExit.setPreferredSize(new Dimension(60,25));
+//        btnExit.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnExit, c);
         
       
@@ -202,8 +195,8 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 5;
         c.ipadx = 10;
-        lblSFX.setFont(fontSmall);
-        lblSFX.setForeground(Color.white);
+//        lblSFX.setFont(fontSmall);
+//        lblSFX.setForeground(Color.white);
         ;
         pnlMusic.add(lblSFX, c);
 
@@ -216,7 +209,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         // Add spacing
       
-        lblSpacing.setFont(fontHead);
+//        lblSpacing.setFont(fontHead);
         c.gridy = 7;
         c.gridx = 1;
         c.weighty = 1;
