@@ -24,32 +24,9 @@ public class Window extends JFrame {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
             env.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf")));
-            FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 20);
 
-            Enumeration keys = UIManager.getDefaults().keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
-                Object value = UIManager.get(key);
-                if (value instanceof FontUIResource) {
-                    UIManager.put(key, defaultFont);
-                }
-                if (key.toString().startsWith("Button")) {
-                    System.out.println(key + " " + value);
-                }
-            }
-
-            // Look and Feel changes
-            UIManager.put("Panel.background", new ColorUIResource(0, 0, 0));
-            UIManager.put("Label.foreground", new ColorUIResource(255, 255, 255));
-
-            UIManager.put("ComboBox.background", new ColorUIResource(255, 255, 255));
-            UIManager.put("ComboBox.foreground", new ColorUIResource(0, 0, 0));
-
-            UIManager.put("ComboBox.selectionBackground", new ColorUIResource(0, 0, 0));
-            UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
-
-            UIManager.put("Button.background", new ColorUIResource(0, 0, 0));
-            UIManager.put("Button.foreground", new ColorUIResource(255, 255, 255));
+            changeDefaultFont();
+            modifyLookAndFeel();
 
         } catch (IOException | FontFormatException e) {
             System.out.println("Failed to load font.");
@@ -75,5 +52,41 @@ public class Window extends JFrame {
             this.setMaximumSize(windowSize);
             this.setVisible(true);
         }
+    }
+
+    private void changeDefaultFont() {
+        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 20);
+
+        Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value instanceof FontUIResource) {
+                UIManager.put(key, defaultFont);
+            }
+            /*
+            if (key.toString().startsWith("Slider")) {
+                System.out.println(key + " " + value);
+            }
+            */
+        }
+    }
+
+    private void modifyLookAndFeel() {
+        ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
+
+        UIManager.put("Panel.background", backgroundColor);
+        UIManager.put("Label.foreground", new ColorUIResource(255, 255, 255));
+
+        UIManager.put("ComboBox.background", new ColorUIResource(255, 255, 255));
+        UIManager.put("ComboBox.foreground", backgroundColor);
+
+        UIManager.put("ComboBox.selectionBackground", backgroundColor);
+        UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
+
+        UIManager.put("Button.background", backgroundColor);
+        UIManager.put("Button.foreground", new ColorUIResource(255, 255, 255));
+
+        UIManager.put("Slider.background", backgroundColor);
     }
 }

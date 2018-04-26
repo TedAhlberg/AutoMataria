@@ -1,22 +1,11 @@
 package gameobjects;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import common.Direction;
-import common.GameMap;
-import common.ID;
-import common.GameEventMessage;
-import common.Utility;
+import common.*;
 import gameclient.Game;
-import gameclient.SoundFx;
 import gameserver.MessageListener;
+
+import java.awt.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Johannes Blüml
@@ -46,12 +35,10 @@ public class Player extends GameObject {
         previousDirection = direction;
         trail = new Trail(this);
         trail.setId(ID.getNext());
-
     }
 
     public void setListener(MessageListener listener) {
         this.listener = listener;
-
     }
 
     public void render(Graphics2D g) {
@@ -63,8 +50,7 @@ public class Player extends GameObject {
         String displayName = name.toUpperCase();
         FontMetrics fontMetrics = g.getFontMetrics(font);
         int stringWidth = fontMetrics.stringWidth(displayName);
-        if (dead)
-            displayName += " (DEAD)";
+        if (dead) displayName += " (DEAD)";
         g.drawString(displayName, x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
     }
 
@@ -129,21 +115,21 @@ public class Player extends GameObject {
     public void move(int amount) {
         Point previousPosition = new Point(x, y);
         switch (direction) {
-        case Up:
-            y -= amount;
-            break;
-        case Down:
-            y += amount;
-            break;
-        case Left:
-            x -= amount;
-            break;
-        case Right:
-            x += amount;
-            break;
+            case Up:
+                y -= amount;
+                break;
+            case Down:
+                y += amount;
+                break;
+            case Left:
+                x -= amount;
+                break;
+            case Right:
+                x += amount;
+                break;
         }
         boolean hasTeleported = teleportIfOutsideMap();
-        if (!hasTeleported) {
+        if (!hasTeleported && !invincible) {
             Point newPosition = new Point(x, y);
             trail.grow(previousPosition, newPosition);
         }
@@ -186,11 +172,12 @@ public class Player extends GameObject {
         }
     }
 
-    public void setInvincible(boolean invincible) {
-        this.invincible = invincible;
-    }
     public boolean isInvincible() {
         return invincible;
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
     }
 
     public void setNextDirection(Direction direction) {
@@ -217,14 +204,6 @@ public class Player extends GameObject {
         return dead;
     }
 
-    public boolean isReversed() {
-        return reversed;
-    }
-
-    public void setReversed(boolean reversed) {
-        this.reversed = reversed;
-    }
-
     public void setDead(boolean dead) {
         if (invincible) {
             this.dead = false;
@@ -233,6 +212,14 @@ public class Player extends GameObject {
             this.dead = dead;
             System.out.println(name + " HAS DIED");
         }
+    }
+
+    public boolean isReversed() {
+        return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public boolean isReady() {
@@ -265,7 +252,6 @@ public class Player extends GameObject {
         return trail;
     }
 
-    @Override
     public String toString() {
         return "Player{" + "id=" + id + ", name='" + name + '\'' + ", color=" + color + ", x=" + x + ", y=" + y
                 + ", width=" + width + ", height=" + height + ", speed=" + speed + ", previousDirection="
