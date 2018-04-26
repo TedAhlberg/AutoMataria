@@ -1,59 +1,62 @@
-package gameclient;
+package gameclient.interfaces;
+
+import java.awt.GridBagLayout;
+import java.awt.KeyboardFocusManager;
+import java.util.HashSet;
+
+import javax.swing.JPanel;
 
 import common.Action;
+import common.Direction;
+import common.GameMap;
+import common.GameServerUpdate;
+import common.GameState;
+import common.Utility;
 import common.messages.ConnectionMessage;
 import common.messages.GameEventMessage;
-import common.*;
+import gameclient.Audio;
+import gameclient.GamePanel;
+import gameclient.GameServerConnection;
+import gameclient.GameServerListener;
 import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashSet;
-
-/**
- * @author Johannes Bluml
- */
-public class Game {
-    public static final String TITLE = "Auto-Mataria";
-    public static final int GRID_PIXEL_SIZE = 100;
-    private final GamePanel gamePanel;
-
+public class GameScreen extends JPanel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private GamePanel gamePanel;
     private GameServerConnection client;
+    private Player player;
     private Audio backgroundMusic;
     private HashSet<Player> players = new HashSet<>();
-    private Player player;
+    private int framesPerSecond = 60;
 
-    public Game() {
-        this("127.0.0.1", 32000, null, 100);
+    public GameScreen() {
+        setLayout(new GridBagLayout());
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
     }
 
-    public Game(String serverIP, int serverPort, int frameRate) {
-        this(serverIP, serverPort, null, frameRate);
-    }
-
-    public Game(String serverIP, int serverPort, Dimension windowSize, int framesPerSecond) {
-        String playerName = JOptionPane.showInputDialog("Enter your username:", "Username");
-
-        Window window = new Window(TITLE, windowSize);
-        gamePanel = new GamePanel(window.getSize());
-
-        window.setContentPane(gamePanel);
-        window.pack();
-
+    public void connect(String ip, int port, String username) {
+        if(gamePanel==null) {
+            gamePanel = new GamePanel(getSize());
+            add(gamePanel);
+            revalidate();
+        }
         client = new GameServerConnection(new GameServerListener() {
             public void onConnect() {
                 System.out.println("Connected to server.");
-                client.send(playerName);
+                client.send(username);
             }
 
             public void onDisconnect() {
-                if (backgroundMusic != null) {
-                    backgroundMusic.stop();
-                }
+                // if (backgroundMusic != null) {
+                // backgroundMusic.stop();
+                // }
                 gamePanel.stop();
-                window.dispose();
             }
 
             public void onData(Object data) {
@@ -90,19 +93,14 @@ public class Game {
                         gamePanel.stop();
                         System.out.println("CLIENT: Failed to connect to server");
                     }
-                }
-                else if(data instanceof GameEventMessage) {
-                   readGameEventMessage((GameEventMessage) data);
+                } else if (data instanceof GameEventMessage) {
                 }
             }
         });
-
-//        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
-
+        client.connect(ip, port);
         gamePanel.requestFocus();
-
-        client.connect(serverIP, serverPort);
     }
+
 
     public void onKeyPress(Action action) {
         if (action == Action.ExitGame) {
@@ -120,15 +118,6 @@ public class Game {
         }
     }
 
-    public void readGameEventMessage(GameEventMessage message) {
-        if((message).data.equals("crash")) {
-            SoundFx.getInstance().crash();
-        }
-        else if((message).data.equals("SelfSpeedPickup")) {
-            SoundFx.getInstance().SelfSpeedPickup();
-        }
-        
-    }
     public void onKeyPress(Direction direction) {
         client.send(direction);
     }

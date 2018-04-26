@@ -12,7 +12,7 @@ public class GameServerConnection {
     private GameServerListener listener;
     private Thread thread;
 
-    GameServerConnection(GameServerListener listener) {
+    public GameServerConnection(GameServerListener listener) {
         this.listener = listener;
     }
 

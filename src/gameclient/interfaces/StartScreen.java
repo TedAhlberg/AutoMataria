@@ -28,7 +28,11 @@ public class StartScreen extends JPanel {
         c.weighty = 6;
         add(new JComponent() {}, c);
 
-        addButton("PLAY", "");
+        addButton("PLAY", new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                userInterface.startGame("127.0.0.1", 32000, "Erik");
+            }
+        });
         addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
         addButton("HIGHSCORES", "");
