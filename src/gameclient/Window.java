@@ -45,17 +45,18 @@ public class Window extends JFrame {
         });
 
         // Workaround for MAC problem with fullscreen - ComboBox not working
-        if (System.getProperty("os.name").contains("Mac OS")) {
-            windowSize = Toolkit.getDefaultToolkit().getScreenSize();
-        }
-
-        if (windowSize == null) {
-            env.getDefaultScreenDevice().setFullScreenWindow(this);
+        if (true || System.getProperty("os.name").contains("Mac OS")) {
+            setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+            setVisible(true);
         } else {
-            this.setPreferredSize(windowSize);
-            this.setMinimumSize(windowSize);
-            this.setMaximumSize(windowSize);
-            this.setVisible(true);
+            if (windowSize == null) {
+                env.getDefaultScreenDevice().setFullScreenWindow(this);
+            } else {
+                this.setPreferredSize(windowSize);
+                this.setMinimumSize(windowSize);
+                this.setMaximumSize(windowSize);
+                this.setVisible(true);
+            }
         }
 
         this.requestFocus();
