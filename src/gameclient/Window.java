@@ -4,8 +4,7 @@ import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -45,7 +44,32 @@ public class Window extends JFrame {
         });
 
         if (windowSize == null) {
-            env.getDefaultScreenDevice().setFullScreenWindow(this);
+            GraphicsDevice dev = env.getDefaultScreenDevice();
+            this.dispose(); // Restarts the JFrame
+            this.setResizable(false);
+            this.setUndecorated(true);
+            this.setVisible(true);
+            this.revalidate();
+            this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+            try {
+                dev.setFullScreenWindow(this);
+                if (System.getProperty("os.name").contains("Mac OS X")) {
+                    this.setVisible(false);
+                    this.setVisible(true);
+                    this.addMouseListener(new MouseAdapter() {
+                        public void mouseClicked(MouseEvent e) {
+                            super.mouseClicked(e);
+                            Window.this.setVisible(false);
+                            Window.this.setVisible(true);
+                        }
+                    });
+                }
+                this.repaint();
+                this.revalidate();
+            } catch (Exception e) {
+                dev.setFullScreenWindow(null);
+            }
+            this.requestFocus();
         } else {
             this.setPreferredSize(windowSize);
             this.setMinimumSize(windowSize);
