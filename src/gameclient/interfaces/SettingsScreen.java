@@ -1,18 +1,15 @@
 package gameclient.interfaces;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -73,8 +70,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         // Add Headline
         
-//        lblSettings.setFont(fontHead);
-//        lblSettings.setForeground(Color.white);
+
         c.gridy = 1;
         c.gridx = 1;
         c.weighty = 1;
@@ -85,49 +81,36 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         // Add UserNamelbl
         c = new GridBagConstraints();
-        c.gridx = 1;
-        c.gridy = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        c.anchor = GridBagConstraints.WEST;
-
-        c.ipadx = 20;
+        c.gridy=0;
         c.ipady = 50;
-//        lblUserName.setFont(fontText);
-//        lblUserName.setForeground(Color.white);
-//        pnlUserName.setSize(60, 25);
+
         pnlUserName.add(lblUserName, c);
         pnlUserName.setOpaque(false);
 
-        // Add ChangeButton
-        c = new GridBagConstraints();
-        c.gridy = 1;
-        c.gridx = 5;
-        c.weightx = 20;
-        c.weighty = 20;
-        c.anchor = GridBagConstraints.EAST;
-        c.ipadx = 10;
-//        btnChange.setPreferredSize(new Dimension(60,25));
-        pnlUserName.add(btnChange, c);
        
         //Add text Field
         c = new GridBagConstraints();
-        c.gridy = 1;
-        c.gridx = 3;
-        c.weightx = 3;
-        c.weighty = 1;
-        c.anchor = GridBagConstraints.CENTER;
-        c.ipadx = 10;
-//        tfUserName.setPreferredSize(new Dimension(100,25));
+        c.gridy=0;
+        c.weightx=1;
+        c.insets = new Insets(0,25,0,25);
+        c.fill=GridBagConstraints.HORIZONTAL;
         pnlUserName.add(tfUserName, c);
+        
+        
+        // Add ChangeButton
+        c = new GridBagConstraints();
+        c.gridy=0;
+        c.ipadx=10;
+        c.ipady=10;
+        pnlUserName.add(btnChange, c);
 
         // Add UserNamePanel
         c = new GridBagConstraints();
         c.gridy = 2;
-        c.gridx = 1;
-        c.weightx = 1;
+        c.gridx=1;
         c.weighty = 20;
-        c.anchor = GridBagConstraints.NORTH;
+        c.anchor=GridBagConstraints.CENTER;
+        c.fill=GridBagConstraints.HORIZONTAL;
         pnlHead.add(pnlUserName, c);
 
         // Add ControlLabel
@@ -135,8 +118,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 1;
         c.gridy = 3;
         c.ipady = 10;
-//        lblControls.setFont(fontText);
-//        lblControls.setForeground(Color.white);
         pnlHead.add(lblControls, c);
 
         // Add keybinderPanel
@@ -152,7 +133,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 1;
         c.ipadx = 10;
-//        btnMusic.setPreferredSize(new Dimension(60,25));
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -161,16 +141,14 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 2;
         c.ipadx = 10;
-//        lblMusic.setFont(fontSmall);
-//        lblMusic.setForeground(Color.white);
-        ;
+
         pnlMusic.add(lblMusic, c);
 
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
         c.ipadx = 10;
-        ;
+
         pnlMusic.add(lblSpacing2, c);
 
         // Add SFXButton
@@ -178,15 +156,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 4;
         c.ipadx = 10;
-//        btnSFX.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnSFX, c);
 
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
         c.ipadx = 10;
-//        c.anchor = GridBagConstraints.SOUTH;
-//        btnExit.setPreferredSize(new Dimension(60,25));
         pnlMusic.add(btnExit, c);
         
       
@@ -195,9 +170,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 5;
         c.ipadx = 10;
-//        lblSFX.setFont(fontSmall);
-//        lblSFX.setForeground(Color.white);
-        ;
+
         pnlMusic.add(lblSFX, c);
 
         // Add MusicPanel
@@ -209,7 +182,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         // Add spacing
       
-//        lblSpacing.setFont(fontHead);
         c.gridy = 7;
         c.gridx = 1;
         c.weighty = 1;
@@ -276,17 +248,4 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.setPreferredSize(new Dimension(500, 750));
-        frame.add(new SettingsScreen(new UserInterface(frame.getSize())));
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(true);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        // frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    }
 }
