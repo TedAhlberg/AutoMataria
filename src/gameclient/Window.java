@@ -36,6 +36,7 @@ public class Window extends JFrame {
         this.setTitle(title);
         this.setResizable(false);
         this.setUndecorated(true);
+
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 super.windowClosing(windowEvent);
@@ -43,36 +44,25 @@ public class Window extends JFrame {
             }
         });
 
-        if (windowSize == null) {
-            GraphicsDevice dev = env.getDefaultScreenDevice();
-            this.dispose(); // Restarts the JFrame
-            this.setResizable(false);
-            this.setUndecorated(true);
-            this.setVisible(true);
-            this.revalidate();
-            this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-            try {
-                if (System.getProperty("os.name").contains("Mac OS X")) {
+        // Workaround for MAC problem with fullscreen - ComboBox not working
+        if (System.getProperty("os.name").contains("Mac OS")) {
+            windowSize = Toolkit.getDefaultToolkit().getScreenSize();
+        }
 
-                }
-                else { dev.setFullScreenWindow(this);
-                }
-                this.repaint();
-                this.revalidate();
-            } catch (Exception e) {
-                dev.setFullScreenWindow(null);
-            }
-            this.requestFocus();
+        if (windowSize == null) {
+            env.getDefaultScreenDevice().setFullScreenWindow(this);
         } else {
             this.setPreferredSize(windowSize);
             this.setMinimumSize(windowSize);
             this.setMaximumSize(windowSize);
             this.setVisible(true);
         }
+
+        this.requestFocus();
     }
 
     private void changeDefaultFont() {
-        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 15);
+        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 12);
 
         Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {

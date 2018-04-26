@@ -119,6 +119,10 @@ public class GameServer implements ClientListener, MessageListener{
                 state = GameState.GameOver;
                 currentCountdown = gameOverCountDown;
             }
+        } else if(state == GameState.Warmup) {
+            respawnDeadPlayers();
+            
+            
         } else if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
                 System.out.println("SERVER STATE: Warmup -> Countdown");
                 players.clear();
@@ -198,6 +202,7 @@ public class GameServer implements ClientListener, MessageListener{
                 player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
                 System.out.println("Placing player " + player.getName() + " at " + player.getPoint());
             } else if (gameObject instanceof Trail) {
+                
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
                 iterator.remove();
@@ -212,7 +217,7 @@ public class GameServer implements ClientListener, MessageListener{
         player.setId(ID.getNext());
         player.setSpeed(playerSpeed);
         if (state == GameState.Warmup) {
-            player.setInvincible(true);
+            player.setInvincible(false);
             player.setReady(false);
             player.setDead(false);
             player.setPickUp(null);
@@ -224,6 +229,26 @@ public class GameServer implements ClientListener, MessageListener{
         }
         return player;
     }
+
+    public void respawnDeadPlayers() {
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
+        startingPositions.reset();
+        for (Player player : connectedClients.values()) {
+
+            if (player.isDead()) {
+                player.getTrail().remove(mapRectangle);
+                player.setDead(false);
+                player.setReady(false);
+                player.setPickUp(null);
+                player.setSpeed(playerSpeed);
+                player.setNextDirection(Direction.Static);
+                player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
+            
+            }
+        }
+    }
+    
+    
 
     @Override
     public void onConnect(Client client) {
