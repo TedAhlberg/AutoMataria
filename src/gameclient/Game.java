@@ -1,6 +1,8 @@
 package gameclient;
 
 import common.Action;
+import common.messages.ConnectionMessage;
+import common.messages.GameEventMessage;
 import common.*;
 import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;

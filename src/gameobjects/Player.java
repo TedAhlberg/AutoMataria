@@ -1,6 +1,7 @@
 package gameobjects;
 
 import common.*;
+import common.messages.GameEventMessage;
 import gameclient.Game;
 import gameserver.MessageListener;
 

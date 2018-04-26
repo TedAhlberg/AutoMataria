@@ -1,8 +1,10 @@
-package common;
+package common.messages;
 
 import gameobjects.Player;
 
 import java.io.Serializable;
+
+import common.GameMap;
 
 /**
  * @author Johannes Blüml
