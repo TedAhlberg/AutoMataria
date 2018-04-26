@@ -52,17 +52,10 @@ public class Window extends JFrame {
             this.revalidate();
             this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
             try {
-                dev.setFullScreenWindow(this);
                 if (System.getProperty("os.name").contains("Mac OS X")) {
-                    this.setVisible(false);
-                    this.setVisible(true);
-                    this.addMouseListener(new MouseAdapter() {
-                        public void mouseClicked(MouseEvent e) {
-                            super.mouseClicked(e);
-                            Window.this.setVisible(false);
-                            Window.this.setVisible(true);
-                        }
-                    });
+
+                }
+                else { dev.setFullScreenWindow(this);
                 }
                 this.repaint();
                 this.revalidate();
