@@ -1,5 +1,7 @@
 package common.messages;
 
+import java.awt.Color;
+
 import gameobjects.Player;
 
 public class PlayerMessage extends Message{
@@ -30,6 +32,10 @@ public class PlayerMessage extends Message{
     
     public Event getEvent() {
         return event;
+    }
+    
+    public Color getPlayerColor() {
+        return player.getColor();
     }
     
 
