@@ -24,8 +24,12 @@ public class ServerInformationReceiver extends Thread {
     private HashSet<ServerInformation> serverList = new HashSet<>();
     private ArrayList<ServerInformationListener> listeners = new ArrayList<>();
     
-    public ServerInformationReceiver() throws SocketException {
-        socket = new DatagramSocket(4445);
+    public ServerInformationReceiver(){
+        try {
+            socket = new DatagramSocket(4445);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         
     }
     
@@ -57,10 +61,12 @@ public class ServerInformationReceiver extends Thread {
                 parts[1],
                 parts[2],
                 Integer.parseInt(parts[3]),
-                Integer.parseInt(parts[4].trim()));
+                Integer.parseInt(parts[4]),
+                Integer.parseInt(parts[5].trim()));
         serverList.add(serverInfo);
         for(ServerInformationListener listener : listeners) {
             listener.update(serverList);
+//            System.out.println(listener.toString());
         }
     }
     

@@ -44,7 +44,7 @@ public class TestStartScreen extends JPanel implements ActionListener {
 
     public TestStartScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        MusicManager.getInstance().gameTrack1();
+        MusicManager.getInstance().menuTrack();
         bfImage = Resources.getImage(("Auto-Mataria.png"));
 
         btnPlay.setMinimumSize(new Dimension(120, 100));
@@ -92,15 +92,15 @@ public class TestStartScreen extends JPanel implements ActionListener {
 
     public static void main(String[] args) {
          JFrame frame = new JFrame();
-        UserInterface userInterface = new UserInterface();
+//        UserInterface userInterface = new UserInterface();
 //         frame.setMinimumSize(new Dimension(400, 400));
 //         frame.setPreferredSize(new Dimension(930, 800));
-         TestStartScreen sc = new TestStartScreen(userInterface);
-         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-         frame.add(sc);
-         frame.pack();
-         frame.setVisible(true);
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//         TestStartScreen sc = new TestStartScreen(userInterface);
+//         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//         frame.add(sc);
+//         frame.pack();
+//         frame.setVisible(true);
+//         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void addListeners() {

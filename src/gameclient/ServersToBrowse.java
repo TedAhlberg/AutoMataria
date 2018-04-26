@@ -5,9 +5,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import gameserver.ServerInformation;
 
 /**
  * 
@@ -46,21 +50,33 @@ public class ServersToBrowse extends JPanel {
 	    
 	    gbc.gridx = 0;
 	    gbc.weightx = 0.1;
+	    gbc.ipadx = 10;
+	    gbc.ipady = 10;
+	    gbc.insets = new Insets(10, 10, 10, 10);
 	    add(lblServerName, gbc);
 	    
 	    gbc = new GridBagConstraints();
 	    gbc.gridx = 1;
 	    gbc.weightx = 0.5;
+	    gbc.ipadx = 10;
+	    gbc.ipady = 10;
+	    gbc.insets = new Insets(10, 10, 10, 10);
 	    add(lblMapName, gbc);
 	    
 	    gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.weightx = 0.5;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
         add(lblGameState, gbc);
         
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
         gbc.weightx = 0.2;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
         add(lblPlayersCurrently, gbc);
         
 	}
@@ -77,7 +93,7 @@ public class ServersToBrowse extends JPanel {
 	
 	public static void main(String[] args) {
 		ServersToBrowse stb = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
-		Window window = new Window("Test", new Dimension(400 , 30));
+		Window window = new Window("Test", new Dimension(1200 , 1200));
         window.add(stb);
 		window.pack();
 	}

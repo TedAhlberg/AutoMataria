@@ -3,6 +3,7 @@ package test;
 import common.*;
 import gameclient.*;
 import gameclient.Window;
+import gameclient.interfaces.UserInterface;
 import gameobjects.*;
 import gameserver.StartingPositions;
 
@@ -19,8 +20,9 @@ import java.util.*;
  */
 public class MapEditorUI {
     private final JColorChooser colorChooser;
+    public JPanel container;
     private Dimension windowSize;
-    private JPanel container, wallPanel, gameObjectPanel;
+    private JPanel wallPanel, gameObjectPanel;
     private JTextField tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
     private JButton saveMapButton, deleteMapButton, btnChangeWallColor, btnChangeWallBorderColor, clearMapButton, generatePositionsButton, deleteGameObjectButton, addNewGameObjectButton;
     private JComboBox<String> mapsComboBox, backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox;
@@ -48,8 +50,7 @@ public class MapEditorUI {
     private HashMap<String, Dimension> gridSizes;
 
     public MapEditorUI(Dimension windowSize) {
-        currentMap = new GameMap();
-        currentMap.setGrid(new Dimension(75, 75));
+        currentMap = new GameMap("NEW MAP", "", "", 4, 1.0, new Dimension(75, 75), null, null);
         this.windowSize = windowSize;
         $$$setupUI$$$();
 
@@ -418,6 +419,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(label3, gbc);
         tfMapName = new JTextField();
         tfMapName.setColumns(15);
@@ -428,6 +432,9 @@ public class MapEditorUI {
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(tfMapName, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
@@ -466,6 +473,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(label5, gbc);
         final JPanel spacer5 = new JPanel();
         gbc = new GridBagConstraints();
@@ -479,6 +489,9 @@ public class MapEditorUI {
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(backgroundImageComboBox, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
@@ -486,6 +499,9 @@ public class MapEditorUI {
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(musicTrackComboBox, gbc);
         final JPanel spacer6 = new JPanel();
         gbc = new GridBagConstraints();
@@ -500,6 +516,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 10;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(label6, gbc);
         final JPanel spacer7 = new JPanel();
         gbc = new GridBagConstraints();
@@ -526,6 +545,9 @@ public class MapEditorUI {
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(gridSizeComboBox, gbc);
         deleteMapButton = new JButton();
         deleteMapButton.setText("Delete Map");
@@ -533,6 +555,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 21;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(deleteMapButton, gbc);
         saveMapButton = new JButton();
         saveMapButton.setText("Save Map");
@@ -541,6 +566,9 @@ public class MapEditorUI {
         gbc.gridy = 21;
         gbc.gridwidth = 7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(saveMapButton, gbc);
         final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
@@ -562,6 +590,9 @@ public class MapEditorUI {
         gbc.weightx = 3.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel2.add(mapsComboBox, gbc);
         final JPanel spacer11 = new JPanel();
         gbc = new GridBagConstraints();
@@ -576,6 +607,9 @@ public class MapEditorUI {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel2.add(clearMapButton, gbc);
         gameObjectPanel = new JPanel();
         gameObjectPanel.setLayout(new GridBagLayout());
@@ -597,6 +631,9 @@ public class MapEditorUI {
         gbc.gridx = 2;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel3.add(addNewGameObjectButton, gbc);
         gameObjectComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
@@ -613,6 +650,9 @@ public class MapEditorUI {
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel3.add(gameObjectComboBox, gbc);
         final JPanel spacer12 = new JPanel();
         gbc = new GridBagConstraints();
@@ -627,6 +667,9 @@ public class MapEditorUI {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel3.add(specialGameObjectComboBox, gbc);
         final JPanel spacer13 = new JPanel();
         gbc = new GridBagConstraints();
@@ -640,6 +683,9 @@ public class MapEditorUI {
         gbc.gridx = 2;
         gbc.gridy = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel3.add(deleteGameObjectButton, gbc);
         final JSeparator separator1 = new JSeparator();
         gbc = new GridBagConstraints();
@@ -769,6 +815,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         pickupPanel.add(setFixedPositionRadioButton, gbc);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridBagLayout());
@@ -783,6 +832,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(label10, gbc);
         final JPanel spacer20 = new JPanel();
         gbc = new GridBagConstraints();
@@ -802,6 +854,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(label11, gbc);
         final JLabel label12 = new JLabel();
         label12.setText("Visible Time");
@@ -809,6 +864,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(label12, gbc);
         final JLabel label13 = new JLabel();
         label13.setText("Random Spawn");
@@ -816,6 +874,9 @@ public class MapEditorUI {
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(label13, gbc);
         randomSpawnCheckBox = new JCheckBox();
         randomSpawnCheckBox.setText("");
@@ -824,6 +885,9 @@ public class MapEditorUI {
         gbc.gridy = 5;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(randomSpawnCheckBox, gbc);
         visibleTimeTextField = new JTextField();
         visibleTimeTextField.setText("0");
@@ -833,6 +897,9 @@ public class MapEditorUI {
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(visibleTimeTextField, gbc);
         spawnLimitTextField = new JTextField();
         spawnLimitTextField.setText("0");
@@ -842,6 +909,9 @@ public class MapEditorUI {
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(spawnLimitTextField, gbc);
         spawnIntervalTextField = new JTextField();
         spawnIntervalTextField.setText("0");
@@ -851,6 +921,9 @@ public class MapEditorUI {
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(spawnIntervalTextField, gbc);
         final JPanel spacer22 = new JPanel();
         gbc = new GridBagConstraints();
@@ -882,6 +955,9 @@ public class MapEditorUI {
         gbc.gridx = 2;
         gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel5.add(saveGameObjectButton, gbc);
         final JPanel spacer26 = new JPanel();
         gbc = new GridBagConstraints();
@@ -929,6 +1005,9 @@ public class MapEditorUI {
         gbc.gridx = 7;
         gbc.gridy = 16;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(removeStartingPositionRadioButton, gbc);
         addStartingPositionRadioButton = new JRadioButton();
         addStartingPositionRadioButton.setEnabled(true);
@@ -938,6 +1017,9 @@ public class MapEditorUI {
         gbc.gridx = 5;
         gbc.gridy = 16;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.ipadx = 5;
+        gbc.ipady = 5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(addStartingPositionRadioButton, gbc);
         final JPanel spacer28 = new JPanel();
         gbc = new GridBagConstraints();

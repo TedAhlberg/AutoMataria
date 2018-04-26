@@ -1,48 +1,44 @@
 package gameclient;
 
 import javax.swing.JPanel;
-import java.awt.GridBagLayout;
+import java.util.Collection;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.JScrollBar;
-import javax.swing.JList;
 
-public class BrowseServers extends JPanel {
+import gameserver.ServerInformation;
+
+public class BrowseServers extends JPanel implements ServerInformationListener {
     private Font font = new Font("Orbitron", Font.PLAIN, 30);
     private JScrollPane scrollPane = new JScrollPane();
-//    private JList<ServersToBrowse> list = new JList<>();
-    
-    ServersToBrowse stb = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
-    ServersToBrowse stb2 = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
-    ServersToBrowse stb3 = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
-    ServersToBrowse stb4 = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
+    private ServerInformationReceiver sir = new ServerInformationReceiver();
+    private BufferedImage backGround;
+    private JPanel pnlCenter = new JPanel();
     
 	
 	public BrowseServers() {
-	    setLayout(new BorderLayout(0, 0));
+	    setLayout(new BorderLayout());
+	    backGround = Resources.getImage("Stars.png");
+	    
+	    sir.start();
+	    sir.addListener(this);
 	    
 	    JLabel lblServers = new JLabel("Servers");
 	    lblServers.setFont(font);
 	    lblServers.setHorizontalAlignment(SwingConstants.CENTER);
 	    add(lblServers, BorderLayout.NORTH);
 	    
-	   
-//	    list.add(stb);
-//	    list.add(stb2);
-//	    list.add(stb3);
-//	    list.add(stb4);
-        
-        scrollPane.add(stb);
-        scrollPane.add(stb);
-        scrollPane.add(stb);
-        scrollPane.add(stb);
-        
+	    scrollPane.setOpaque(false);
+        scrollPane.setViewportView(pnlCenter);
         add(scrollPane, BorderLayout.CENTER);
 	}
 	
@@ -53,5 +49,30 @@ public class BrowseServers extends JPanel {
 	    window.pack();
 	}
 	
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    g.drawImage(backGround, 0, 0, getWidth(), getHeight(), null);
+	}
 
+    public void update(Collection<ServerInformation> serverList) {
+        scrollPane.removeAll();
+        pnlCenter.setLayout(new GridLayout(serverList.size(),2));
+        pnlCenter.setOpaque(false);
+        
+        for(ServerInformation info : serverList) {
+            ServersToBrowse servers = new ServersToBrowse(info.getServerName(),
+                                                          info.getMapName(),
+                                                          info.getGameState().toString(),
+                                                          info.getConnectedClients(),
+                                                          info.getMaxPlayers());
+            JButton btnJoin = new JButton("JOIN");
+            pnlCenter.add(servers);
+            pnlCenter.add(btnJoin);    
+            
+            add(pnlCenter);
+        }
+        scrollPane.setViewportView(pnlCenter);
+        scrollPane.revalidate();
+        scrollPane.repaint();
+    }
 }

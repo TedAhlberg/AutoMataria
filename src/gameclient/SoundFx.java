@@ -15,6 +15,7 @@ public class SoundFx {
     private static SoundFx instance = null;
 
     protected SoundFx() {
+        
     }
 
     public static SoundFx getInstance() {
