@@ -3,12 +3,13 @@ package common.messages;
 import java.awt.Color;
 
 import gameobjects.Player;
-
+/**
+ * 
+ * @author eriklundow
+ *
+ */
 public class PlayerMessage extends Message{
 
-    /**
-     * author @Erik Lundow
-     */
     private static final long serialVersionUID = 1L;
     private Event event;
     private Player player;

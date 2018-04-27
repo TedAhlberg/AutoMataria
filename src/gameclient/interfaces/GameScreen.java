@@ -57,9 +57,11 @@ public class GameScreen extends JPanel {
 
         Buttons exitButton = new Buttons("EXIT");
         exitButton.addActionListener(e -> {
+            MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
             userInterface.changeScreen("StartScreen");
+            MusicManager.getInstance().menuTrack();
         });
         c.ipadx = 20;
         c.ipady = 20;
