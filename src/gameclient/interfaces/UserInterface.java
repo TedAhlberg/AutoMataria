@@ -2,6 +2,7 @@ package gameclient.interfaces;
 
 import gameclient.*;
 import gameclient.Window;
+import gameclient.keyinput.KeyInput;
 import test.MapEditorUI;
 
 import javax.swing.*;
@@ -15,19 +16,21 @@ public class UserInterface extends JPanel {
      */
     private CardLayout cardLayout = new CardLayout();
     private GameScreen gameScreen;
+    private SettingsScreen settingsScreen;
 
     public UserInterface(Dimension windowSize) {
         System.setProperty("sun.java2d.opengl", "True");
-        
         setLayout(cardLayout);
         setPreferredSize(windowSize);
 
         add(new StartScreen(this), "StartScreen");
+        settingsScreen = new SettingsScreen(this);
         add(new SettingsScreen(this), "SettingsScreen");
         add(new HostServerScreen(this), "HostServerScreen");
         add(new MapEditorUI(this).container, "MapEditorScreen");
         add(new BrowseServers(), "BrowseScreen");
         gameScreen = new GameScreen(this);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(gameScreen));
         add(gameScreen, "GameScreen");
 
         // Show startscreen on startup
@@ -53,8 +56,8 @@ public class UserInterface extends JPanel {
         cardLayout.show(this, screen);
     }
 
-    public void startGame(String ip, int port, String username) {
-        gameScreen.connect(ip, port, username);
+    public void startGame(String ip, int port) {
+        gameScreen.connect(ip, port, settingsScreen.getUsername());
         cardLayout.show(this, "GameScreen");
     }
 }

@@ -48,7 +48,7 @@ public class GameScreen extends JPanel {
         gbc.weightx = 1;
         add(createRightPanel(), gbc);
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
+        
     }
 
     private JPanel createRightPanel() {
