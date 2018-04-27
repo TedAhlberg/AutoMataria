@@ -28,6 +28,8 @@ public class UserInterface extends JPanel {
         gameScreen = new GameScreen(this);
         add(gameScreen, "GameScreen");
 
+        // Show startscreen on startup
+        cardLayout.show(this, "StartScreen");
     }
 
     public static void main(String[] args) {
@@ -52,6 +54,4 @@ public class UserInterface extends JPanel {
         gameScreen.connect(ip, port, username);
         cardLayout.show(this, "GameScreen");
     }
-
-
 }
