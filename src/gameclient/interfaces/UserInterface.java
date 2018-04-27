@@ -64,4 +64,8 @@ public class UserInterface extends JPanel {
         gameScreen.connect(ip, port, settingsScreen.getUsername());
         cardLayout.show(this, "GameScreen");
     }
+
+    public void setFullscreen(boolean fullscreen) {
+        window.setFullscreen(fullscreen);
+    }
 }
