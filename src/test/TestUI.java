@@ -2,6 +2,8 @@ package test;
 
 import common.Maps;
 import gameclient.Game;
+import gameclient.Window;
+import gameclient.interfaces.UserInterface;
 import gameserver.GameServer;
 
 import javax.swing.*;
@@ -23,7 +25,6 @@ public class TestUI {
     private JSlider playerSpeedSlider;
     private JSlider updatesSlider;
     private JSlider tickRateSlider;
-    private JComboBox<String> maxFPSComboBox;
     private JComboBox<String> mapsComboBox;
 
     private GameServer server;
@@ -33,7 +34,6 @@ public class TestUI {
             tickRate = 100,
             ticksBetweenUpdates = 2,
             clientPort = 32000,
-            framesPerSecond = 60,
             clientWidth = 750,
             clientHeight = 750,
             playerSpeed = 50;
@@ -60,12 +60,17 @@ public class TestUI {
 
         btnStartGame.addActionListener(e -> {
             updateAllVariables();
-            System.out.println(toString());
-            if (fullscreen) {
-                new Game(clientIP, clientPort, framesPerSecond);
-            } else {
-                new Game(clientIP, clientPort, new Dimension(clientWidth, clientHeight), framesPerSecond);
-            }
+
+            SwingUtilities.invokeLater(() -> {
+                UserInterface userInterface;
+                if (fullscreen) {
+                    userInterface = new UserInterface();
+                } else {
+                    userInterface = new UserInterface(new Dimension(clientWidth, clientHeight));
+                }
+                userInterface.changeScreen("GameScreen");
+                userInterface.startGame(clientIP, clientPort);
+            });
         });
 
         btnStartServer.addActionListener(e -> {
@@ -136,7 +141,6 @@ public class TestUI {
         checkFullscreen.setSelected(fullscreen);
         tfClientIP.setText(clientIP);
         tfClientPort.setText(Integer.toString(clientPort));
-        maxFPSComboBox.setSelectedItem(Integer.toString(framesPerSecond));
         // SERVER
         tfServerPort.setText(Integer.toString(serverPort));
         tickRateSlider.setValue(tickRate);
@@ -156,7 +160,6 @@ public class TestUI {
             fullscreen = checkFullscreen.isSelected();
             clientIP = tfClientIP.getText();
             clientPort = Integer.parseInt(tfClientPort.getText());
-            framesPerSecond = Integer.parseInt((String) maxFPSComboBox.getSelectedItem());
             // SERVER
             serverPort = Integer.parseInt(tfServerPort.getText());
             tickRate = tickRateSlider.getValue();
@@ -495,9 +498,8 @@ public class TestUI {
         container.add(checkFullscreen, gbc);
         cbWindowSize = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
-        defaultComboBoxModel2.addElement("1000x1000");
-        defaultComboBoxModel2.addElement("750x750");
-        defaultComboBoxModel2.addElement("500x500");
+        defaultComboBoxModel2.addElement("1280x720");
+        defaultComboBoxModel2.addElement("800x480");
         cbWindowSize.setModel(defaultComboBoxModel2);
         gbc = new GridBagConstraints();
         gbc.gridx = 8;
@@ -505,14 +507,6 @@ public class TestUI {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(cbWindowSize, gbc);
-        btnStartGame = new JButton();
-        btnStartGame.setText("Start Game");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 13;
-        gbc.gridwidth = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(btnStartGame, gbc);
         lblWindowSize = new JLabel();
         lblWindowSize.setText("Window Size");
         lblWindowSize.setVisible(true);
@@ -521,35 +515,20 @@ public class TestUI {
         gbc.gridy = 9;
         gbc.anchor = GridBagConstraints.WEST;
         container.add(lblWindowSize, gbc);
-        final JLabel label12 = new JLabel();
-        label12.setText("Max FPS");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 6;
-        gbc.gridy = 11;
-        gbc.anchor = GridBagConstraints.WEST;
-        container.add(label12, gbc);
-        maxFPSComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel3 = new DefaultComboBoxModel();
-        defaultComboBoxModel3.addElement("15");
-        defaultComboBoxModel3.addElement("30");
-        defaultComboBoxModel3.addElement("60");
-        defaultComboBoxModel3.addElement("100");
-        defaultComboBoxModel3.addElement("120");
-        defaultComboBoxModel3.addElement("144");
-        defaultComboBoxModel3.addElement("200");
-        maxFPSComboBox.setModel(defaultComboBoxModel3);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 8;
-        gbc.gridy = 11;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        container.add(maxFPSComboBox, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         container.add(mapsComboBox, gbc);
+        btnStartGame = new JButton();
+        btnStartGame.setText("Start Game");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 6;
+        gbc.gridy = 11;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        container.add(btnStartGame, gbc);
         label2.setLabelFor(tfClientIP);
         label10.setLabelFor(tfClientPort);
     }

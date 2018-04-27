@@ -335,19 +335,9 @@
         </constraints>
         <properties>
           <model>
-            <item value="1000x1000"/>
-            <item value="750x750"/>
-            <item value="500x500"/>
+            <item value="1280x720"/>
+            <item value="800x480"/>
           </model>
-        </properties>
-      </component>
-      <component id="37c20" class="javax.swing.JButton" binding="btnStartGame">
-        <constraints>
-          <grid row="13" column="6" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="Start Game"/>
         </properties>
       </component>
       <component id="fa8b3" class="javax.swing.JLabel" binding="lblWindowSize">
@@ -360,38 +350,21 @@
           <visible value="true"/>
         </properties>
       </component>
-      <component id="c5fc" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="11" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <text value="Max FPS"/>
-        </properties>
-      </component>
-      <component id="32a08" class="javax.swing.JComboBox" binding="maxFPSComboBox">
-        <constraints>
-          <grid row="11" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="0.0" weighty="0.0"/>
-        </constraints>
-        <properties>
-          <model>
-            <item value="15"/>
-            <item value="30"/>
-            <item value="60"/>
-            <item value="100"/>
-            <item value="120"/>
-            <item value="144"/>
-            <item value="200"/>
-          </model>
-        </properties>
-      </component>
       <component id="e3a59" class="javax.swing.JComboBox" binding="mapsComboBox" custom-create="true">
         <constraints>
           <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0"/>
         </constraints>
         <properties/>
+      </component>
+      <component id="37c20" class="javax.swing.JButton" binding="btnStartGame">
+        <constraints>
+          <grid row="11" column="6" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <text value="Start Game"/>
+        </properties>
       </component>
     </children>
   </grid>

@@ -2,9 +2,13 @@ package test;
 
 import common.*;
 import gameclient.Game;
+import gameclient.Window;
+import gameclient.interfaces.GameScreen;
+import gameclient.interfaces.UserInterface;
 import gameobjects.pickups.*;
 import gameserver.GameServer;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -26,13 +30,16 @@ public class StartTestGame {
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server
-        new GameServer("AM-test-server", 32000, 100, 2, 50, map);
+        new GameServer("AM-test-server 1", 32000, 100, 2, 50, map);
 
         // Start a game client
-        new Game("127.0.0.1", 32000, new Dimension(750 , 750), 60);
-        // new Game("127.0.0.1", 32000, new Dimension(1000, 1000), 30);
-        // new Game("127.0.0.1", 32000, 100);
-        
-        
+        SwingUtilities.invokeLater(() -> {
+            gameclient.Window window = new Window("Auto-Mataria");
+            UserInterface userInterface = new UserInterface(window.getSize());
+            window.setContentPane(userInterface);
+            window.pack();
+            userInterface.changeScreen("GameScreen");
+            userInterface.startGame("127.0.0.1", 32000);
+        });
     }
 }
