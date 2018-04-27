@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,14 +29,15 @@ public class ServersToBrowse extends JPanel {
 	
 	
 	public ServersToBrowse(String serverName, String mapName, String gameState,
-	                          int playersCurrently, int playersMax) {
-	    
+						   int playersCurrently, int playersMax, ActionListener actionListener) {
+
 	    setLayout(new GridBagLayout());
-	    setPreferredSize(new Dimension(getWidth()/2, getHeight()/10));
+	    //setPreferredSize(new Dimension(getWidth()/2, getHeight()/10));
 	    setOpaque(false);
 	    
 	    lblServerName = new JLabel(serverName);
 	    lblServerName.setBackground(Color.RED);
+	    lblServerName.setForeground(Color.WHITE);
 	    
 	    lblMapName = new JLabel(mapName);
 	    
@@ -95,7 +97,7 @@ public class ServersToBrowse extends JPanel {
 	}
 	
 	public static void main(String[] args) {
-		ServersToBrowse stb = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15);
+		ServersToBrowse stb = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15, null);
 		Window window = new Window("Test", new Dimension(1200 , 1200));
         window.add(stb);
 		window.pack();

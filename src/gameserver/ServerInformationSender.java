@@ -16,17 +16,11 @@ import common.Maps;
  */
 
 public class ServerInformationSender extends Thread {
-    private DatagramSocket socket;
     private boolean running;
     private GameServer gameServer;
 
     
     public ServerInformationSender(GameServer gameServer) {
-        try {
-            socket = new DatagramSocket();
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
         this.gameServer = gameServer;
     }
     
@@ -37,6 +31,7 @@ public class ServerInformationSender extends Thread {
             byte[] data = gameServer.getServerAliveUpdateMessage();
             InetAddress ip;
             try {
+                DatagramSocket socket = new DatagramSocket();
                 ip = InetAddress.getByName("255.255.255.255");
                 DatagramPacket packet = new DatagramPacket(data, data.length, ip, 4445);
                 socket.send(packet);
