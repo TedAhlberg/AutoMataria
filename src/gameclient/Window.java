@@ -36,8 +36,8 @@ public class Window extends JFrame {
 
         this.getContentPane().setBackground(Color.BLACK);
         this.setTitle(title);
-        this.setResizable(false);
-        this.setUndecorated(true);
+        this.setResizable(true);
+        this.setUndecorated(false);
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
@@ -83,10 +83,10 @@ public class Window extends JFrame {
     }
 
     private void modifyLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(new MetalLookAndFeel()); 
-        } catch (UnsupportedLookAndFeelException e) {e.printStackTrace();
-        }
+//        try {
+//            UIManager.setLookAndFeel(new MetalLookAndFeel()); 
+//        } catch (UnsupportedLookAndFeelException e) {e.printStackTrace();
+//        }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
 
         UIManager.put("Panel.background", backgroundColor);
