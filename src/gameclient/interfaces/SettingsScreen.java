@@ -45,7 +45,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
-    private String user;
+    private String user = "Player";
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
@@ -215,7 +215,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
             e.printStackTrace();
         }
     }
-    
+    public String getUsername() {
+        return readSettings();
+    }
     public String readSettings(){
         try {
             FileInputStream fis = new FileInputStream("resources/settings/username.ser");
@@ -272,6 +274,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         if (e.getSource() == btnChange) {
             lblUserName.setText("USER: " + tfUserName.getText());
             writeToFile(tfUserName.getText());
+            user=tfUserName.getText();
             tfUserName.setText("");
 
         }

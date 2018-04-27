@@ -284,7 +284,7 @@ public class HostServerScreen extends JPanel {
 
         joinGameButton.addActionListener(e -> {
             if (server != null) {
-                userInterface.startGame("127.0.0.1", Integer.parseInt(portTextField.getText()), "Player");
+                userInterface.startGame("127.0.0.1", Integer.parseInt(portTextField.getText()));
             }
         });
     }

@@ -36,8 +36,7 @@ public class StartScreen extends JPanel {
 
         addButton("PLAY", new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                readSettings();
-                userInterface.startGame("127.0.0.1", 32000, username);
+                userInterface.startGame("127.0.0.1", 32000);
             }
         });
         addButton("HOST A GAME", "HostServerScreen");
@@ -86,23 +85,7 @@ public class StartScreen extends JPanel {
         buttonsPanel.add(button, c);
     }
     
-  public void readSettings(){
-      try {
-          FileInputStream fis = new FileInputStream("resources/settings/username.ser");
-          ObjectInputStream ois = new ObjectInputStream(fis);         
-          username=(String) ois.readObject();
-          ois.close();
-
-      } catch (FileNotFoundException e) {
-          e.printStackTrace();
-      } catch (IOException e) {
-          e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-        
-    }
+ 
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
