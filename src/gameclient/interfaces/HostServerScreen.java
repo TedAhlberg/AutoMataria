@@ -44,7 +44,7 @@ public class HostServerScreen extends JPanel {
         topPanel.setOpaque(false);
 
         JLabel headerLabel = new JLabel("HOST A SERVER");
-        headerLabel.setFont(new Font("Orbitron", Font.BOLD, 40));
+        headerLabel.setFont(Resources.getInstance().getTitleFont());
         c = new GridBagConstraints();
         c.gridx = 0;
         c.weightx = 10;

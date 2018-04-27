@@ -1,11 +1,10 @@
 package gameclient;
 
 /**
- * 
- * @author Henrik Olofsson & Johannes Blüml
+ * Represents information from a GameServer
  *
+ * @author Henrik Olofsson
  */
-
 public class ServerInformation {
     private String ip;
     private String serverName;
@@ -14,10 +13,9 @@ public class ServerInformation {
     private int serverPort;
     private int connectedClients;
     private int maxPlayers;
-    
+
     public ServerInformation(String ip, String serverName, String mapName, String gameState, int serverPort,
-            int connectedClients, int maxPlayers) {
-        super();
+                             int connectedClients, int maxPlayers) {
         this.ip = ip;
         this.serverName = serverName;
         this.mapName = mapName;
@@ -50,7 +48,7 @@ public class ServerInformation {
     public int getConnectedClients() {
         return connectedClients;
     }
-    
+
     public int getMaxPlayers() {
         return maxPlayers;
     }
@@ -64,9 +62,9 @@ public class ServerInformation {
     }
 
     public boolean equals(Object obj) {
-        if(obj instanceof ServerInformation) {
-            ServerInformation servInfo = (ServerInformation)obj;
-            return(servInfo.getIp().equals(ip) && servInfo.getServerPort() == serverPort);
+        if (obj instanceof ServerInformation) {
+            ServerInformation servInfo = (ServerInformation) obj;
+            return (servInfo.getIp().equals(ip) && servInfo.getServerPort() == serverPort);
         }
         return false;
     }

@@ -9,20 +9,19 @@ import java.util.Collection;
 import java.util.Random;
 
 /**
+ * Some utility methods that are used in various places in the Game.
+ *
  * @author Johannes Blüml
  */
 public class Utility {
-
     private static Random random = new Random();
 
-    public static int clamp(int var, int min, int max) {
-        if (var >= max)
-            return max;
-        if (var <= min)
-            return min;
-        return var;
-    }
-
+    /**
+     * Calculates the percentage of how many players are ready.
+     *
+     * @param players A Collection of players to iterate through and check if they are ready
+     * @return 0.0 - 1.0
+     */
     public static double getReadyPlayerPercentage(Collection<Player> players) {
         if (players == null) {
             return 0;
@@ -38,6 +37,13 @@ public class Utility {
         return readyPlayerPercentage;
     }
 
+    /**
+     * Finds a position on the map that doesn't collide with any existing GameObjects
+     *
+     * @param grid        The grid size from the current GameMap
+     * @param gameObjects The GameObjects that are used to check collisions
+     * @return A Point (Not a grid point) that does not collide with any other GameObject
+     */
     public static Point getRandomUniquePosition(Dimension grid, Collection<GameObject> gameObjects) {
         Rectangle rectangle = getGridRectangle();
         while (true) {
@@ -49,6 +55,13 @@ public class Utility {
         }
     }
 
+    /**
+     * Checks if the provided Rectangle does not collide with any GameObjects
+     *
+     * @param rect        The Rectangle to use to check for collisions
+     * @param gameObjects The GameObjects to iterate over
+     * @return true if Rectangle does not collide with any GameObject, false if it does
+     */
     public static boolean intersectsNoGameObject(Rectangle rect, Collection<GameObject> gameObjects) {
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Wall) {
@@ -62,6 +75,10 @@ public class Utility {
         return true;
     }
 
+    /**
+     * @param grid The grid that limits the search of a position.
+     * @return A random position on the provided grid
+     */
     public static Point getRandomPosition(Dimension grid) {
         int x = random.nextInt(grid.width);
         int y = random.nextInt(grid.height);
@@ -107,30 +124,57 @@ public class Utility {
         return -1;
     }
 
+    /**
+     * Converts the provided Point into a Point on the GRID
+     *
+     * @param point The Point to convert to GRID
+     * @return The converted GRID Point
+     */
     public static Point convertToGrid(Point point) {
         int x = point.x / Game.GRID_PIXEL_SIZE;
         int y = point.y / Game.GRID_PIXEL_SIZE;
         return new Point(x, y);
     }
 
+    /**
+     * Converts the provided GRID Point into a Point in the Game (pixels)
+     *
+     * @param point The GRID Point to convert
+     * @return The converted Point
+     */
     public static Point convertFromGrid(Point point) {
         int x = point.x * Game.GRID_PIXEL_SIZE;
         int y = point.y * Game.GRID_PIXEL_SIZE;
         return new Point(x, y);
     }
 
+    /**
+     * Converts the provided Dimension into a Dimension as a GRID
+     *
+     * @param dimension The Dimension to convert to GRID Dimension
+     * @return The converted GRID Dimension
+     */
     public static Dimension convertToGrid(Dimension dimension) {
         int width = dimension.width / Game.GRID_PIXEL_SIZE;
         int height = dimension.height / Game.GRID_PIXEL_SIZE;
         return new Dimension(width, height);
     }
 
+    /**
+     * Converts the provided GRID Dimension into a Dimension in the Game (pixels)
+     *
+     * @param dimension The GRID Dimension to convert
+     * @return The converted Dimension
+     */
     public static Dimension convertFromGrid(Dimension dimension) {
         int width = dimension.width * Game.GRID_PIXEL_SIZE;
         int height = dimension.height * Game.GRID_PIXEL_SIZE;
         return new Dimension(width, height);
     }
 
+    /**
+     * @return A Rectangle that is the size of one grid point in the Game
+     */
     public static Rectangle getGridRectangle() {
         return new Rectangle(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
     }
@@ -146,5 +190,31 @@ public class Utility {
         GraphicsDevice device = env.getDefaultScreenDevice();
         GraphicsConfiguration config = device.getDefaultConfiguration();
         return config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
+    }
+
+    /**
+     * Converts a BufferedImage into a compatible image to improve performance
+     *
+     * @param image The BufferedImage to convert
+     * @return The Converted image
+     */
+    public static BufferedImage convertToCompatibleImage(BufferedImage image) {
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
+
+        // Image is already compatible
+        if (image.getColorModel().equals(config.getColorModel())) {
+            return image;
+        }
+
+        // Create a compatible image
+        BufferedImage compatibleImage = config.createCompatibleImage(image.getWidth(), image.getHeight(),
+                image.getTransparency());
+        Graphics2D g2d = (Graphics2D) compatibleImage.getGraphics();
+        g2d.drawImage(image, 0, 0, null);
+        g2d.dispose();
+
+        return compatibleImage;
     }
 }

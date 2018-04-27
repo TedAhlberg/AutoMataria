@@ -5,10 +5,11 @@ import java.io.Serializable;
 import gameobjects.GameObject;
 
 /**
+ * Contains a GameObject and adds extra settings for it.
+ * So it can spawn in intervals and only be visible for a limited time.
  *
  * @author Dante Håkansson
  * @author Johannes Bluml
- *
  */
 
 public class SpecialGameObject implements Serializable {

@@ -1,19 +1,28 @@
 package gameclient;
 
+import common.Utility;
+
 import javax.imageio.ImageIO;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * Handles all resources used by the Game like Images, Sounds, Music and Fonts.
+ *
  * @author Dante Håkansson
  * @author Johannes Bluml
  * @author Erik Lundow
  */
 public class Resources {
+    private static Resources instance;
+    public static Font defaultFont, titleFont;
+    public static Path fontPath = FileSystems.getDefault().getPath("resources", "fonts");
     public static Path imagePath = FileSystems.getDefault().getPath("resources", "images");
     public static Path musicPath = FileSystems.getDefault().getPath("resources", "Music");
     public static Path buttonPath = FileSystems.getDefault().getPath("resources", "images", "Buttons");
@@ -21,6 +30,23 @@ public class Resources {
     private static HashMap<String, BufferedImage> images = new HashMap<>();
 
     private Resources() {
+        try {
+            File orbitronFile = fontPath.resolve("Orbitron Bold.ttf").toFile();
+            Font orbitronFont = Font.createFont(Font.TRUETYPE_FONT, orbitronFile);
+            defaultFont = orbitronFont.deriveFont(Font.BOLD, 12);
+            titleFont = orbitronFont.deriveFont(Font.BOLD, 30);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(orbitronFont);
+        } catch (IOException | FontFormatException e) {
+            System.out.println("Failed to load font.");
+            e.printStackTrace();
+        }
+    }
+
+    public static Resources getInstance() {
+        if (instance == null) {
+             instance = new Resources();
+        }
+        return instance;
     }
 
     public static BufferedImage getImage(Path path, String name) {
@@ -30,7 +56,7 @@ public class Resources {
         }
         Path filePath = path.resolve(name);
         try {
-            BufferedImage image = convertToCompatibleImage(ImageIO.read(filePath.toFile()));
+            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(filePath.toFile()));
             images.put(name, image);
             return image;
         } catch (IOException e) {
@@ -51,7 +77,7 @@ public class Resources {
         }
         Path filePath = imagePath.resolve(name);
         try {
-            BufferedImage image = convertToCompatibleImage(ImageIO.read(filePath.toFile()));
+            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(filePath.toFile()));
             images.put(name, image);
             return image;
         } catch (IOException e) {
@@ -82,23 +108,11 @@ public class Resources {
         return result.toArray(new String[0]);
     }
 
-    private static BufferedImage convertToCompatibleImage(BufferedImage image) {
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice device = env.getDefaultScreenDevice();
-        GraphicsConfiguration config = device.getDefaultConfiguration();
+    public Font getDefaultFont() {
+        return defaultFont;
+    }
 
-        // Image is already compatible
-        if (image.getColorModel().equals(config.getColorModel())) {
-            return image;
-        }
-
-        // Create a compatible image
-        BufferedImage compatibleImage = config.createCompatibleImage(image.getWidth(), image.getHeight(),
-                image.getTransparency());
-        Graphics2D g2d = (Graphics2D) compatibleImage.getGraphics();
-        g2d.drawImage(image, 0, 0, null);
-        g2d.dispose();
-
-        return compatibleImage;
+    public Font getTitleFont() {
+        return titleFont;
     }
 }

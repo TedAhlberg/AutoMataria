@@ -2,14 +2,16 @@ package gameclient;
 
 import gameclient.interfaces.UserInterface;
 
-import java.awt.*;
-
 /**
+ * Starts the Auto-Mataria Game
+ * Contains some important settings.
+ *
  * @author Johannes Bluml
  */
 public class Game {
     public static final String TITLE = "Auto-Mataria";
     public static final int GRID_PIXEL_SIZE = 100;
+    public static final int LOCAL_UDP_PORT = 63211;
     private UserInterface userInterface;
 
     public Game() {

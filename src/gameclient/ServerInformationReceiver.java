@@ -1,57 +1,47 @@
 package gameclient;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.net.*;
+import java.util.*;
 
 /**
- * Denna klassen ska ta emot UDP packet ifrån servern
- * och dela in dessa i en lista av hashmaps.
- * @author Henrik Olofsson & Johannes Blüml
+ * Denna klassen ska ta emot UDP packet ifrån lokala nätverket
+ * Sedan spara dem i en lista och uppdatera lyssnare om att listan har ändrats
  *
+ * @author Henrik Olofsson
  */
-
-
 public class ServerInformationReceiver extends Thread {
-    private DatagramSocket socket;
     private boolean running = false;
     private HashSet<ServerInformation> serverList = new HashSet<>();
-    private ArrayList<ServerInformationListener> listeners = new ArrayList<>();
-    
-    public ServerInformationReceiver(){
-        try {
-            socket = new DatagramSocket(4445);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        
+    private HashSet<ServerInformationListener> listeners = new HashSet<>();
+
+    public ServerInformationReceiver() {
     }
-    
+
     public void run() {
-        running = true; 
-        
-        while(running) {
-            byte[] data = new byte[76];
-            try {
+        running = true;
+
+        while (running) {
+            byte[] data = new byte[128];
+
+            try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
+
                 DatagramPacket packet = new DatagramPacket(data, data.length);
                 socket.receive(packet);
                 String ip = packet.getAddress().toString();
                 updateServerInfo(ip, new String(packet.getData()));
-                
-                System.out.println(serverList.size());
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+
             } catch (IOException e) {
                 e.printStackTrace();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }
-    
+
     private void updateServerInfo(String ip, String data) {
         String[] parts = data.split("\n");
         ServerInformation serverInfo = new ServerInformation(
@@ -63,23 +53,14 @@ public class ServerInformationReceiver extends Thread {
                 Integer.parseInt(parts[4]),
                 Integer.parseInt(parts[5].trim()));
         serverList.add(serverInfo);
-        for(ServerInformationListener listener : listeners) {
+        for (ServerInformationListener listener : listeners) {
             listener.update(serverList);
-//            System.out.println(listener.toString());
         }
     }
-    
+
     public Collection<ServerInformation> getServerList() {
         return serverList;
     }
-    
-//    public static void main(String[] args) throws SocketException {
-//        ServerInformationReceiver sir = new ServerInformationReceiver();
-//        sir.start();
-////        String[] servInfo = new String[5];
-////        servInfo = sir.getServerInformation();
-////        System.out.println(servInfo[0]);
-//    }
 
     public void addListener(ServerInformationListener listener) {
         listeners.add(listener);

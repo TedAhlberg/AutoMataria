@@ -5,50 +5,57 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 
 /**
+ * Window is a customized JFrame that has some extra features.
+ * Mainly for changing between Fullscreen/Windowed/Maximized
+ * Also changes the look of swing components to match the Auto-Mataria look.
+ *
  * @author Johannes Blüml
  */
 public class Window extends JFrame {
     private Dimension windowSize;
 
+    /**
+     * Default window size will be a quarter of the screen size
+     *
+     * @param title The title of the window
+     */
     public Window(String title) {
         this(title, null);
     }
 
+    /**
+     * Creates a new window with the specified window size
+     *
+     * @param title      The title of the window
+     * @param windowSize the size of the window (in windowed mode)
+     */
     public Window(String title, Dimension windowSize) {
         this.windowSize = windowSize;
         this.getContentPane().setBackground(Color.BLACK);
         this.setTitle(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        try {
-            Font orbitronFont = Font.createFont(Font.TRUETYPE_FONT, new File("resources/Orbitron Bold.ttf"));
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(orbitronFont);
-
-            changeDefaultFont();
-            modifyLookAndFeel();
-
-        } catch (IOException | FontFormatException e) {
-            System.out.println("Failed to load font.");
-            e.printStackTrace();
-        }
+        changeDefaultFont();
+        modifyLookAndFeel();
 
         setMode(Mode.Windowed);
     }
 
+    /**
+     * Changes the default font for all swing components
+     */
     private void changeDefaultFont() {
-        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 12);
+        FontUIResource defaultFontResource = new FontUIResource(Resources.getInstance().getDefaultFont());
 
         Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
             if (value instanceof FontUIResource) {
-                UIManager.put(key, defaultFont);
+                UIManager.put(key, defaultFontResource);
             }
             /*
             if (key.toString().startsWith("Slider")) {
@@ -58,6 +65,10 @@ public class Window extends JFrame {
         }
     }
 
+    /**
+     * Changes the look of Swing components that are used in the interface.
+     * Mostly black background with white text.
+     */
     private void modifyLookAndFeel() {
         try {
             UIManager.setLookAndFeel(new MetalLookAndFeel());
@@ -78,6 +89,13 @@ public class Window extends JFrame {
         UIManager.put("Slider.background", backgroundColor);
     }
 
+    /**
+     * Changes the window to the specified Mode.
+     * Fullscreen, Windowed or Maximized
+     * Only windowed mode is resizeable.
+     *
+     * @param mode The Mode to change to. Fullscreen, Windowed or Maximized
+     */
     public void setMode(Mode mode) {
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
@@ -116,6 +134,12 @@ public class Window extends JFrame {
         }
     }
 
+    /**
+     * Changes the size of the window
+     * Also changes the Mode to Windowed if it's Fullscreen or Maximized
+     *
+     * @param windowSize The new size of the window
+     */
     public void setWindowSize(Dimension windowSize) {
         this.windowSize = windowSize;
         setMode(Mode.Windowed);

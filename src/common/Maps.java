@@ -6,6 +6,8 @@ import java.io.*;
 import java.nio.file.*;
 
 /**
+ * Singleton which is used to save and load GameMaps from the resources/maps directory
+ *
  * @author Johannes Blüml
  */
 public class Maps {
