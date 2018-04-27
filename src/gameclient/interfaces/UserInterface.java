@@ -17,6 +17,8 @@ public class UserInterface extends JPanel {
     private GameScreen gameScreen;
 
     public UserInterface(Dimension windowSize) {
+        System.setProperty("sun.java2d.opengl", "True");
+        
         setLayout(cardLayout);
         setPreferredSize(windowSize);
 
@@ -32,13 +34,13 @@ public class UserInterface extends JPanel {
         cardLayout.show(this, "StartScreen");
     }
 
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.opengl", "True");
-
-        Window window = new Window("Auto-Mataria");
-        UserInterface userInterface = new UserInterface(window.getSize());
-        window.setContentPane(userInterface);
-        window.pack();
+    public static void main(String[] args) throws InterruptedException {
+        SwingUtilities.invokeLater(() -> {
+            Window window = new Window("Auto-Mataria");
+            UserInterface userInterface = new UserInterface(window.getSize());
+            window.setContentPane(userInterface);
+            window.pack();
+        });
     }
 
     protected void paintComponent(Graphics g) {

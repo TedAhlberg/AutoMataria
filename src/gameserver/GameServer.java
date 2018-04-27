@@ -115,30 +115,20 @@ public class GameServer implements ClientListener, MessageListener {
                 }
             }
             if (alivePlayers <= 1) {
-                System.out.println("SERVER STATE: Running -> Game Over");
-                state = GameState.GameOver;
-                currentCountdown = gameOverCountDown;
+                gameOver();
             }
         } else if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
-            System.out.println("SERVER STATE: Warmup -> Countdown");
-            players.clear();
-            players.addAll(connectedClients.values());
-            state = GameState.Countdown;
-            currentCountdown = gameStartCountdown;
+            startWarmUp();
         } else if (state == GameState.Warmup) {
             respawnDeadPlayers();
         } else if (state == GameState.Countdown) {
             if (currentCountdown <= 0) {
-                System.out.println("SERVER STATE: Countdown -> Running");
-                state = GameState.Running;
                 startNewGame();
             } else {
                 currentCountdown -= tickRate;
             }
         } else if (state == GameState.GameOver) {
             if (currentCountdown <= 0) {
-                System.out.println("SERVER STATE: Game Over -> Warmup");
-                state = GameState.Warmup;
                 startNewWarmup();
             } else {
                 currentCountdown -= tickRate;
@@ -147,7 +137,25 @@ public class GameServer implements ClientListener, MessageListener {
         gameObjectSpawner.tick();
     }
 
+    private void startWarmUp() {
+        System.out.println("SERVER STATE: Warmup -> Countdown");
+        players.clear();
+        players.addAll(connectedClients.values());
+        state = GameState.Countdown;
+        currentCountdown = gameStartCountdown;
+
+    }
+
+    private void gameOver() {
+        System.out.println("SERVER STATE: Running -> Game Over");
+        state = GameState.GameOver;
+        currentCountdown = gameOverCountDown;
+
+    }
+
     private void startNewWarmup() {
+        System.out.println("SERVER STATE: Game Over -> Warmup");
+        state = GameState.Warmup;
         System.out.println("Starting Warmup");
         Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
         Iterator<GameObject> iterator = gameObjects.iterator();
@@ -178,6 +186,8 @@ public class GameServer implements ClientListener, MessageListener {
     }
 
     private void startNewGame() {
+        System.out.println("SERVER STATE: Countdown -> Running");
+        state = GameState.Running;
         System.out.println("Starting new game");
         if (currentMap.getStartingPositions() != null) {
             startingPositions.set(currentMap.getStartingPositions());
@@ -200,7 +210,6 @@ public class GameServer implements ClientListener, MessageListener {
                 player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
                 System.out.println("Placing player " + player.getName() + " at " + player.getPoint());
             } else if (gameObject instanceof Trail) {
-
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
                 iterator.remove();
