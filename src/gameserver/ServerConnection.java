@@ -13,16 +13,18 @@ public class ServerConnection implements Runnable {
     private LinkedList<Client> clients = new LinkedList<>();
     private int port;
     private ServerSocket serverSocket;
+    private boolean running;
 
     public ServerConnection(int port) {
         this.port = port;
     }
 
     public void run() {
+        running = true;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             this.serverSocket = serverSocket;
             System.out.println("Server started on port " + port + ".");
-            while (true) {
+            while (running) {
                 Socket socket = serverSocket.accept();
                 clients.add(new Client(socket, listeners));
             }
@@ -38,6 +40,7 @@ public class ServerConnection implements Runnable {
 
     public void stop() {
         if (serverSocket == null) return;
+        running = false;
         clients.forEach(client -> client.disconnect());
         try {
             serverSocket.close();

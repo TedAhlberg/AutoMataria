@@ -15,10 +15,9 @@ import common.Maps;
  *
  */
 
-public class ServerInformationSender extends Thread {
+public class ServerInformationSender implements Runnable {
     private boolean running;
     private GameServer gameServer;
-
     
     public ServerInformationSender(GameServer gameServer) {
         this.gameServer = gameServer;
@@ -43,11 +42,14 @@ public class ServerInformationSender extends Thread {
             }
         }
     }
+
+    public void stop() {
+        running = false;
+    }
     
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) {
         GameServer gameServer = new GameServer("Best Server", 3000, 10, 10, 50, Maps.getInstance().get("Small Map 1"));
         ServerInformationSender sis = new ServerInformationSender(gameServer);
-        sis.start();
+        new Thread(sis).start();
     }
-
 }

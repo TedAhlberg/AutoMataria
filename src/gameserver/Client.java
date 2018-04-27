@@ -23,7 +23,6 @@ public class Client {
              ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
             this.outputStream = outputStream;
             connected = true;
-            listeners.forEach(listener -> listener.onConnect(this));
             while (connected) {
                 try {
                     Object nextObject = inputStream.readObject();

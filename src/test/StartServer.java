@@ -21,6 +21,7 @@ public class StartServer {
         int playerSpeed = Integer.parseInt(args[4]);
         GameMap map = Maps.getInstance().get(args[5]);
 
-        new GameServer(serverName, port, tickRate, amountOfUpdatesPerTick, playerSpeed, map);
+        GameServer server = new GameServer(serverName, port, tickRate, amountOfUpdatesPerTick, playerSpeed, map);
+        server.start();
     }
 }

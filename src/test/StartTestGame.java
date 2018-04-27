@@ -30,14 +30,12 @@ public class StartTestGame {
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server
-        new GameServer("AM-test-server 1", 32000, 100, 2, 50, map);
+        GameServer server = new GameServer("AM-test-server 1", 32000, 100, 2, Game.GRID_PIXEL_SIZE / 2, map);
+        server.start();
 
         // Start a game client
         SwingUtilities.invokeLater(() -> {
-            gameclient.Window window = new Window("Auto-Mataria");
-            UserInterface userInterface = new UserInterface(window.getSize());
-            window.setContentPane(userInterface);
-            window.pack();
+            UserInterface userInterface = new UserInterface();
             userInterface.changeScreen("GameScreen");
             userInterface.startGame("127.0.0.1", 32000);
         });

@@ -73,11 +73,19 @@ public class TestUI {
             });
         });
 
+        mapsComboBox.addActionListener(e -> {
+            if (server != null) {
+                server.changeMap(Maps.getInstance().get((String) mapsComboBox.getSelectedItem()));
+            }
+        });
+
         btnStartServer.addActionListener(e -> {
             updateAllVariables();
             System.out.println(toString());
-            if (server == null)
+            if (server == null) {
                 server = new GameServer("AM-test-server", serverPort, tickRate, ticksBetweenUpdates, playerSpeed, Maps.getInstance().get(gameMap));
+                server.start();
+            }
         });
         btnStopServer.addActionListener(e -> {
             if (server != null) {
@@ -369,7 +377,6 @@ public class TestUI {
         gbc.gridy = 13;
         gbc.anchor = GridBagConstraints.WEST;
         container.add(label8, gbc);
-        playerSpeedSlider = new JSlider();
         playerSpeedSlider.setEnabled(false);
         playerSpeedSlider.setMajorTickSpacing(25);
         playerSpeedSlider.setMinimum(0);

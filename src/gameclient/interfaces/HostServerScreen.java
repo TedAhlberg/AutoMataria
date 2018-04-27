@@ -1,7 +1,7 @@
 package gameclient.interfaces;
 
 import common.Maps;
-import gameclient.Buttons;
+import gameclient.*;
 import gameclient.Window;
 import gameserver.GameServer;
 
@@ -198,8 +198,8 @@ public class HostServerScreen extends JPanel {
 
         panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 3));
 
-        playerSpeedSlider = new JSlider(0, 100, 25);
-        playerSpeedSlider.setMajorTickSpacing(25);
+        playerSpeedSlider = new JSlider(0, Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE / 4);
+        playerSpeedSlider.setMajorTickSpacing(Game.GRID_PIXEL_SIZE / 4);
         playerSpeedSlider.setPaintLabels(true);
         playerSpeedSlider.setSnapToTicks(true);
         panel.add(playerSpeedSlider, getFieldConstraints(1, 3));
@@ -256,6 +256,7 @@ public class HostServerScreen extends JPanel {
                 String map = (String) mapsComboBox.getSelectedItem();
 
                 server = new GameServer(name, port, tickRate, ticksBetweenUpdates, playerSpeed, Maps.getInstance().get(map));
+                server.start();
                 serverStatusLabel.setText("ONLINE");
                 serverStatusLabel.setForeground(Color.GREEN);
                 startButton.setEnabled(false);

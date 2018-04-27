@@ -191,7 +191,7 @@
           <text value="Player Speed"/>
         </properties>
       </component>
-      <component id="27c3c" class="javax.swing.JSlider" binding="playerSpeedSlider">
+      <component id="27c3c" class="javax.swing.JSlider" binding="playerSpeedSlider" custom-create="true">
         <constraints>
           <grid row="13" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
           <gridbag weightx="0.0" weighty="0.0" ipady="10"/>

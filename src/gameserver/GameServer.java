@@ -3,6 +3,7 @@ package gameserver;
 import common.*;
 import common.messages.ConnectionMessage;
 import common.messages.Message;
+import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
@@ -12,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
+ * A Controller that connects together the serverConnection part of Auto-Mataria.
+ * The game loop, Clients that connect. Everything that happens in the actual game.
+ *
  * @author Johannes Blüml
  */
 public class GameServer implements ClientListener, MessageListener {
@@ -25,44 +29,79 @@ public class GameServer implements ClientListener, MessageListener {
     private final int gameOverCountDown;
     private final String serverName;
     private final int serverPort;
+    private final int serverPlayerSpeed;
     private int playerSpeed;
-    private GameState state = GameState.Warmup;
+    private GameState state;
     private GameMap currentMap;
-    private ServerConnection server;
-    private boolean running = true;
+    private ServerConnection serverConnection;
+    private boolean running;
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
     private GameObjectSpawner gameObjectSpawner;
+    private ServerInformationSender serverInformationSender;
 
+    /**
+     * A Controller that connects together the serverConnection part of Auto-Mataria.
+     * The game loop, Clients that connect. Everything that happens in the actual game.
+     *
+     * @param serverName Name of the server
+     * @param serverPort Port that the server will listen to connections on
+     * @param tickRate How often to run the tick method on all game objects (In milliseconds)
+     * @param amountOfTickBetweenUpdates How often to update the game to all clients
+     * @param playerSpeed How far the players travels each tick
+     * @param map The GameMap that the server will start with
+     */
     public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
         this.serverPort = serverPort;
         this.tickRate = tickRate;
         this.amountOfTickBetweenUpdates = amountOfTickBetweenUpdates;
-        this.playerSpeed = (int) Math.round(playerSpeed * map.getPlayerSpeedMultiplier());
-        this.gameStartCountdown = 5000;
-        this.gameOverCountDown = 10000;
+        this.serverPlayerSpeed = this.playerSpeed = playerSpeed;
         this.currentMap = map;
 
-        server = new ServerConnection(serverPort);
-        new Thread(server).start();
-        server.addListener(this);
+        gameStartCountdown = 5000;
+        gameOverCountDown = 10000;
+        state = GameState.Warmup;
 
-        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
+        serverConnection = new ServerConnection(serverPort);
+        serverConnection.addListener(this);
+        serverInformationSender = new ServerInformationSender(this);
         startingPositions = new StartingPositions();
-        startingPositions.generate(map.getGrid(), map.getPlayers());
+        changeMap(map);
+    }
 
-        new Thread(() -> gameLoop()).start();
-
-        ServerInformationSender serverInformationSender = new ServerInformationSender(this);
-        serverInformationSender.start();
+    public void start() {
+        if (running) return;
+        running = true;
+        new Thread(serverConnection).start();
+        new Thread(serverInformationSender).start();
+        new Thread(this::gameLoop).start();
     }
 
     public void stop() {
+        if (!running) return;
         running = false;
-        server.stop();
+        serverConnection.stop();
+        serverInformationSender.stop();
     }
 
+    /**
+     * Changes the active map on the server.
+     *
+     * @param map The GameMap to change to
+     */
+    public void changeMap(GameMap map) {
+        if (map == null) return;
+        currentMap = map;
+        playerSpeed = (int) Math.round(serverPlayerSpeed * map.getPlayerSpeedMultiplier());
+        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
+        //TODO: Send new map to all clients so they can change the GamePanel gridSize
+        startNewWarmup();
+    }
+
+    /**
+     * Main game loop that handles when it is time to tick all game objects or update game state to clients.
+     */
     private void gameLoop() {
         int ticksSinceLastUpdate = 0;
         long tickRate = this.tickRate * 1000000;
@@ -81,7 +120,7 @@ public class GameServer implements ClientListener, MessageListener {
                 }
             }
 
-            // WAIT BEFORE CONTINUING WITH THE GAMELOOP
+            // Wait until tickRate has passed before continuing
             while (nowTime - previousTickTime < tickRate) {
                 Thread.yield();
                 try {
@@ -93,6 +132,10 @@ public class GameServer implements ClientListener, MessageListener {
         }
     }
 
+    /**
+     * Called from game loop on a regular interval.
+     * Sends all game objects to all connected clients so they can update their view of the game.
+     */
     private void update() {
         GameServerUpdate update = new GameServerUpdate(state, gameObjects);
 
@@ -102,38 +145,55 @@ public class GameServer implements ClientListener, MessageListener {
         }
     }
 
+    /**
+     * Called from game loop on a regular interval. Runs all tick methods in all game objects.
+     * Which for example moves players forward.
+     *
+     * Also handles Game State changes.
+     */
     private void tick() {
         for (GameObject gameObject : gameObjects) {
             gameObject.tick();
         }
 
-        if (state == GameState.Running) {
-            int alivePlayers = 0;
-            for (Player player : players) {
-                if (!player.isDead()) {
-                    alivePlayers += 1;
+        switch (state) {
+            case Running:
+                int alivePlayers = 0;
+                for (Player player : players) {
+                    if (!player.isDead()) {
+                        alivePlayers += 1;
+                    }
                 }
-            }
-            if (alivePlayers <= 1) {
-                gameOver();
-            }
-        } else if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
-            startWarmUp();
-        } else if (state == GameState.Warmup) {
-            respawnDeadPlayers();
-        } else if (state == GameState.Countdown) {
-            if (currentCountdown <= 0) {
-                startNewGame();
-            } else {
-                currentCountdown -= tickRate;
-            }
-        } else if (state == GameState.GameOver) {
-            if (currentCountdown <= 0) {
-                startNewWarmup();
-            } else {
-                currentCountdown -= tickRate;
-            }
+                if (alivePlayers <= 1) {
+                    gameOver();
+                }
+                break;
+
+            case Warmup:
+                if (Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
+                    startWarmUp();
+                } else {
+                    respawnDeadPlayers();
+                }
+                break;
+
+            case GameOver:
+                if (currentCountdown <= 0) {
+                    startNewWarmup();
+                } else {
+                    currentCountdown -= tickRate;
+                }
+                break;
+
+            case Countdown:
+                if (currentCountdown <= 0) {
+                    startNewGame();
+                } else {
+                    currentCountdown -= tickRate;
+                }
+                break;
         }
+
         gameObjectSpawner.tick();
     }
 
@@ -254,12 +314,14 @@ public class GameServer implements ClientListener, MessageListener {
         }
     }
 
-    @Override
-    public void onConnect(Client client) {
-        System.out.println("SERVER: Client connected.");
-    }
-
-    @Override
+    /**
+     * Handles everything that is received from connected clients:
+     * Login - Creates a new Player
+     * Input - Controls the Player
+     *
+     * @param client
+     * @param value
+     */
     public void onData(Client client, Object value) {
         if (value instanceof Direction && connectedClients.containsKey(client)) {
             Direction direction = (Direction) value;
@@ -290,7 +352,11 @@ public class GameServer implements ClientListener, MessageListener {
         }
     }
 
-    @Override
+    /**
+     * Called when a client has disconnected from the server
+     *
+     * @param client The client that has disconnected from the server
+     */
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
         if (state == GameState.Running) {
@@ -303,10 +369,10 @@ public class GameServer implements ClientListener, MessageListener {
     }
 
     /**
-     * Creates a byte array that conains info about this server that is used
+     * Creates a byte array that conains info about this serverConnection that is used
      * in clients to view active servers on the local network
      *
-     * @return byte array that conains info about this server - maximum length is 76 bytes
+     * @return byte array that conains info about this serverConnection - maximum length is 76 bytes
      */
     public byte[] getServerAliveUpdateMessage() {
         String string = serverName + "\n"
@@ -319,8 +385,10 @@ public class GameServer implements ClientListener, MessageListener {
         return string.getBytes();
     }
 
-
+    /**
+     * @param message Message to be sent to all connected clients
+     */
     public void newMessage(Message message) {
-        connectedClients.forEach((client, player) -> { client.send(message); });
+        connectedClients.forEach((client, player) -> client.send(message));
     }
 }
