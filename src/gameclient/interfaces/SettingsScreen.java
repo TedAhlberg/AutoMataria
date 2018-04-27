@@ -1,6 +1,6 @@
 package gameclient.interfaces;
 
-import java.awt.Font;
+
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -41,9 +41,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
-    private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
-    private Font fontText = new Font("Orbitron", Font.BOLD, 25);
-    private Font fontSmall = new Font("Orbitron", Font.BOLD, 20);
+
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
