@@ -3,14 +3,9 @@ package gameclient.interfaces;
 import gameclient.*;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 /**
  * @author Henrik Olofsson & Erik Lundow
@@ -59,6 +54,16 @@ public class StartScreen extends JPanel {
         add(new JComponent() {}, c);
     }
 
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        StartScreen sc = new StartScreen(null);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.add(sc);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     private void addButton(String buttonText, String screenName) {
         addButton(buttonText, new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -85,18 +90,5 @@ public class StartScreen extends JPanel {
         super.paintComponent(g);
 
         g.drawImage(Resources.getImage("Auto-Mataria.png"), 0, 0, getWidth(), getHeight(), null);
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        UserInterface userInterface = new UserInterface(new Dimension(1200, 800));
-//         frame.setMinimumSize(new Dimension(400, 400));
-//         frame.setPreferredSize(new Dimension(930, 800));
-        StartScreen sc = new StartScreen(userInterface);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.add(sc);
-        frame.pack();
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

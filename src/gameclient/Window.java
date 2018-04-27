@@ -37,7 +37,7 @@ public class Window extends JFrame {
             e.printStackTrace();
         }
 
-        setFullscreen(false);
+        setMode(Mode.Windowed);
     }
 
     private void changeDefaultFont() {
@@ -78,32 +78,35 @@ public class Window extends JFrame {
         UIManager.put("Slider.background", backgroundColor);
     }
 
-    public void setFullscreen(boolean fullscreen) {
+    public void setMode(Mode mode) {
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        if (windowSize == null) {
-            System.out.println("No windowsize defined. Using 1/4 of available screen.");
-            windowSize = new Dimension(device.getDisplayMode().getWidth() / 2, device.getDisplayMode().getHeight() / 2);
-        }
-
-        if (fullscreen && device.isFullScreenSupported()) {
+        if (mode == Mode.Fullscreen) {
             System.out.println("Changing to fullscreen mode.");
 
+            this.dispose();
             this.setUndecorated(true);
             this.setResizable(false);
 
-            if (System.getProperty("os.name").contains("Mac OS")) {
-                System.out.println("MAC OS detected. Maximizing screen.");
-                // Workaround for MAC problem with fullscreen - ComboBox not working
-                this.setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-                this.setVisible(true);
-            } else {
-                device.setFullScreenWindow(this);
-            }
-        } else {
-            System.out.println("Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
+            device.setFullScreenWindow(this);
 
-            device.setFullScreenWindow(null);
+        } else if (mode == Mode.Maximized) {
+            System.out.println("WINDOW: Changing to maximized window.");
+
+            this.dispose();
+            this.setUndecorated(true);
+            this.setResizable(false);
+
+            this.setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+            this.setVisible(true);
+        } else {
+            if (windowSize == null) {
+                System.out.println("No windowsize defined. Using 1/4 of available screen.");
+                windowSize = new Dimension(device.getDisplayMode().getWidth() / 2, device.getDisplayMode().getHeight() / 2);
+            }
+            System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
+
+            this.dispose();
             this.setUndecorated(false);
             this.setResizable(true);
 
@@ -115,6 +118,12 @@ public class Window extends JFrame {
 
     public void setWindowSize(Dimension windowSize) {
         this.windowSize = windowSize;
-        setFullscreen(false);
+        setMode(Mode.Windowed);
+    }
+
+    public enum Mode {
+        Fullscreen,
+        Windowed,
+        Maximized
     }
 }

@@ -1,17 +1,8 @@
 package gameclient;
 
-import common.Action;
-import common.*;
-import common.messages.ConnectionMessage;
-import common.messages.GameEventMessage;
-import gameclient.Window;
 import gameclient.interfaces.UserInterface;
-import gameobjects.GameObject;
-import gameobjects.Player;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.HashSet;
 
 /**
  * @author Johannes Bluml
@@ -23,6 +14,8 @@ public class Game {
 
     public Game() {
         System.setProperty("sun.java2d.opengl", "True");
+        System.setProperty("awt.useSystemAAFontSettings", "on");
+
         userInterface = new UserInterface();
     }
 

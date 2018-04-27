@@ -25,7 +25,7 @@ public class UserInterface extends JPanel {
 
     public UserInterface(Dimension windowSize) {
 
-        Window window = new Window(Game.TITLE, windowSize);
+        window = new Window(Game.TITLE, windowSize);
         window.setContentPane(this);
         window.pack();
 
@@ -65,7 +65,7 @@ public class UserInterface extends JPanel {
         cardLayout.show(this, "GameScreen");
     }
 
-    public void setFullscreen(boolean fullscreen) {
-        window.setFullscreen(fullscreen);
+    public void setWindowMode(Window.Mode windowMode) {
+        window.setMode(windowMode);
     }
 }
