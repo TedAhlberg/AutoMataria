@@ -34,12 +34,18 @@ public class ServersToBrowse extends JPanel {
 	                          int playersCurrently, int playersMax) {
 	    
 	    setLayout(new GridBagLayout());
-	    setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	    setPreferredSize(new Dimension(getWidth()/2, getHeight()/10));
+	    setOpaque(false);
 	    
 	    lblServerName = new JLabel(serverName);
+	    lblServerName.setBackground(Color.RED);
+	    
 	    lblMapName = new JLabel(mapName);
+	    
 	    lblGameState = new JLabel(gameState);
+	    
 	    lblPlayersCurrently = new JLabel(Integer.toString(playersCurrently) + " / " + Integer.toString(playersMax));
+	    
 	    lblPlayersMax = new JLabel(Integer.toString(playersMax));
 	    
 	    lblServerName.setFont(font);

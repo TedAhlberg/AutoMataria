@@ -3,10 +3,17 @@ package gameclient;
 import javax.swing.JPanel;
 import java.util.Collection;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -18,11 +25,13 @@ import javax.swing.SwingConstants;
 import gameserver.ServerInformation;
 
 public class BrowseServers extends JPanel implements ServerInformationListener {
-    private Font font = new Font("Orbitron", Font.PLAIN, 30);
-    private JScrollPane scrollPane = new JScrollPane();
     private ServerInformationReceiver sir = new ServerInformationReceiver();
+    private Font font = new Font("Orbitron", Font.PLAIN, 30);
+    private ServersToBrowse server;
     private BufferedImage backGround;
-    private JPanel pnlCenter = new JPanel();
+    private JScrollPane scrollPane;
+    private JPanel panel;
+    
     
 	
 	public BrowseServers() {
@@ -37,42 +46,75 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
 	    lblServers.setHorizontalAlignment(SwingConstants.CENTER);
 	    add(lblServers, BorderLayout.NORTH);
 	    
+	    JScrollPane scrollPane = new JScrollPane();
 	    scrollPane.setOpaque(false);
-        scrollPane.setViewportView(pnlCenter);
-        add(scrollPane, BorderLayout.CENTER);
+	    add(scrollPane, BorderLayout.CENTER);
+	    
+	    JPanel panel = new JPanel();
+	    panel.setOpaque(false);
+	    scrollPane.setViewportView(panel);
+	    
+	    
+	    add(panel);
+
+        
 	}
 	
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+	    g.drawImage(backGround, 0, 0, getWidth(), getHeight(), null);
+	}
+
+    public void update(Collection<ServerInformation> serverList) {
+    	scrollPane.removeAll();
+        
+        for(ServerInformation info : serverList) {
+            server = new ServersToBrowse(info.getServerName(),
+                                                          info.getMapName(),
+                                                          info.getGameState().toString(),
+                                                          info.getConnectedClients(),
+                                                          info.getMaxPlayers());
+           
+           panel.add(server);
+            
+        }
+        scrollPane.revalidate();
+        scrollPane.repaint();
+    }
+    
+    public void addButton(ActionListener actionListener, JPanel panel) {
+    	Buttons button = new Buttons("Join");
+    	button.addActionListener(actionListener);
+    	button.setFont(font);
+    	
+    	GridBagConstraints c = new GridBagConstraints();
+        c.ipadx = 30;
+        c.ipady = 30;
+        c.insets = new Insets(10, 10, 10, 10);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        
+        panel.add(button);
+    	
+    }
+    
+    public class Listener implements ActionListener {
+
+		public void actionPerformed(ActionEvent event) {
+			
+			
+		}
+    	
+    }
+    
+    public JScrollPane getScrollPane() {
+    	return this.scrollPane;
+    }
+    
+    
 	public static void main(String[] args) {
 	    BrowseServers bs = new BrowseServers();
 	    Window window = new Window("Test", new Dimension(800,800));
 	    window.add(bs);
 	    window.pack();
 	}
-	
-	public void paintComponent(Graphics g) {
-	    super.paintComponent(g);
-	    g.drawImage(backGround, 0, 0, getWidth(), getHeight(), null);
-	}
-
-    public void update(Collection<ServerInformation> serverList) {
-        scrollPane.removeAll();
-        pnlCenter.setLayout(new GridLayout(serverList.size(),2));
-        pnlCenter.setOpaque(false);
-        
-        for(ServerInformation info : serverList) {
-            ServersToBrowse servers = new ServersToBrowse(info.getServerName(),
-                                                          info.getMapName(),
-                                                          info.getGameState().toString(),
-                                                          info.getConnectedClients(),
-                                                          info.getMaxPlayers());
-            JButton btnJoin = new JButton("JOIN");
-            pnlCenter.add(servers);
-            pnlCenter.add(btnJoin);    
-            
-            add(pnlCenter);
-        }
-        scrollPane.setViewportView(pnlCenter);
-        scrollPane.revalidate();
-        scrollPane.repaint();
-    }
 }

@@ -11,7 +11,7 @@ public class UserInterface extends JPanel {
 
     private static final long serialVersionUID = 1L;
     /**
-     * @Erik Lundow
+     * @eriklundow
      */
     private CardLayout cardLayout = new CardLayout();
     private GameScreen gameScreen;
