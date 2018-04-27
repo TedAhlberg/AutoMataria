@@ -3,14 +3,14 @@ package test;
 import common.*;
 import gameclient.*;
 import gameclient.Window;
+import gameclient.interfaces.UserInterface;
 import gameobjects.*;
 import gameserver.StartingPositions;
 
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -20,7 +20,6 @@ import java.util.*;
 public class MapEditorUI {
     private final JColorChooser colorChooser;
     public JPanel container;
-    private Dimension windowSize;
     private JPanel wallPanel, gameObjectPanel;
     private JTextField tfMapName, visibleTimeTextField, spawnLimitTextField, spawnIntervalTextField;
     private JButton saveMapButton, deleteMapButton, btnChangeWallColor, btnChangeWallBorderColor, clearMapButton, generatePositionsButton, deleteGameObjectButton, addNewGameObjectButton;
@@ -36,6 +35,7 @@ public class MapEditorUI {
     private JRadioButton setFixedPositionRadioButton;
     private JPanel gamePanelContainer;
     private JComboBox<Double> playerSpeedComboBox;
+    private JButton exitButton;
 
     private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
@@ -47,10 +47,11 @@ public class MapEditorUI {
     private SpecialGameObject selectedObject;
 
     private HashMap<String, Dimension> gridSizes;
+    private UserInterface userInterface;
 
-    public MapEditorUI(Dimension windowSize) {
+    public MapEditorUI(UserInterface userInterface) {
+        this.userInterface = userInterface;
         currentMap = new GameMap("NEW MAP", "", "", 4, 1.0, new Dimension(75, 75), null, null);
-        this.windowSize = windowSize;
         $$$setupUI$$$();
 
         addNewGameObjectButton.addActionListener(e -> {
@@ -167,6 +168,10 @@ public class MapEditorUI {
             ).setVisible(true);
         });
 
+        exitButton.addActionListener(e -> {
+            userInterface.changeScreen("StartScreen");
+        });
+
         updateCurrentMap();
         updateGamePanel();
 
@@ -176,7 +181,7 @@ public class MapEditorUI {
 
     public static void main(String[] args) {
         Window window = new Window("Auto-Mataria Map Editor", null);
-        window.setContentPane(new MapEditorUI(window.getSize()).container);
+        window.setContentPane(new MapEditorUI(null).container);
         window.pack();
     }
 
@@ -346,10 +351,11 @@ public class MapEditorUI {
             }
 
             public void mouseReleased(MouseEvent end) {
-                int spaceWidth = gamePanel.getSize().width / currentMap.getGrid().width;
-                int spaceHeight = gamePanel.getSize().height / currentMap.getGrid().height;
-                Point startGridPoint = new Point(start.getX() / spaceWidth, start.getY() / spaceHeight);
-                Point endGridPoint = new Point(end.getX() / spaceWidth, end.getY() / spaceHeight);
+                int gamePanelSize = Math.min(gamePanel.getWidth(), gamePanel.getHeight());
+                double spaceWidth = (double) gamePanelSize / currentMap.getGrid().width;
+                double spaceHeight = (double) gamePanelSize / currentMap.getGrid().height;
+                Point startGridPoint = new Point((int) (start.getX() / spaceWidth), (int) (start.getY() / spaceHeight));
+                Point endGridPoint = new Point((int) (end.getX() / spaceWidth), (int) (end.getY() / spaceHeight));
                 Point startPoint = Utility.convertFromGrid(startGridPoint);
                 Point endPoint = Utility.convertFromGrid(endGridPoint);
 
@@ -401,7 +407,7 @@ public class MapEditorUI {
         label1.setText("Max Players");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label1, gbc);
         final JLabel label2 = new JLabel();
@@ -409,14 +415,14 @@ public class MapEditorUI {
         label2.setToolTipText("Increases (above 1.0) or decreases (below 1.0) all players speed on this map");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label2, gbc);
         final JLabel label3 = new JLabel();
         label3.setText("Map Name");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -427,7 +433,7 @@ public class MapEditorUI {
         tfMapName.setText("New Map Name");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -438,21 +444,21 @@ public class MapEditorUI {
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(spacer1, gbc);
         final JLabel label4 = new JLabel();
         label4.setText("Background Image");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label4, gbc);
         final JLabel label5 = new JLabel();
         label5.setText("Music Track");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -460,7 +466,7 @@ public class MapEditorUI {
         panel1.add(label5, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -470,7 +476,7 @@ public class MapEditorUI {
         panel1.add(backgroundImageComboBox, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -482,7 +488,7 @@ public class MapEditorUI {
         label6.setText("Grid Size");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -490,7 +496,7 @@ public class MapEditorUI {
         panel1.add(label6, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -502,7 +508,7 @@ public class MapEditorUI {
         deleteMapButton.setText("Delete Map");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 11;
+        gbc.gridy = 12;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -512,7 +518,7 @@ public class MapEditorUI {
         saveMapButton.setText("Save Map");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 11;
+        gbc.gridy = 12;
         gbc.gridwidth = 7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 5;
@@ -523,7 +529,7 @@ public class MapEditorUI {
         panel2.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.gridwidth = 9;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
@@ -558,7 +564,7 @@ public class MapEditorUI {
         gameObjectPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.gridwidth = 9;
         panel1.add(gameObjectPanel, gbc);
         final JPanel panel3 = new JPanel();
@@ -856,14 +862,14 @@ public class MapEditorUI {
         panel5.add(saveGameObjectButton, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(playersComboBox, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         gbc.gridwidth = 7;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -871,7 +877,7 @@ public class MapEditorUI {
         final JSeparator separator2 = new JSeparator();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 10;
+        gbc.gridy = 11;
         gbc.gridwidth = 9;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(separator2, gbc);
@@ -879,14 +885,14 @@ public class MapEditorUI {
         generatePositionsButton.setText("Generate");
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(generatePositionsButton, gbc);
         removeStartingPositionRadioButton = new JRadioButton();
         removeStartingPositionRadioButton.setText("Remove");
         gbc = new GridBagConstraints();
         gbc.gridx = 7;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -898,7 +904,7 @@ public class MapEditorUI {
         addStartingPositionRadioButton.setText("Add");
         gbc = new GridBagConstraints();
         gbc.gridx = 5;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
@@ -907,36 +913,44 @@ public class MapEditorUI {
         final JPanel spacer9 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(spacer9, gbc);
         final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(spacer10, gbc);
         final JLabel label14 = new JLabel();
         label14.setText("Starting Positions");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.anchor = GridBagConstraints.WEST;
         panel1.add(label14, gbc);
         final JSeparator separator3 = new JSeparator();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 9;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(separator3, gbc);
         final JPanel spacer11 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 9;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 10;
         panel1.add(spacer11, gbc);
+        exitButton = new JButton();
+        exitButton.setText("EXIT FROM MAP EDITOR");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 9;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel1.add(exitButton, gbc);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 1;
