@@ -23,7 +23,7 @@ public class UserInterface extends JPanel {
         add(new StartScreen(this), "StartScreen");
         add(new SettingsScreen(this), "SettingsScreen");
         add(new HostServerScreen(this), "HostServerScreen");
-        add(new MapEditorUI(windowSize).container, "MapEditorScreen");
+        add(new MapEditorUI(this).container, "MapEditorScreen");
         add(new BrowseServers(), "BrowseScreen");
         gameScreen = new GameScreen(this);
         add(gameScreen, "GameScreen");
