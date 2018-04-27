@@ -1,6 +1,6 @@
 package gameclient.interfaces;
 
-import java.awt.Font;
+
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -8,6 +8,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,14 +41,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
-    private Font fontHead = new Font("Orbitron", Font.BOLD, 50);
-    private Font fontText = new Font("Orbitron", Font.BOLD, 25);
-    private Font fontSmall = new Font("Orbitron", Font.BOLD, 20);
+
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
-    private String user = "Testperson";
-    
+    private String user;
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
@@ -53,7 +56,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
 
-    private JLabel lblUserName = new JLabel("USER: " + user);
+    private JLabel lblUserName = new JLabel("USER: " + readSettings());
     private JLabel lblMusic = new JLabel("ON");
     private JLabel lblSFX = new JLabel("ON");
     private JLabel lblSettings = new JLabel("SETTINGS");
@@ -69,7 +72,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         GridBagConstraints c = new GridBagConstraints();
 
         // Add Headline
-        
 
         c.gridy = 1;
         c.gridx = 1;
@@ -81,36 +83,34 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
         // Add UserNamelbl
         c = new GridBagConstraints();
-        c.gridy=0;
+        c.gridy = 0;
         c.ipady = 50;
 
         pnlUserName.add(lblUserName, c);
         pnlUserName.setOpaque(false);
 
-       
-        //Add text Field
+        // Add text Field
         c = new GridBagConstraints();
-        c.gridy=0;
-        c.weightx=1;
-        c.insets = new Insets(0,25,0,25);
-        c.fill=GridBagConstraints.HORIZONTAL;
+        c.gridy = 0;
+        c.weightx = 1;
+        c.insets = new Insets(0, 25, 0, 25);
+        c.fill = GridBagConstraints.HORIZONTAL;
         pnlUserName.add(tfUserName, c);
-        
-        
+
         // Add ChangeButton
         c = new GridBagConstraints();
-        c.gridy=0;
-        c.ipadx=10;
-        c.ipady=10;
+        c.gridy = 0;
+        c.ipadx = 10;
+        c.ipady = 10;
         pnlUserName.add(btnChange, c);
 
         // Add UserNamePanel
         c = new GridBagConstraints();
         c.gridy = 2;
-        c.gridx=1;
+        c.gridx = 1;
         c.weighty = 20;
-        c.anchor=GridBagConstraints.CENTER;
-        c.fill=GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
         pnlHead.add(pnlUserName, c);
 
         // Add ControlLabel
@@ -131,8 +131,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
         // Add musicButton
         c = new GridBagConstraints();
         c.gridy = 1;
-        c.gridx = 1;
         c.ipadx = 10;
+        c.ipady = 10;
+        c.gridx = 1;
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
@@ -156,15 +157,16 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridy = 1;
         c.gridx = 4;
         c.ipadx = 10;
+        c.ipady = 10;
         pnlMusic.add(btnSFX, c);
 
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
         c.ipadx = 10;
+        c.ipady = 10;
         pnlMusic.add(btnExit, c);
-        
-      
+
         // Add SFXLabel
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -181,7 +183,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlHead.add(pnlMusic, c);
 
         // Add spacing
-      
+
         c.gridy = 7;
         c.gridx = 1;
         c.weighty = 1;
@@ -200,6 +202,39 @@ public class SettingsScreen extends JPanel implements ActionListener {
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
 
     }
+
+    public void writeToFile(String username) {
+        try {
+            FileOutputStream fos = new FileOutputStream("resources/settings/username.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(username);
+            oos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public String readSettings(){
+        try {
+            FileInputStream fis = new FileInputStream("resources/settings/username.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);         
+            user=(String) ois.readObject();
+            ois.close();
+            return user;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+      }
+        return "Player";
+        
+          
+      }
 
     public void addListeners() {
         btnKeyBinder.addActionListener(this);
@@ -235,10 +270,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnChange) {
-            
-
-                lblUserName.setText("USER: " + tfUserName.getText());
-                tfUserName.setText("");
+            lblUserName.setText("USER: " + tfUserName.getText());
+            writeToFile(tfUserName.getText());
+            tfUserName.setText("");
 
         }
 

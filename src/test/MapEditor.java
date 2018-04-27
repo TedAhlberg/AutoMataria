@@ -16,6 +16,7 @@ public class MapEditor {
     private StartingPositions startingPositions;
     private GamePanel gamePanel;
     private ArrayList<GameObject> gamePanelGameObjects;
+    private GameMap currentMap;
     private GameObject currentGameObject;
     private SpecialGameObject currentSpecialGameObject;
 

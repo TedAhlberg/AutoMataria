@@ -3,9 +3,14 @@ package gameclient.interfaces;
 import gameclient.*;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * @author Henrik Olofsson & Erik Lundow
@@ -13,6 +18,7 @@ import java.awt.event.ActionListener;
 public class StartScreen extends JPanel {
     private JPanel buttonsPanel = new JPanel(new GridBagLayout());
     private Font buttonFont = new Font("Orbitron", Font.BOLD, 20);
+    private String username;
 
     private UserInterface userInterface;
 
@@ -28,7 +34,12 @@ public class StartScreen extends JPanel {
         c.weighty = 6;
         add(new JComponent() {}, c);
 
-        addButton("PLAY", "");
+        addButton("PLAY", new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                readSettings();
+                userInterface.startGame("127.0.0.1", 32000, username);
+            }
+        });
         addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
         addButton("HIGHSCORES", "");
@@ -73,6 +84,24 @@ public class StartScreen extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
 
         buttonsPanel.add(button, c);
+    }
+    
+  public void readSettings(){
+      try {
+          FileInputStream fis = new FileInputStream("resources/settings/username.ser");
+          ObjectInputStream ois = new ObjectInputStream(fis);         
+          username=(String) ois.readObject();
+          ois.close();
+
+      } catch (FileNotFoundException e) {
+          e.printStackTrace();
+      } catch (IOException e) {
+          e.printStackTrace();
+      } catch (ClassNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+        
     }
 
     protected void paintComponent(Graphics g) {

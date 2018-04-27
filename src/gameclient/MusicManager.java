@@ -48,6 +48,14 @@ public class MusicManager {
         }
 
     }
+    
+    public static void changeTrack() {
+        stop =!stop;
+        music.setVolume(0);
+        music.stop();
+        music.setVolume(1);
+        stop=!stop;
+    }
 
     public static void stop() {
         stop =!stop;

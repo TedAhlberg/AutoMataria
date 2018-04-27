@@ -8,6 +8,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 /**
  * @author Johannes Blüml
@@ -36,6 +38,7 @@ public class Window extends JFrame {
         this.setTitle(title);
         this.setResizable(false);
         this.setUndecorated(true);
+
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 super.windowClosing(windowEvent);
@@ -43,43 +46,26 @@ public class Window extends JFrame {
             }
         });
 
-        if (windowSize == null) {
-            GraphicsDevice dev = env.getDefaultScreenDevice();
-            this.dispose(); // Restarts the JFrame
-            this.setResizable(false);
-            this.setUndecorated(true);
-            this.setVisible(true);
-            this.revalidate();
-            this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-            try {
-                dev.setFullScreenWindow(this);
-                if (System.getProperty("os.name").contains("Mac OS X")) {
-                    this.setVisible(false);
-                    this.setVisible(true);
-                    this.addMouseListener(new MouseAdapter() {
-                        public void mouseClicked(MouseEvent e) {
-                            super.mouseClicked(e);
-                            Window.this.setVisible(false);
-                            Window.this.setVisible(true);
-                        }
-                    });
-                }
-                this.repaint();
-                this.revalidate();
-            } catch (Exception e) {
-                dev.setFullScreenWindow(null);
-            }
-            this.requestFocus();
+        // Workaround for MAC problem with fullscreen - ComboBox not working
+        if (System.getProperty("os.name").contains("Mac OS")) {
+            setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+            setVisible(true);
         } else {
-            this.setPreferredSize(windowSize);
-            this.setMinimumSize(windowSize);
-            this.setMaximumSize(windowSize);
-            this.setVisible(true);
+            if (windowSize == null) {
+                env.getDefaultScreenDevice().setFullScreenWindow(this);
+            } else {
+                this.setPreferredSize(windowSize);
+                this.setMinimumSize(windowSize);
+                this.setMaximumSize(windowSize);
+                this.setVisible(true);
+            }
         }
+
+        this.requestFocus();
     }
 
     private void changeDefaultFont() {
-        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 15);
+        FontUIResource defaultFont = new FontUIResource("Orbitron", Font.BOLD, 12);
 
         Enumeration keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -97,6 +83,10 @@ public class Window extends JFrame {
     }
 
     private void modifyLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new MetalLookAndFeel()); 
+        } catch (UnsupportedLookAndFeelException e) {e.printStackTrace();
+        }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
 
         UIManager.put("Panel.background", backgroundColor);

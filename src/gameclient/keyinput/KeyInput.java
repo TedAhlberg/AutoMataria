@@ -3,6 +3,7 @@ package gameclient.keyinput;
 import common.Action;
 import common.Direction;
 import gameclient.Game;
+import gameclient.interfaces.GameScreen;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,12 +13,12 @@ import java.awt.event.KeyEvent;
  * @author Ted Ahlberg
  */
 public class KeyInput implements KeyEventDispatcher {
-    private Game game;
+    private GameScreen gameScreen;
     private KeyBindings bindings;
     private int lastKey = 0;
 
-    public KeyInput(Game game) {
-        this.game = game;
+    public KeyInput(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
     }
 
     @Override
@@ -27,42 +28,42 @@ public class KeyInput implements KeyEventDispatcher {
 
         // GoLeft
         if (key == KeyEvent.VK_LEFT && lastKey != KeyEvent.VK_RIGHT) {
-            game.onKeyPress(Direction.Left);
+            gameScreen.onKeyPress(Direction.Left);
             lastKey = KeyEvent.VK_LEFT;
             // GoRight
         } else if (key == KeyEvent.VK_RIGHT && lastKey != KeyEvent.VK_LEFT) {
-            game.onKeyPress(Direction.Right);
+            gameScreen.onKeyPress(Direction.Right);
             lastKey = KeyEvent.VK_RIGHT;
             // GoUp
         } else if (key == KeyEvent.VK_UP && lastKey != KeyEvent.VK_DOWN) {
-            game.onKeyPress(Direction.Up);
+            gameScreen.onKeyPress(Direction.Up);
             lastKey = KeyEvent.VK_UP;
             // GoDown
         } else if (key == KeyEvent.VK_DOWN && lastKey != KeyEvent.VK_UP) {
-            game.onKeyPress(Direction.Down);
+            gameScreen.onKeyPress(Direction.Down);
             lastKey = KeyEvent.VK_DOWN;
         }
         else if(key == KeyEvent.VK_SPACE) {
-            game.onKeyPress(Action.UsePickup);
+            gameScreen.onKeyPress(Action.UsePickup);
         }
 
         // ExitGame
         else if (key == KeyEvent.VK_ESCAPE) {
-            game.onKeyPress(Action.ExitGame);
+            gameScreen.onKeyPress(Action.ExitGame);
         }
 
         // ToggleInterpolation
         else if (key == KeyEvent.VK_I) {
-            game.onKeyPress(Action.ToggleInterpolation);
+            gameScreen.onKeyPress(Action.ToggleInterpolation);
         }
 
         // Toggle Player Color
         else if (key == KeyEvent.VK_C) {
-            game.onKeyPress(Action.TogglePlayerColor);
+            gameScreen.onKeyPress(Action.TogglePlayerColor);
         } else if (key == KeyEvent.VK_R) {
-            game.onKeyPress(Action.ToggleReady);
+            gameScreen.onKeyPress(Action.ToggleReady);
         } else if (key == KeyEvent.VK_F1) {
-            game.onKeyPress(Action.ToggleDebugText);
+            gameScreen.onKeyPress(Action.ToggleDebugText);
         }
 
         return false;
