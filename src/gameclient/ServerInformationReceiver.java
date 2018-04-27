@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import gameserver.ServerInformation;
 /**
  * Denna klassen ska ta emot UDP packet ifrån servern
  * och dela in dessa i en lista av hashmaps.

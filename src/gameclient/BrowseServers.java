@@ -3,26 +3,18 @@ package gameclient;
 import javax.swing.JPanel;
 import java.util.Collection;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-
-import gameserver.ServerInformation;
 
 public class BrowseServers extends JPanel implements ServerInformationListener {
     private ServerInformationReceiver sir = new ServerInformationReceiver();

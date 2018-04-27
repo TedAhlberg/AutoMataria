@@ -3,7 +3,6 @@ package gameserver;
 import common.*;
 import common.messages.ConnectionMessage;
 import common.messages.Message;
-import gameclient.Game;
 import gameobjects.*;
 
 import java.awt.*;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author Johannes Blüml
  */
-public class GameServer implements ClientListener, MessageListener{
+public class GameServer implements ClientListener, MessageListener {
     private final GameColors colors = new GameColors();
     private final StartingPositions startingPositions;
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
@@ -34,7 +33,6 @@ public class GameServer implements ClientListener, MessageListener{
     private int currentCountdown;
     private LinkedList<Player> players = new LinkedList<>();
     private GameObjectSpawner gameObjectSpawner;
-    private ServerInformationSender serverSender = new ServerInformationSender(this);
 
     public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
@@ -55,7 +53,9 @@ public class GameServer implements ClientListener, MessageListener{
         startingPositions.generate(map.getGrid(), map.getPlayers());
 
         new Thread(() -> gameLoop()).start();
-        serverSender.start();
+
+        ServerInformationSender serverInformationSender = new ServerInformationSender(this);
+        serverInformationSender.start();
     }
 
     public void stop() {
@@ -119,16 +119,14 @@ public class GameServer implements ClientListener, MessageListener{
                 state = GameState.GameOver;
                 currentCountdown = gameOverCountDown;
             }
-        } else if(state == GameState.Warmup) {
-            respawnDeadPlayers();
-            
-            
         } else if (state == GameState.Warmup && Utility.getReadyPlayerPercentage(connectedClients.values()) >= 1.0 && connectedClients.size() > 1) {
-                System.out.println("SERVER STATE: Warmup -> Countdown");
-                players.clear();
-                players.addAll(connectedClients.values());
-                state = GameState.Countdown;
-                currentCountdown = gameStartCountdown;
+            System.out.println("SERVER STATE: Warmup -> Countdown");
+            players.clear();
+            players.addAll(connectedClients.values());
+            state = GameState.Countdown;
+            currentCountdown = gameStartCountdown;
+        } else if (state == GameState.Warmup) {
+            respawnDeadPlayers();
         } else if (state == GameState.Countdown) {
             if (currentCountdown <= 0) {
                 System.out.println("SERVER STATE: Countdown -> Running");
@@ -202,7 +200,7 @@ public class GameServer implements ClientListener, MessageListener{
                 player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
                 System.out.println("Placing player " + player.getName() + " at " + player.getPoint());
             } else if (gameObject instanceof Trail) {
-                
+
                 ((Trail) gameObject).remove(mapRectangle);
             } else {
                 iterator.remove();
@@ -230,7 +228,7 @@ public class GameServer implements ClientListener, MessageListener{
         return player;
     }
 
-    public void respawnDeadPlayers() {
+    private void respawnDeadPlayers() {
         Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
         startingPositions.reset();
         for (Player player : connectedClients.values()) {
@@ -243,12 +241,9 @@ public class GameServer implements ClientListener, MessageListener{
                 player.setSpeed(playerSpeed);
                 player.setNextDirection(Direction.Static);
                 player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
-            
             }
         }
     }
-    
-    
 
     @Override
     public void onConnect(Client client) {
@@ -317,7 +312,6 @@ public class GameServer implements ClientListener, MessageListener{
 
 
     public void newMessage(Message message) {
-        connectedClients.forEach( (client, player) -> { client.send(message); });
-        
+        connectedClients.forEach((client, player) -> { client.send(message); });
     }
 }

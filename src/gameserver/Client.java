@@ -8,14 +8,13 @@ import java.util.LinkedList;
  * @author Johannes Blüml
  */
 public class Client {
-    private Thread thread;
     private ObjectOutputStream outputStream;
     private boolean connected;
     private LinkedList<ClientListener> listeners;
 
     public Client(Socket socket, LinkedList<ClientListener> listeners) {
         this.listeners = listeners;
-        thread = new Thread(() -> listenForDataAndUpdateListeners(socket));
+        Thread thread = new Thread(() -> listenForDataAndUpdateListeners(socket));
         thread.start();
     }
 

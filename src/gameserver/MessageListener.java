@@ -7,6 +7,5 @@ import common.messages.Message;
  *
  */
 public interface MessageListener {
-
-    public void newMessage(Message message);
+    void newMessage(Message message);
 }
