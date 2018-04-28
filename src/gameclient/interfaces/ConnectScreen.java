@@ -61,23 +61,29 @@ public class ConnectScreen extends JPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         add(topPanel, c);
 
-        JPanel leftPanel = createPanel();
-        c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 1;
-        c.fill = GridBagConstraints.BOTH;
-        c.ipady = 50;
-        c.weightx = 1;
-        add(leftPanel, c);
+        JPanel panel = new JPanel(new GridBagLayout());
 
-        JPanel rightPanel = new JPanel();
+        panel.add(new JLabel("SERVER ADDRESS"), getFieldConstraints(0, 0));
+        serverIPTextField = new JTextField("johannes.bluml.se");
+        serverIPTextField.setMargin(new Insets(4, 6, 0, 0));
+        panel.add(serverIPTextField, getFieldConstraints(1, 0));
+
+        panel.add(new JLabel("SERVER PORT"), getFieldConstraints(2, 0));
+        portTextField = new JTextField("32000");
+        portTextField.setMargin(new Insets(4, 6, 0, 0));
+        panel.add(portTextField, getFieldConstraints(3, 0));
+
+        joinGameButton = new Buttons("JOIN SERVER");
+        c = getFieldConstraints(4, 0);
+        c.ipady = 30;
+        panel.add(joinGameButton, c);
+
         c = new GridBagConstraints();
-        c.gridx = 1;
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         c.ipady = 50;
         c.weightx = 1;
-        add(rightPanel, c);
+        add(panel, c);
     }
 
     private GridBagConstraints getFieldConstraints(int gridx, int gridy) {
@@ -96,32 +102,6 @@ public class ConnectScreen extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.HORIZONTAL;
         return c;
-    }
-
-    private JPanel createPanel() {
-        GridBagConstraints c;
-        JPanel panel = new JPanel(new GridBagLayout());
-
-        panel.add(new JLabel("SERVER IP"), getFieldConstraints(0, 1));
-
-        serverIPTextField = new JTextField("johannes.bluml.se");
-        serverIPTextField.setMargin(new Insets(4, 6, 0, 0));
-        panel.add(serverIPTextField, getFieldConstraints(1, 1));
-
-
-        panel.add(new JLabel("SERVER PORT"), getFieldConstraints(0, 4));
-
-        portTextField = new JTextField("32000");
-        portTextField.setMargin(new Insets(4, 6, 0, 0));
-        panel.add(portTextField, getFieldConstraints(1, 4));
-
-
-        joinGameButton = new Buttons("JOIN SERVER");
-        c = getFieldConstraints(0, 5);
-        c.ipady = 20;
-        panel.add(joinGameButton, c);
-
-        return panel;
     }
 
     private void addListeners() {

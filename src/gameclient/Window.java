@@ -34,7 +34,7 @@ public class Window extends JFrame {
      */
     public Window(String title, Dimension windowSize) {
         this.windowSize = windowSize;
-        this.getContentPane().setBackground(Color.BLACK);
+        this.setBackground(Color.BLACK);
         this.setTitle(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
