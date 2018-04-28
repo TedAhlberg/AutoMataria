@@ -53,6 +53,7 @@ public class HostServerScreen extends JPanel {
         topPanel.add(headerLabel, c);
 
         joinGameButton = new Buttons("JOIN GAME");
+        joinGameButton.setVisible(false);
         c = new GridBagConstraints();
         c.gridx = 1;
         c.ipadx = 80;
@@ -128,7 +129,7 @@ public class HostServerScreen extends JPanel {
 
         panel.add(new JLabel("SERVER NAME"), getFieldConstraints(0, 1));
 
-        serverNameTextField = new JTextField("");
+        serverNameTextField = new JTextField("Auto-Mataria Server");
         serverNameTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 
@@ -171,7 +172,7 @@ public class HostServerScreen extends JPanel {
         GridBagConstraints c;
         JPanel panel = new JPanel(new GridBagLayout());
 
-        JLabel serverProfileLabel = new JLabel("ADVANCED CUSTOM SETTINGS");
+        JLabel serverProfileLabel = new JLabel("CUSTOM ADVANCED SETTINGS");
         serverProfileLabel.setForeground(Color.LIGHT_GRAY);
         c = getFieldConstraints(0, 0);
         c.gridwidth = 2;
@@ -261,11 +262,13 @@ public class HostServerScreen extends JPanel {
                 serverStatusLabel.setForeground(Color.GREEN);
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
+                joinGameButton.setVisible(true);
             } catch (Exception error) {
                 serverStatusLabel.setText("OFFLINE");
                 serverStatusLabel.setForeground(Color.RED);
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
+                joinGameButton.setVisible(false);
             }
         });
 
@@ -277,6 +280,7 @@ public class HostServerScreen extends JPanel {
             serverStatusLabel.setForeground(Color.RED);
             startButton.setEnabled(true);
             stopButton.setEnabled(false);
+            joinGameButton.setVisible(false);
         });
 
         exitButton.addActionListener(e -> {

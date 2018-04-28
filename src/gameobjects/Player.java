@@ -2,10 +2,11 @@ package gameobjects;
 
 import common.*;
 import common.messages.GameEventMessage;
+import common.messages.MessageListener;
 import gameclient.Game;
-import gameserver.MessageListener;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Player extends GameObject {
     private static final long serialVersionUID = 2;
     private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<GameObject> gameObjects;
+    private final Collection<GameObject> gameObjects;
     private final GameMap currentMap;
     private final String name;
     private final Trail trail;
@@ -25,7 +26,7 @@ public class Player extends GameObject {
     private Pickup pickUpSlot;
     transient private MessageListener listener;
 
-    public Player(String name, ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap) {
+    public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;

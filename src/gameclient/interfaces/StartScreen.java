@@ -30,6 +30,7 @@ public class StartScreen extends JPanel {
         add(new JComponent() {}, c);
 
         addButton("PLAY", "BrowseScreen");
+        addButton("JOIN", "ConnectScreen");
         addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
         addButton("HIGHSCORES", "");
