@@ -3,7 +3,6 @@ package gameclient;
 import common.Utility;
 
 import javax.imageio.ImageIO;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,13 +19,13 @@ import java.util.HashMap;
  * @author Erik Lundow
  */
 public class Resources {
-    private static Resources instance;
     public static Font defaultFont, titleFont;
     public static Path fontPath = FileSystems.getDefault().getPath("resources", "fonts");
     public static Path imagePath = FileSystems.getDefault().getPath("resources", "images");
     public static Path musicPath = FileSystems.getDefault().getPath("resources", "Music");
     public static Path buttonPath = FileSystems.getDefault().getPath("resources", "images", "Buttons");
     public static Path sfxPath = FileSystems.getDefault().getPath("resources", "SFX");
+    private static Resources instance;
     private static HashMap<String, BufferedImage> images = new HashMap<>();
 
     private Resources() {
@@ -44,7 +43,7 @@ public class Resources {
 
     public static Resources getInstance() {
         if (instance == null) {
-             instance = new Resources();
+            instance = new Resources();
         }
         return instance;
     }
