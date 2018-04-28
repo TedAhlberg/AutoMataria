@@ -280,7 +280,7 @@ public class HostServerScreen extends JPanel {
         });
 
         exitButton.addActionListener(e -> {
-            userInterface.changeScreen("StartScreen");
+            userInterface.changeToPreviousScreen();
         });
 
         joinGameButton.addActionListener(e -> {

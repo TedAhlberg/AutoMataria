@@ -56,7 +56,7 @@ public class GameScreen extends JPanel {
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
-            userInterface.changeScreen("StartScreen");
+            userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
         c.ipadx = 20;

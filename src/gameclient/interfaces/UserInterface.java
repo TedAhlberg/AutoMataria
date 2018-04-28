@@ -7,6 +7,7 @@ import test.MapEditorUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedList;
 
 public class UserInterface extends JPanel {
 
@@ -18,6 +19,7 @@ public class UserInterface extends JPanel {
     private CardLayout cardLayout = new CardLayout();
     private GameScreen gameScreen;
     private SettingsScreen settingsScreen;
+    private LinkedList<String> screenHistory = new LinkedList<>();
 
     public UserInterface() {
         this(null);
@@ -43,7 +45,7 @@ public class UserInterface extends JPanel {
         add(gameScreen, "GameScreen");
 
         // Show startscreen on startup
-        cardLayout.show(this, "StartScreen");
+        changeScreen("StartScreen");
     }
 
     public static void main(String[] args) {
@@ -57,12 +59,21 @@ public class UserInterface extends JPanel {
     }
 
     public void changeScreen(String screen) {
+        if (screen.equals("StartScreen")) {
+            screenHistory.clear();
+        }
+        screenHistory.add(screen);
         cardLayout.show(this, screen);
+    }
+
+    public void changeToPreviousScreen() {
+        screenHistory.removeLast();
+        cardLayout.show(this, screenHistory.getLast());
     }
 
     public void startGame(String ip, int port) {
         gameScreen.connect(ip, port, settingsScreen.getUsername());
-        cardLayout.show(this, "GameScreen");
+        changeScreen("GameScreen");
     }
 
     public void setWindowMode(Window.Mode windowMode) {
