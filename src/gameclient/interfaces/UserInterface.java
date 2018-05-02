@@ -29,7 +29,7 @@ public class UserInterface extends JPanel {
 
         window = new Window(Game.TITLE, windowSize);
         window.setContentPane(this);
-        window.pack();
+        window.setMode(Window.Mode.Windowed);
 
         setLayout(cardLayout);
         setPreferredSize(windowSize);

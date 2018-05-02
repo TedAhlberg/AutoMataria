@@ -40,8 +40,6 @@ public class Window extends JFrame {
 
         changeDefaultFont();
         modifyLookAndFeel();
-
-        setMode(Mode.Windowed);
     }
 
     /**
@@ -98,40 +96,53 @@ public class Window extends JFrame {
      */
     public void setMode(Mode mode) {
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        this.dispose();
-        if (mode == Mode.Fullscreen) {
-            System.out.println("Changing to fullscreen mode.");
 
-            
+        if (device.getFullScreenWindow() != null) {
+            System.out.println("WINDOW: Exiting fullscreen mode.");
+            device.setFullScreenWindow(null);
+        }
+
+        if (mode == Mode.Fullscreen) {
+            System.out.println("WINDOW: Changing to fullscreen mode.");
+
+            this.dispose();
             this.setUndecorated(true);
             this.setResizable(false);
-            this.pack();
-
+            this.setIgnoreRepaint(true);
             device.setFullScreenWindow(this);
+            this.pack();
 
         } else if (mode == Mode.Maximized) {
             System.out.println("WINDOW: Changing to maximized window.");
 
-            this.setVisible(false);
+            this.dispose();
             this.setUndecorated(true);
             this.setResizable(false);
-
             this.setVisible(true);
-            this.setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
-        } else {
-            if (windowSize == null) {
-                System.out.println("No windowsize defined. Using 1/4 of available screen.");
-                windowSize = new Dimension(device.getDisplayMode().getWidth() / 2, device.getDisplayMode().getHeight() / 2);
-            }
+            this.pack();
+
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        } else if (mode == Mode.Windowed && windowSize != null) {
             System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
 
             this.dispose();
             this.setUndecorated(false);
             this.setResizable(true);
-
             this.setPreferredSize(windowSize);
-
             this.setVisible(true);
+            this.pack();
+
+        } else if (mode == Mode.Windowed) {
+            System.out.println("WINDOW: Changing to windowed mode.");
+
+            this.dispose();
+            this.setUndecorated(false);
+            this.setResizable(true);
+            this.setVisible(true);
+            this.pack();
+
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
     }
 
