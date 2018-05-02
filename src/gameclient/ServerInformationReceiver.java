@@ -20,6 +20,7 @@ public class ServerInformationReceiver extends Thread {
 
     public void run() {
         running = true;
+        runTimeThread();
 
         try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
 
@@ -30,6 +31,7 @@ public class ServerInformationReceiver extends Thread {
                 socket.receive(packet);
                 String ip = packet.getAddress().getHostName();
                 updateServerInfo(ip, new String(packet.getData()));
+                
         }
 
         } catch (IOException e) {
@@ -37,7 +39,7 @@ public class ServerInformationReceiver extends Thread {
         }
     }
 
-    private void updateServerInfo(String ip, String data) {
+    private synchronized void updateServerInfo(String ip, String data) {
         String[] parts = data.split("\n");
         ServerInformation serverInfo = new ServerInformation(
                 ip,
@@ -50,6 +52,38 @@ public class ServerInformationReceiver extends Thread {
         serverList.add(serverInfo);
         for (ServerInformationListener listener : listeners) {
             listener.update(serverList);
+        }
+    }
+    
+    public void runTimeThread() {
+        new Thread(new Runnable() {
+
+            public void run() {
+                while(running) {
+                    cleanServerList();
+                    try {
+                        Thread.sleep(3000);
+                    } catch(InterruptedException e) {
+                        e.getStackTrace();
+                    }
+                } 
+                
+            } 
+            
+        })
+        .start();
+    }
+    
+    public synchronized void cleanServerList() {
+        Iterator<ServerInformation> iter = serverList.iterator();
+        while(iter.hasNext()) {
+          long lastDateTime = iter.next().getUpdateTime();
+          if(System.currentTimeMillis() - lastDateTime > 11000) {
+              iter.remove();
+              for (ServerInformationListener listener : listeners) {
+                  listener.update(serverList);
+              }
+          }
         }
     }
 

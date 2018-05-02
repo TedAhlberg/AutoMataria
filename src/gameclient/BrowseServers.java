@@ -76,18 +76,23 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
     }
 
     public void update(Collection<ServerInformation> serverList) {
-//        panel.removeAll();
+        panel.removeAll();
         //gridPanel = new JPanel(new GridBagLayout());
         int gridWeightX = 1;
         int gridX = 0;
         int gridY = 0;
         
+        System.out.println(serverList.size());
         for (ServerInformation info : serverList) {
             server = new ServersToBrowse(info.getServerName(),
                     info.getMapName(),
                     info.getGameState(),
                     info.getConnectedClients(),
-                    info.getMaxPlayers());
+                    info.getMaxPlayers(),
+                    info.getIp(),
+                    info.getServerPort());
+            
+            System.out.println(info.toString());
             
             Buttons button = new Buttons("Join");
             button.addActionListener(new ActionListener() {
@@ -117,11 +122,11 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
     }
 
     
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UserInterface userInterface = new UserInterface();
-            userInterface.changeScreen("BrowseScreen");
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            UserInterface userInterface = new UserInterface();
+//            userInterface.changeScreen("BrowseScreen");
+//        });
+//    }
 
 }

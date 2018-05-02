@@ -46,7 +46,7 @@ public class ServerInformationSender implements Runnable {
             }
 
             try {
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -78,11 +78,11 @@ public class ServerInformationSender implements Runnable {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        try {
-            result.add(InetAddress.getByName("255.255.255.255"));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            result.add(InetAddress.getByName("255.255.255.255"));
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        }
         return result;
     }
 }
