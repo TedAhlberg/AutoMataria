@@ -102,21 +102,22 @@ public class Window extends JFrame {
         if (mode == Mode.Fullscreen) {
             System.out.println("Changing to fullscreen mode.");
 
-            this.dispose();
-            this.setUndecorated(true);
+//            this.dispose();
+//            this.setUndecorated(true);
             this.setResizable(false);
+//            this.pack();
 
             device.setFullScreenWindow(this);
 
         } else if (mode == Mode.Maximized) {
             System.out.println("WINDOW: Changing to maximized window.");
 
-            this.dispose();
-            this.setUndecorated(true);
+            this.setVisible(false);
+//            this.setUndecorated(true);
             this.setResizable(false);
 
-            this.setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
             this.setVisible(true);
+            this.setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
         } else {
             if (windowSize == null) {
                 System.out.println("No windowsize defined. Using 1/4 of available screen.");
@@ -124,8 +125,8 @@ public class Window extends JFrame {
             }
             System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
 
-            this.dispose();
-            this.setUndecorated(false);
+//            this.dispose();
+//            this.setUndecorated(false);
             this.setResizable(true);
 
             this.setPreferredSize(windowSize);

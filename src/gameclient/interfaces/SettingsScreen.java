@@ -15,11 +15,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import com.sun.glass.ui.Window;
 
 import gameclient.Audio;
 import gameclient.Buttons;
@@ -49,7 +48,10 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String user = "Player";
-    private String screen ="WINDOWED";
+    private String screen[] = {"WINDOWED","MAXIMIZED","FULLSCREEN"};
+    
+    
+    private JComboBox<String> screenSize =new JComboBox <String>(screen);
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
@@ -142,15 +144,15 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.ipady = 10;
         c.gridx = 1;
         lblScreenSettings.setOpaque(false);
-        pnlScreen.add(lblScreenSettings, c);
+        pnlScreen.add(screenSize, c);
         
-        //Add btnScreen
-        c = new GridBagConstraints();
-        c.gridy = 1;
-        c.gridx = 2;
-        c.ipadx = 10;
-        c.ipady = 10;
-        pnlScreen.add(btnScreen, c);
+//        //Add btnScreen
+//        c = new GridBagConstraints();
+//        c.gridy = 1;
+//        c.gridx = 2;
+//        c.ipadx = 10;
+//        c.ipady = 10;
+//        pnlScreen.add(btnScreen, c);
         
         //Add pnlScreen
         // Add MusicPanel
@@ -278,7 +280,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         btnMusic.addActionListener(this);
         btnSFX.addActionListener(this);
         btnExit.addActionListener(this);
-        btnScreen.addActionListener(this);
+        screenSize.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -292,19 +294,20 @@ public class SettingsScreen extends JPanel implements ActionListener {
             }
 
         }
-        if(e.getSource()==btnScreen) {
-            if(screen.equals("WINDOWED")) {                
-                userInterface.setWindowMode(gameclient.Window.Mode.Fullscreen);
-                screen="FULLSCREEN";
-                lblScreenSettings.setText("SCREENMODE: " + screen);
+        if(e.getSource()==screenSize) {
+            if(screenSize.getSelectedItem().equals("MAXIMIZED")) {                
+                userInterface.setWindowMode(gameclient.Window.Mode.Maximized);
                 repaint();
             }
-            else {
+            else if(screenSize.getSelectedItem().equals("WINDOWED")) {
                 userInterface.setWindowMode(gameclient.Window.Mode.Windowed);
-                screen="WINDOWED";
-                lblScreenSettings.setText("SCREENMODE: " + screen);
                 repaint();
             }
+            else if(screenSize.getSelectedItem().equals("FULLSCREEN")) {
+                userInterface.setWindowMode(gameclient.Window.Mode.Fullscreen);
+                repaint();
+            }
+            
         }
 
         if (e.getSource() == btnSFX) {
