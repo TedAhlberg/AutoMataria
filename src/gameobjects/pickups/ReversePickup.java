@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.InstantPickup;
@@ -23,7 +24,7 @@ public class ReversePickup extends InstantPickup {
     private int timer = 60;
     private Player player;
     private ConcurrentLinkedQueue<GameObject> gameObjects;
-    private boolean reversed;
+    
 
     public ReversePickup() {
         this(0, 0, 60);
@@ -36,7 +37,7 @@ public class ReversePickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken || used) {
+        if (getState() == PickupState.NotTaken || getState() == PickupState.Used) {
             return;
         }
         timer--;
@@ -48,12 +49,12 @@ public class ReversePickup extends InstantPickup {
                     }
                 }
             }
-            used = true;
+            setState(PickupState.Used);
         }
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if (taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
 
@@ -68,11 +69,11 @@ public class ReversePickup extends InstantPickup {
                 }
             }
         }
-        taken = true;
+        setState(PickupState.Taken);
     }
 
     public void render(Graphics2D g) {
-        if (taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("ReversePickup.png");

@@ -4,12 +4,15 @@ import gameclient.Game;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
+
 /*
  * @author Dante Håkansson
  */
 public abstract class Pickup extends GameObject {
     private static final long serialVersionUID = 1;
-    protected boolean used, taken;
+    
+    protected PickupState state = PickupState.NotTaken;
 
     public Pickup() {
         this(0, 0);
@@ -23,20 +26,27 @@ public abstract class Pickup extends GameObject {
 
     public void tick() {
     }
-
-    public boolean isTaken() {
-        return taken;
+    public PickupState getState() {
+        return state;
+    }
+    public void setState(PickupState state) {
+        this.state = state;
     }
 
-    public boolean isUsed() {
-        return used;
-    }
+//    public boolean isTaken() {
+//        return taken;
+//    }
+//
+//    public boolean isUsed() {
+//        return used;
+//    }
     public void take(Player player) {
-        if(taken) {
+        if(state == state.Taken) {
             return;
         }
         player.setPickUp(this);
-        taken = true;
+        state = state.Taken;
+        
     }
 
     public abstract void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects);

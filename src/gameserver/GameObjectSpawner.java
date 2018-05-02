@@ -54,7 +54,8 @@ public class GameObjectSpawner {
             if (gameMapObject.getTimer() <= 0) {
                 if (gameObjects.contains(gameObject)) {
                     if (gameObject instanceof Pickup) {
-                        if (!((Pickup) gameObject).isTaken()) {
+                       PickupState state = ((Pickup) gameObject).getState();
+                        if (state == PickupState.NotTaken) {
                             System.out.println("Removing from map (Timed out): " + gameObject + " Position: "
                                     + new Point(gameObject.getX(), gameObject.getY()));
                             gameObjects.remove(gameMapObject.getGameObject());

@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.InstantPickup;
@@ -35,7 +36,7 @@ public class InvinciblePickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken) {
+        if (getState() == PickupState.NotTaken) {
             return;
         }
         timer--;
@@ -43,22 +44,22 @@ public class InvinciblePickup extends InstantPickup {
         if (timer == 0) {
             player.setInvincible(false);
         }
-        used = true;
+        setState(PickupState.Used);
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if (taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
         this.player = player;
 
         player.setInvincible(true);
 
-        taken = true;
+        setState(PickupState.Taken);
     }
 
     public void render(Graphics2D g) {
-        if (taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("InvinciblePickup.png");

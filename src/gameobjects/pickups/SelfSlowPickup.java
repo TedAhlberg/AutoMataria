@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameclient.SoundFx;
 import gameobjects.GameObject;
@@ -37,9 +38,13 @@ public class SelfSlowPickup extends Pickup {
         this.timer = timer;
     }
 
+    private int getTimer() {
+        return timer;
+    }
+
     public void tick() {
 
-        if (!taken || !used) {
+        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse) {
             return;
         }
         timer--;
@@ -51,17 +56,8 @@ public class SelfSlowPickup extends Pickup {
         }
     }
 
-    public void render(Graphics2D g) {
-        if (taken) {
-            return;
-        }
-        BufferedImage image = Resources.getImage("SlowSelfPickup.png");
-        g.drawImage(image, x, y, width, height, null);
-
-    }
-
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if (used) {
+        if (getState() == PickupState.Used) {
             return;
         }
         this.gameObjects = gameObjects;
@@ -69,10 +65,16 @@ public class SelfSlowPickup extends Pickup {
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
         SoundFx.getInstance().selfSlowPickup();
-        used = true;
+
+        setState(PickupState.Used);
     }
 
-    private int getTimer() {
-        return timer;
+    public void render(Graphics2D g) {
+        if (getState() == PickupState.Taken) {
+            return;
+        }
+        BufferedImage image = Resources.getImage("SlowSelfPickup.png");
+        g.drawImage(image, x, y, width, height, null);
+
     }
 }

@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
+
 /**
  * Pickup that erases all drawn trails.
  * 
@@ -26,7 +28,7 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if(taken) {
+        if(getState() == PickupState.Taken) {
             return;
         }
         Dimension gridSize = player.getCurrentMap().getGrid();
@@ -36,13 +38,13 @@ public class EraserPickup extends InstantPickup {
                 ((Trail) gameObject).remove(new Rectangle(gridSize));
             }
         }
-        taken = true;
+        setState(PickupState.Taken);
         gameObjects.remove(this);
         
     }
 
     public void render(Graphics2D g) {
-        if(taken) {
+        if(getState() == PickupState.Taken) {
             return;
         }
         BufferedImage image = Resources.getImage("EraserPickup.png");

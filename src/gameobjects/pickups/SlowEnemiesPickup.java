@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.InstantPickup;
@@ -39,7 +40,7 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken || used) {
+        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse) {
             return;
         }
 
@@ -51,7 +52,8 @@ public class SlowEnemiesPickup extends InstantPickup {
                         int speed = gameObject.getSpeed();
                         gameObject.setSpeed((int) (speed * 2));
                         gameObjects.remove(this);
-                        used = true;
+                        
+                        setState(PickupState.Used);
                     }
                 }
             }
@@ -60,7 +62,7 @@ public class SlowEnemiesPickup extends InstantPickup {
 
     public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
 
-        if (taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
 
@@ -75,7 +77,7 @@ public class SlowEnemiesPickup extends InstantPickup {
                 }
             }
         }
-        taken = true;
+        setState(PickupState.Taken);
     }
 
     /**
@@ -83,7 +85,7 @@ public class SlowEnemiesPickup extends InstantPickup {
      * @see gameobjects.GameObject#render(java.awt.Graphics2D)
      */
     public void render(Graphics2D g) {
-        if (taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("SlowEnemiesPickup.png");
