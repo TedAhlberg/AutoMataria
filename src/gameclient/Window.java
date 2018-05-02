@@ -98,14 +98,14 @@ public class Window extends JFrame {
      */
     public void setMode(Mode mode) {
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
+        this.dispose();
         if (mode == Mode.Fullscreen) {
             System.out.println("Changing to fullscreen mode.");
 
-//            this.dispose();
-//            this.setUndecorated(true);
+            
+            this.setUndecorated(true);
             this.setResizable(false);
-//            this.pack();
+            this.pack();
 
             device.setFullScreenWindow(this);
 
@@ -113,7 +113,7 @@ public class Window extends JFrame {
             System.out.println("WINDOW: Changing to maximized window.");
 
             this.setVisible(false);
-//            this.setUndecorated(true);
+            this.setUndecorated(true);
             this.setResizable(false);
 
             this.setVisible(true);
@@ -125,8 +125,8 @@ public class Window extends JFrame {
             }
             System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
 
-//            this.dispose();
-//            this.setUndecorated(false);
+            this.dispose();
+            this.setUndecorated(false);
             this.setResizable(true);
 
             this.setPreferredSize(windowSize);
