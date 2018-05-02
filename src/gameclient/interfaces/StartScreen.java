@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
  */
 public class StartScreen extends JPanel {
     private JPanel buttonsPanel = new JPanel(new GridBagLayout());
-    private Font buttonFont = new Font("Orbitron", Font.BOLD, 20);
+    private Font buttonFont = Resources.getInstance().getDefaultFont().deriveFont(20f);
     private String username;
 
     private UserInterface userInterface;
@@ -30,6 +30,7 @@ public class StartScreen extends JPanel {
         add(new JComponent() {}, c);
 
         addButton("PLAY", "BrowseScreen");
+        addButton("JOIN", "ConnectScreen");
         addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
         addButton("HIGHSCORES", "");

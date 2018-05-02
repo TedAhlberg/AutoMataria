@@ -329,7 +329,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnExit) {
-            userInterface.changeScreen("StartScreen");
+            userInterface.changeToPreviousScreen();
         }
 
     }

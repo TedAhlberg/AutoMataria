@@ -29,7 +29,7 @@ public class GamePanel extends JComponent {
     private boolean gameLoopRunning;
     private BufferedImage background, gridBuffer;
     private GameState gameState = GameState.Warmup;
-    private Color backgroundColor = Color.RED;
+    private Color backgroundColor = Color.DARK_GRAY;
     private double scale = 1.0, playerReadyPercentage;
     private long timeBetweenRenders;
     private int fps, frameCounter;

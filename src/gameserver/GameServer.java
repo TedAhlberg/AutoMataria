@@ -1,9 +1,7 @@
 package gameserver;
 
 import common.*;
-import common.messages.ConnectionMessage;
-import common.messages.Message;
-import gameclient.Game;
+import common.messages.*;
 import gameobjects.*;
 
 import java.awt.*;

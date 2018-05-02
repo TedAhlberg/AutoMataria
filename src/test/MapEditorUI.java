@@ -169,7 +169,7 @@ public class MapEditorUI {
         });
 
         exitButton.addActionListener(e -> {
-            userInterface.changeScreen("StartScreen");
+            userInterface.changeToPreviousScreen();
         });
 
         updateCurrentMap();

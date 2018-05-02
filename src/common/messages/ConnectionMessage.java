@@ -1,15 +1,14 @@
 package common.messages;
 
-import gameobjects.Player;
-
-import java.io.Serializable;
-
 import common.GameMap;
+import gameobjects.Player;
 
 /**
  * @author Johannes Blüml
  */
-public class ConnectionMessage implements Serializable {
+public class ConnectionMessage extends Message {
+    private static final long serialVersionUID = 1L;
+
     public boolean success;
     public GameMap currentMap;
     public int tickRate, updateRate;

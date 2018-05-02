@@ -2,10 +2,11 @@ package gameobjects;
 
 import common.*;
 import common.messages.GameEventMessage;
+import common.messages.MessageListener;
 import gameclient.Game;
-import gameserver.MessageListener;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

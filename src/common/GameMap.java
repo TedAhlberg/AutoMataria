@@ -1,11 +1,11 @@
 package common;
 
-import gameclient.Game;
-
 import java.awt.*;
 import java.io.Serializable;
 
 /**
+ * Represents a Map in the game.
+ *
  * @author Johannes Blüml
  */
 public class GameMap implements Serializable {

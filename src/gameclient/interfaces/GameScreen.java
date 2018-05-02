@@ -2,10 +2,8 @@ package gameclient.interfaces;
 
 import common.Action;
 import common.*;
-import common.messages.ConnectionMessage;
-import common.messages.PlayerMessage;
+import common.messages.*;
 import gameclient.*;
-import gameclient.keyinput.KeyInput;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
@@ -47,8 +45,6 @@ public class GameScreen extends JPanel {
         gbc.gridy = 0;
         gbc.weightx = 1;
         add(createRightPanel(), gbc);
-
-        
     }
 
     private JPanel createRightPanel() {
@@ -60,7 +56,7 @@ public class GameScreen extends JPanel {
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
-            userInterface.changeScreen("StartScreen");
+            userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
         c.ipadx = 20;
