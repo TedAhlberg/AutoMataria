@@ -26,7 +26,6 @@ public class UserInterface extends JPanel {
     }
 
     public UserInterface(Dimension windowSize) {
-
         window = new Window(Game.TITLE, windowSize);
         window.setContentPane(this);
         window.pack();

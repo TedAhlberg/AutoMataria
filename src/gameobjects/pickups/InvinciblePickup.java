@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
@@ -51,7 +52,7 @@ public class InvinciblePickup extends InstantPickup {
         this.player = player;
 
         player.setInvincible(true);
-
+        SoundFx.getInstance().invincible();
         setState(PickupState.Taken);
     }
 

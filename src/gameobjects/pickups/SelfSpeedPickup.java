@@ -64,7 +64,7 @@ public class SelfSpeedPickup extends Pickup {
         this.gameObjects = gameObjects;
         int speed = player.getSpeed();
         player.setSpeed(speed * 2);
-        SoundFx.getInstance().SelfSpeedPickup();
+        SoundFx.getInstance().selfSpeedPickup();
 
         setState(PickupState.Used);
     }

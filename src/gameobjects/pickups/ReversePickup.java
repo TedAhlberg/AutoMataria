@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
@@ -66,6 +67,7 @@ public class ReversePickup extends InstantPickup {
             }
         }
         setState(PickupState.Taken);
+        SoundFx.getInstance().reverse();
     }
 
     public void render(Graphics2D g) {

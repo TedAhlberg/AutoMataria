@@ -121,7 +121,7 @@ public class Window extends JFrame {
         } else {
             if (windowSize == null) {
                 System.out.println("No windowsize defined. Using 1/4 of available screen.");
-                windowSize = new Dimension(device.getDisplayMode().getWidth() / 2, device.getDisplayMode().getHeight() / 2);
+                windowSize = new Dimension(device.getDisplayMode().getWidth()/2, device.getDisplayMode().getHeight()/2);
             }
             System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
 

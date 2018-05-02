@@ -3,6 +3,7 @@ package gameobjects.pickups;
 import common.PickupState;
 import gameclient.Game;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
@@ -37,6 +38,7 @@ public class EraserPickup extends InstantPickup {
             }
         }
         setState(PickupState.Taken);
+        SoundFx.getInstance().eraserPickup();
         gameObjects.remove(this);
     }
 

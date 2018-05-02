@@ -143,6 +143,13 @@ public class GameScreen extends JPanel {
                     }
 
                 }
+                else if(data instanceof GameEventMessage) {
+                    String message = ((GameEventMessage) data).data;
+                    if(message.equals("crash")) {
+                        SoundFx.getInstance().crash();
+                   }
+                }
+              
             }
         });
         client.connect(ip, port);

@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
@@ -66,6 +67,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
         }
 
         setState(PickupState.Used);
+        SoundFx.getInstance().speedEnemiesPickup();
     }
 
     public void render(Graphics2D g) {
