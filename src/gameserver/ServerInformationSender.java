@@ -38,7 +38,6 @@ public class ServerInformationSender implements Runnable {
 
             try (DatagramSocket socket = new DatagramSocket()) {
                 for (InetAddress localBroadcastAddress : localBroadcastAddresses) {
-                    System.out.println("Sending broadcast to: " + localBroadcastAddress.getHostAddress());
                     DatagramPacket packet = new DatagramPacket(data, data.length, localBroadcastAddress, Game.LOCAL_UDP_PORT);
                     socket.send(packet);
                 }
