@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
+import common.PickupState;
+
 /**
  * Pickup that speeds the player up for a short duration when activated/used.
  *
@@ -19,12 +21,10 @@ public class SelfSpeedPickup extends Pickup {
 
     private int timer = 60;
     private Player player;
-    private boolean pickedUp = false;
     private Collection<GameObject> gameObjects;
 
     public SelfSpeedPickup() {
         this(0, 0, 60);
-
     }
 
     public SelfSpeedPickup(int x, int y, int timer) {
@@ -37,7 +37,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void tick() {
-        if (!taken || !used) {
+        if (getState() == PickupState.NotTaken || getState() != PickupState.Used) {
             return;
         }
         timer--;
@@ -49,7 +49,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void render(Graphics2D g) {
-        if (taken) {
+        if(getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
@@ -58,7 +58,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (used) {
+        if(getState() == PickupState.Used) {
             return;
         }
         this.player = player;
@@ -66,11 +66,11 @@ public class SelfSpeedPickup extends Pickup {
         int speed = player.getSpeed();
         player.setSpeed(speed * 2);
         SoundFx.getInstance().SelfSpeedPickup();
-        used = true;
+
+        setState(PickupState.Used);
     }
 
     public int getTimer() {
         return timer;
-
     }
 }

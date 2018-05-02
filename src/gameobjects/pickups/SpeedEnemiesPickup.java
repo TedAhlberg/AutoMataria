@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import gameclient.Resources;
 import gameobjects.*;
+import common.PickupState;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -30,7 +31,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
 
     public void tick() {
 
-        if (!taken || !used)
+        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse)
             return;
 
         timer--;
@@ -51,7 +52,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
         this.player = player;
@@ -63,17 +64,15 @@ public class SpeedEnemiesPickup extends InstantPickup {
                 gameObject.setSpeed(speed * 2);
             }
         }
-        taken = true;
-        used = true;
+
+        setState(PickupState.Used);
     }
 
     public void render(Graphics2D g) {
-        if (taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("EnemiesSpeedUp.png");
         g.drawImage(image, x, y, width, height, null);
-
     }
-
 }

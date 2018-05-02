@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import gameclient.Resources;
 import gameobjects.*;
+import common.PickupState;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -36,7 +37,7 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (!taken || used) {
+        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse) {
             return;
         }
 
@@ -48,7 +49,8 @@ public class SlowEnemiesPickup extends InstantPickup {
                         int speed = gameObject.getSpeed();
                         gameObject.setSpeed(speed * 2);
                         gameObjects.remove(this);
-                        used = true;
+
+                        setState(PickupState.Used);
                     }
                 }
             }
@@ -57,7 +59,7 @@ public class SlowEnemiesPickup extends InstantPickup {
 
     public void use(Player player, Collection<GameObject> gameObjects) {
 
-        if (taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
 
@@ -72,19 +74,17 @@ public class SlowEnemiesPickup extends InstantPickup {
                 }
             }
         }
-        taken = true;
+        setState(PickupState.Taken);
     }
 
     /**
      * @see gameobjects.GameObject#render(java.awt.Graphics2D)
      */
     public void render(Graphics2D g) {
-        if (taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("SlowEnemiesPickup.png");
         g.drawImage(image, x, y, width, height, null);
-
     }
-
 }

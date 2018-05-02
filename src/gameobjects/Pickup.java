@@ -1,5 +1,6 @@
 package gameobjects;
 
+import common.PickupState;
 import gameclient.Game;
 
 import java.util.Collection;
@@ -9,7 +10,8 @@ import java.util.Collection;
  */
 public abstract class Pickup extends GameObject {
     private static final long serialVersionUID = 1;
-    protected boolean used, taken;
+
+    protected PickupState state = PickupState.NotTaken;
     protected Player player;
 
     public Pickup() {
@@ -25,23 +27,22 @@ public abstract class Pickup extends GameObject {
     public void tick() {
     }
 
-    public boolean isTaken() {
-        return taken;
+    public PickupState getState() {
+        return state;
     }
 
-    public boolean isUsed() {
-        return used;
+    public void setState(PickupState state) {
+        this.state = state;
     }
 
     public void take(Player player) {
-        if (taken) {
+        if (state == state.Taken) {
             return;
         }
         player.setPickUp(this);
         this.player = player;
-        taken = true;
+        state = state.Taken;
     }
 
     public abstract void use(Player player, Collection<GameObject> gameObjects);
-
 }
