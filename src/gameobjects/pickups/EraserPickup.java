@@ -41,7 +41,7 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void render(Graphics2D g) {
-        if (getState() == PickupState.Taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("EraserPickup.png");
