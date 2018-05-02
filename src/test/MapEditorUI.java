@@ -10,7 +10,8 @@ import gameserver.StartingPositions;
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -42,7 +43,7 @@ public class MapEditorUI {
     private ArrayList<SpecialGameObject> specialGameObjectsToSave = new ArrayList<>();
     private HashSet<Point> startingPositionsToSave = new HashSet<>();
     private GamePanel gamePanel;
-    private GameMap currentMap;
+    private GameMap currentMap = new GameMap("NEW MAP", "", "", 4, 1.0, new Dimension(75, 75), null, null);
     private PaintMode paintMode = PaintMode.AddStartPosition;
     private SpecialGameObject selectedObject;
 
@@ -51,7 +52,6 @@ public class MapEditorUI {
 
     public MapEditorUI(UserInterface userInterface) {
         this.userInterface = userInterface;
-        currentMap = new GameMap("NEW MAP", "", "", 4, 1.0, new Dimension(75, 75), null, null);
         $$$setupUI$$$();
 
         addNewGameObjectButton.addActionListener(e -> {
@@ -176,7 +176,9 @@ public class MapEditorUI {
         updateGamePanel();
 
         // Load first Map
-        mapsComboBox.setSelectedIndex(0);
+        SwingUtilities.invokeLater(() -> {
+            mapsComboBox.setSelectedIndex(0);
+        });
     }
 
     public static void main(String[] args) {
@@ -228,6 +230,7 @@ public class MapEditorUI {
         try {
             maps.save(currentMap);
             reloadMapList();
+            mapsComboBox.setSelectedItem(currentMap.getName());
         } catch (Exception error) {
             JOptionPane.showMessageDialog(container, "Failed to save map.");
         }
@@ -238,6 +241,7 @@ public class MapEditorUI {
         if (result == 0) {
             maps.remove(currentMap.getName());
             reloadMapList();
+            mapsComboBox.setSelectedItem(0);
         }
     }
 
@@ -342,7 +346,7 @@ public class MapEditorUI {
         gamePanel = new GamePanel();
         gamePanelContainer.add(gamePanel);
         gamePanel.toggleDebugInfo();
-        gamePanel.start(15);
+        gamePanel.start(1);
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 

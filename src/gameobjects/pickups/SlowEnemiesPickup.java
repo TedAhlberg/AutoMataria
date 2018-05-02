@@ -37,7 +37,7 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse) {
+        if (getState() == PickupState.NotTaken || getState() != PickupState.Used) {
             return;
         }
 

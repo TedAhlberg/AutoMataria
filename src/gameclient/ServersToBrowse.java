@@ -95,13 +95,4 @@ public class ServersToBrowse extends JPanel {
         lblPlayersCurrently = new JLabel(Integer.toString(playersCurrently));
         lblPlayersMax = new JLabel(Integer.toString(playersMax));
 	}
-	
-	public static void main(String[] args) {
-		ServersToBrowse stb = new ServersToBrowse("Best Server", "Best Map", "Warm Up", 5, 15, null);
-		Window window = new Window("Test", new Dimension(1200 , 1200));
-        window.add(stb);
-		window.pack();
-	}
-	
-	
 }
