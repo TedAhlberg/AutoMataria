@@ -19,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.sun.glass.ui.Window;
+
 import gameclient.Audio;
 import gameclient.Buttons;
 import gameclient.MusicManager;
@@ -39,6 +41,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
+    private JPanel pnlScreen = new JPanel (new GridBagLayout());
     private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
 
@@ -46,12 +49,14 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String user = "Player";
+    private String screen ="WINDOWED";
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
     private Buttons btnMusic = new Buttons("MUSIC");
     private Buttons btnExit = new Buttons("EXIT");
     private Buttons btnSFX = new Buttons("SFX");
+    private Buttons btnScreen = new Buttons("CHANGE");
 
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
@@ -62,6 +67,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSettings = new JLabel("SETTINGS");
     private JLabel lblControls = new JLabel("CONTROLS");
     private JLabel lblSpacing = new JLabel(" ");
+    private JLabel lblScreenSettings = new JLabel("SCREEN MODE: "+screen);
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
 
@@ -128,6 +134,34 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(pnlKeyBinder, c);
 
+        
+        //Add lblScreenSettings
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.ipadx = 50;
+        c.ipady = 10;
+        c.gridx = 1;
+        lblScreenSettings.setOpaque(false);
+        pnlScreen.add(lblScreenSettings, c);
+        
+        //Add btnScreen
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 2;
+        c.ipadx = 10;
+        c.ipady = 10;
+        pnlScreen.add(btnScreen, c);
+        
+        //Add pnlScreen
+        // Add MusicPanel
+        c = new GridBagConstraints();
+        c.ipady = 30;
+        c.gridy = 6;
+        c.gridx = 1;
+        pnlScreen.setOpaque(false);
+        pnlHead.add(pnlScreen, c);
+        
+        
         // Add musicButton
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -178,13 +212,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
         // Add MusicPanel
         c = new GridBagConstraints();
         c.ipady = 30;
-        c.gridy = 6;
+        c.gridy = 7;
         c.gridx = 1;
         pnlHead.add(pnlMusic, c);
 
         // Add spacing
 
-        c.gridy = 7;
+        c.gridy = 8;
         c.gridx = 1;
         c.weighty = 1;
         c.weightx = 11;
@@ -244,6 +278,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         btnMusic.addActionListener(this);
         btnSFX.addActionListener(this);
         btnExit.addActionListener(this);
+        btnScreen.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -256,6 +291,20 @@ public class SettingsScreen extends JPanel implements ActionListener {
                 MusicManager.getInstance().menuTrack();
             }
 
+        }
+        if(e.getSource()==btnScreen) {
+            if(screen.equals("WINDOWED")) {                
+                userInterface.setWindowMode(gameclient.Window.Mode.Fullscreen);
+                screen="FULLSCREEN";
+                lblScreenSettings.setText("SCREENMODE: " + screen);
+                repaint();
+            }
+            else {
+                userInterface.setWindowMode(gameclient.Window.Mode.Windowed);
+                screen="WINDOWED";
+                lblScreenSettings.setText("SCREENMODE: " + screen);
+                repaint();
+            }
         }
 
         if (e.getSource() == btnSFX) {
