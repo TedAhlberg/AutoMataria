@@ -1,8 +1,8 @@
 package gameobjects.pickups;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameobjects.*;
-import common.PickupState;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -1,9 +1,5 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import common.PickupState;
 import gameclient.Resources;
 import gameobjects.*;

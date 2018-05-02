@@ -1,5 +1,6 @@
 package gameobjects.pickups;
 
+import common.PickupState;
 import gameclient.Game;
 import gameclient.Resources;
 import gameobjects.*;
@@ -7,8 +8,6 @@ import gameobjects.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-
-import common.PickupState;
 
 /**
  * Pickup that erases all drawn trails.
@@ -27,7 +26,7 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if(getState() == PickupState.Taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
         Dimension gridSize = player.getCurrentMap().getGrid();
@@ -42,7 +41,7 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void render(Graphics2D g) {
-        if(getState() == PickupState.Taken) {
+        if (getState() == PickupState.Taken) {
             return;
         }
         BufferedImage image = Resources.getImage("EraserPickup.png");

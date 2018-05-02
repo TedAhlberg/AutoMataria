@@ -1,5 +1,6 @@
 package gameobjects.pickups;
 
+import common.PickupState;
 import gameclient.Resources;
 import gameclient.SoundFx;
 import gameobjects.*;
@@ -7,8 +8,6 @@ import gameobjects.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-
-import common.PickupState;
 
 /**
  * Pickup that speeds the player up for a short duration when activated/used.
@@ -49,7 +48,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void render(Graphics2D g) {
-        if(getState() != PickupState.NotTaken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
@@ -58,7 +57,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if(getState() == PickupState.Used) {
+        if (getState() == PickupState.Used) {
             return;
         }
         this.player = player;

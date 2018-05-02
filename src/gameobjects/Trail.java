@@ -1,7 +1,6 @@
 package gameobjects;
 
 import common.Direction;
-import common.GameState;
 
 import java.awt.*;
 

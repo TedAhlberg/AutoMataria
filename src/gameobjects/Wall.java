@@ -1,9 +1,9 @@
 package gameobjects;
 
 import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * A Wall is GameObject that has a shape that can be changed into any shape by adding or removing Rectangles
@@ -118,20 +118,20 @@ public class Wall extends GameObject {
         }
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
     public Color getColor() {
         return color;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     public Color getBorderColor() {
         return borderColor;
+    }
+
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
     }
 
     public Shape getShape() {
