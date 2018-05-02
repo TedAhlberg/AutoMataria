@@ -29,7 +29,7 @@ public class ServersToBrowse extends JPanel {
 	
 	
 	public ServersToBrowse(String serverName, String mapName, String gameState,
-						   int playersCurrently, int playersMax, ActionListener actionListener) {
+						   int playersCurrently, int playersMax) {
 
 	    setLayout(new GridBagLayout());
 	    //setPreferredSize(new Dimension(getWidth()/2, getHeight()/10));

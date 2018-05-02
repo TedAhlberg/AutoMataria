@@ -21,24 +21,19 @@ public class ServerInformationReceiver extends Thread {
     public void run() {
         running = true;
 
+        try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
+
         while (running) {
             byte[] data = new byte[128];
 
-            try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
-
                 DatagramPacket packet = new DatagramPacket(data, data.length);
                 socket.receive(packet);
-                String ip = packet.getAddress().toString();
+                String ip = packet.getAddress().getHostName();
                 updateServerInfo(ip, new String(packet.getData()));
+        }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

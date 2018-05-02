@@ -2,6 +2,9 @@ package gameclient;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
+
+import gameclient.interfaces.UserInterface;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,11 +16,13 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
     private Font font = new Font("Orbitron", Font.PLAIN, 30);
     private ServersToBrowse server;
     private BufferedImage backGround;
-    private JScrollPane scrollPane;
     private JPanel panel;
+    private JPanel pnlSouthCenter;
+    private UserInterface userInterface;
 
 
-    public BrowseServers() {
+    public BrowseServers(UserInterface userInterface) {
+        this.userInterface = userInterface;
         setLayout(new BorderLayout());
         backGround = Resources.getImage("Stars.png");
 
@@ -28,23 +33,41 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
         lblServers.setFont(font);
         lblServers.setHorizontalAlignment(SwingConstants.CENTER);
         add(lblServers, BorderLayout.NORTH);
-/*
-        scrollPane = new JScrollPane();
-        scrollPane.setOpaque(false);
-        add(scrollPane, BorderLayout.CENTER);
-  */
 
         panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
         add(panel, BorderLayout.CENTER);
+        
+        pnlSouthCenter = new JPanel();
+        
+        Buttons btnExit = new Buttons("Exit");
+        btnExit.setPreferredSize(new Dimension(60,40));
+        btnExit.setHorizontalAlignment(SwingConstants.CENTER);
+        btnExit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                userInterface.changeScreen("StartScreen");
+            }
+            
+        });
+        
+        Buttons btnCustom = new Buttons("Custom Connect");
+        btnCustom.setPreferredSize(new Dimension(130,40));
+        btnCustom.setHorizontalAlignment(SwingConstants.CENTER);
+        btnCustom.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                userInterface.changeScreen("ConnectScreen");
+            }
+            
+        });
+        
+        pnlSouthCenter.add(btnExit);
+        pnlSouthCenter.add(btnCustom);
+        pnlSouthCenter.setOpaque(false);
+        
+        
+        
+        add(pnlSouthCenter, BorderLayout.SOUTH);
 
-    }
-
-    public static void main(String[] args) {
-        BrowseServers bs = new BrowseServers();
-        Window window = new Window("Test", new Dimension(800, 800));
-        window.add(bs);
-        window.pack();
     }
 
     public void paintComponent(Graphics g) {
@@ -53,57 +76,52 @@ public class BrowseServers extends JPanel implements ServerInformationListener {
     }
 
     public void update(Collection<ServerInformation> serverList) {
-        //panel.removeAll();
+//        panel.removeAll();
+        //gridPanel = new JPanel(new GridBagLayout());
+        int gridWeightX = 1;
+        int gridX = 0;
+        int gridY = 0;
+        
         for (ServerInformation info : serverList) {
             server = new ServersToBrowse(info.getServerName(),
                     info.getMapName(),
                     info.getGameState(),
                     info.getConnectedClients(),
-                    info.getMaxPlayers(), new ActionListener() {
+                    info.getMaxPlayers());
+            
+            Buttons button = new Buttons("Join");
+            button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
-                    //userInterface.startGame(serverIP, serPort, "Player");
+                    userInterface.startGame(info.getIp(), info.getServerPort());
+                    System.out.println(info.getIp());
                 }
             });
+            
             GridBagConstraints c = new GridBagConstraints();
-            c.gridx =0;
-            c.weightx = 1;
+            c.gridy = gridY;
+            c.gridx = 0;
             panel.add(server, c);
-            System.out.println(server.getSize());
+
+            GridBagConstraints c2 = new GridBagConstraints();
+            c2.gridx = 1;
+            c2.gridy = gridY;
+            c2.ipadx = 10;
+            c2.ipady = 10;
+            panel.add(button, c2);
+            
+            gridY+=1;
         }
+        //panel.add(gridPanel);
         revalidate();
         repaint();
-/*
-        scrollPane.setViewportView(panel);
-        scrollPane.revalidate();
-        scrollPane.repaint();
-        */
     }
 
-    public void addButton(ActionListener actionListener, JPanel panel) {
-        Buttons button = new Buttons("Join");
-        button.addActionListener(actionListener);
-        button.setFont(font);
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.ipadx = 30;
-        c.ipady = 30;
-        c.insets = new Insets(10, 10, 10, 10);
-        c.fill = GridBagConstraints.HORIZONTAL;
-
-        panel.add(button);
-
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            UserInterface userInterface = new UserInterface();
+            userInterface.changeScreen("BrowseScreen");
+        });
     }
 
-    public JScrollPane getScrollPane() {
-        return this.scrollPane;
-    }
-
-    public class Listener implements ActionListener {
-
-        public void actionPerformed(ActionEvent event) {
-
-
-        }
-
-    }
 }
