@@ -1,27 +1,24 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
 import gameclient.SoundFx;
-import gameobjects.GameObject;
-import gameobjects.Pickup;
-import gameobjects.Player;
+import gameobjects.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Pickup that when activated/used slows down the player for a short duration.
- * 
- * @author Erik Lundow
  *
+ * @author Erik Lundow
  */
 public class SelfSlowPickup extends Pickup {
     private static final long serialVersionUID = 1;
 
     private int timer = 60;
     private Player player;
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private Collection<GameObject> gameObjects;
 
     public SelfSlowPickup() {
         this(0, 0, 60);
@@ -60,7 +57,7 @@ public class SelfSlowPickup extends Pickup {
 
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
         if (used) {
             return;
         }

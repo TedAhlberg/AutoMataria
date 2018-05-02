@@ -1,27 +1,24 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.InstantPickup;
-import gameobjects.Player;
+import gameobjects.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Pickup that slows opponents for a short duration.
- * 
+ *
  * @author Dante Håkansson
  * @author Johannes Blüml
- * 
  */
 
 public class SlowEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
     private int timer;
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private Collection<GameObject> gameObjects;
     private Player player;
 
     public SlowEnemiesPickup() {
@@ -49,7 +46,7 @@ public class SlowEnemiesPickup extends InstantPickup {
                 if (gameObject instanceof Player) {
                     if (!gameObject.equals(player)) {
                         int speed = gameObject.getSpeed();
-                        gameObject.setSpeed((int) (speed * 2));
+                        gameObject.setSpeed(speed * 2);
                         gameObjects.remove(this);
                         used = true;
                     }
@@ -58,7 +55,7 @@ public class SlowEnemiesPickup extends InstantPickup {
         }
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
 
         if (taken) {
             return;
@@ -79,7 +76,6 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     /**
-     * 
      * @see gameobjects.GameObject#render(java.awt.Graphics2D)
      */
     public void render(Graphics2D g) {

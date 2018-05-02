@@ -10,4 +10,8 @@ public abstract class InstantPickup extends Pickup {
     public InstantPickup(int x, int y) {
         super(x, y);
     }
+
+    public void take(Player player) {
+        // Players can't take InstantPickups - They should be use() immediately
+    }
 }

@@ -6,13 +6,12 @@ import gameobjects.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Collection;
 
 /**
  * Pickup that speeds the player up for a short duration when activated/used.
- * 
+ *
  * @author Dante Håkansson
- * 
  */
 
 public class SelfSpeedPickup extends Pickup {
@@ -21,19 +20,20 @@ public class SelfSpeedPickup extends Pickup {
     private int timer = 60;
     private Player player;
     private boolean pickedUp = false;
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private Collection<GameObject> gameObjects;
 
     public SelfSpeedPickup() {
         this(0, 0, 60);
-        
+
     }
 
     public SelfSpeedPickup(int x, int y, int timer) {
         super(x, y);
         this.timer = timer;
     }
+
     public SelfSpeedPickup(SelfSpeedPickup object) {
-       this(object.getX(), object.getY(), object.getTimer());
+        this(object.getX(), object.getY(), object.getTimer());
     }
 
     public void tick() {
@@ -49,7 +49,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void render(Graphics2D g) {
-        if(taken) {
+        if (taken) {
             return;
         }
         BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
@@ -57,20 +57,20 @@ public class SelfSpeedPickup extends Pickup {
 
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
-        if(used) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
+        if (used) {
             return;
         }
         this.player = player;
         this.gameObjects = gameObjects;
         int speed = player.getSpeed();
-        player.setSpeed((int) (speed * 2));
+        player.setSpeed(speed * 2);
         SoundFx.getInstance().SelfSpeedPickup();
         used = true;
     }
 
     public int getTimer() {
         return timer;
-        
+
     }
 }

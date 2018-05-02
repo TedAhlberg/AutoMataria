@@ -1,20 +1,17 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.InstantPickup;
-import gameobjects.Player;
+import gameobjects.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Pickup that reverses all movements for a short amount of time for all
  * opponents.
- * 
- * @author Dante Håkansson
  *
+ * @author Dante Håkansson
  */
 
 public class ReversePickup extends InstantPickup {
@@ -22,8 +19,7 @@ public class ReversePickup extends InstantPickup {
 
     private int timer = 60;
     private Player player;
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
-    private boolean reversed;
+    private Collection<GameObject> gameObjects;
 
     public ReversePickup() {
         this(0, 0, 60);
@@ -52,7 +48,7 @@ public class ReversePickup extends InstantPickup {
         }
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
         if (taken) {
             return;
         }

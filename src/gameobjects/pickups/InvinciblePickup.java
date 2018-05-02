@@ -1,21 +1,18 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.InstantPickup;
-import gameobjects.Player;
+import gameobjects.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Pickup that when acquired sets the players state to invincible. When
  * invincible the player cannot crash and the players' trail will not be drawn
  * during the duration. This effect lasts for a couple of seconds.
- * 
- * @author Dante Håkansson
  *
+ * @author Dante Håkansson
  */
 
 public class InvinciblePickup extends InstantPickup {
@@ -39,14 +36,14 @@ public class InvinciblePickup extends InstantPickup {
             return;
         }
         timer--;
-        
+
         if (timer == 0) {
             player.setInvincible(false);
         }
         used = true;
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
         if (taken) {
             return;
         }

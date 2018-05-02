@@ -1,26 +1,22 @@
 package gameobjects.pickups;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.InstantPickup;
-import gameobjects.Player;
+import gameobjects.*;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collection;
 
 /**
  * Pickup that increases all opponents speed for a short duration.
- * 
- * @author Erik Lundow 
- * 
  *
+ * @author Erik Lundow
  */
 public class SpeedEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
     private int timer = 30;
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private Collection<GameObject> gameObjects;
     private Player player;
 
     public SpeedEnemiesPickup() {
@@ -54,7 +50,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
         }
     }
 
-    public void use(Player player, ConcurrentLinkedQueue<GameObject> gameObjects) {
+    public void use(Player player, Collection<GameObject> gameObjects) {
         if (taken) {
             return;
         }
@@ -64,7 +60,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player && !gameObject.equals(player)) {
                 int speed = gameObject.getSpeed();
-                gameObject.setSpeed((int) (speed * 2));
+                gameObject.setSpeed(speed * 2);
             }
         }
         taken = true;
