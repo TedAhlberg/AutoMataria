@@ -70,7 +70,7 @@ public class SelfSlowPickup extends Pickup {
     }
 
     public void render(Graphics2D g) {
-        if (getState() == PickupState.Taken) {
+        if (getState() != PickupState.NotTaken) {
             return;
         }
         BufferedImage image = Resources.getImage("SlowSelfPickup.png");
