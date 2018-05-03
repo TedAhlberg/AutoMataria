@@ -4,6 +4,7 @@ import common.*;
 import common.messages.GameEventMessage;
 import common.messages.MessageListener;
 import common.messages.PlayerMessage;
+import common.messages.PlayerPickupMessage;
 import gameclient.Game;
 import gameclient.SoundFx;
 
@@ -156,7 +157,7 @@ public class Player extends GameObject {
                     ((Player) gameObject).setDead(true);
                 } else if (gameObject instanceof InstantPickup) {
                     ((InstantPickup) gameObject).use(this, gameObjects);
-                    listener.newMessage(new GameEventMessage(gameObject.getClass().getName()));
+                    listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed,this,(InstantPickup)gameObject));
                     System.out.println("Player " + name + "used pickup " + gameObject);
                 } else if (gameObject instanceof Pickup) {
                     ((Pickup) gameObject).take(this);
@@ -172,6 +173,7 @@ public class Player extends GameObject {
 
     public void usePickUp() {
         if (pickUpSlot != null) {
+            listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed,this,pickUpSlot));
             pickUpSlot.use(this, gameObjects);
         }
     }
@@ -198,7 +200,7 @@ public class Player extends GameObject {
         } else {
             inputQueue.add(direction);
         }
-        SoundFx.getInstance().movement();
+        listener.newMessage(new GameEventMessage("movement"));
         
     }
 

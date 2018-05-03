@@ -52,7 +52,6 @@ public class InvinciblePickup extends InstantPickup {
         this.player = player;
 
         player.setInvincible(true);
-        SoundFx.getInstance().invincible();
         setState(PickupState.Taken);
     }
 

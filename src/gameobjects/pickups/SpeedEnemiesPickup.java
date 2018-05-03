@@ -67,7 +67,6 @@ public class SpeedEnemiesPickup extends InstantPickup {
         }
 
         setState(PickupState.Used);
-        SoundFx.getInstance().speedEnemiesPickup();
     }
 
     public void render(Graphics2D g) {

@@ -67,7 +67,6 @@ public class ReversePickup extends InstantPickup {
             }
         }
         setState(PickupState.Taken);
-        SoundFx.getInstance().reverse();
     }
 
     public void render(Graphics2D g) {

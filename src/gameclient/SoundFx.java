@@ -41,7 +41,7 @@ public class SoundFx {
 
     }
     
-    public void selfSpeedPickup() {
+    public void SelfSpeedPickup() {
         sfx=Audio.getSFX("SelfSpeedPickup.mp3");
         play(sfx);
     }
@@ -62,34 +62,34 @@ public class SoundFx {
         SoundFx.getInstance().crash();
     }
 
-    public void selfSlowPickup() {
+    public void SelfSlowPickup() {
         sfx=Audio.getSFX("SelfSlowPickup.mp3");
         play(sfx);
         
     }
     
-    public void eraserPickup() {
+    public void EraserPickup() {
         sfx=Audio.getSFX("Erase.mp3");
         play(sfx);
     }
     
-    public void invincible() {
+    public void InvinciblePickup() {
         sfx=Audio.getSFX("invincible.mp3");
         play(sfx);
         
     }
     
-    public void slowEnemiesPickup() {
+    public void SlowEnemiesPickup() {
         sfx=Audio.getSFX("SlowEnemies.mp3");
         play(sfx);
     }
     
-    public void reverse() {
+    public void ReversePickup() {
         sfx=Audio.getSFX("Reverse.mp3");
         play(sfx);
     }
     
-    public void speedEnemiesPickup() {
+    public void SpeedEnemiesPickup() {
         sfx=Audio.getSFX("speedEnemies.mp3");
         play(sfx);
     }
