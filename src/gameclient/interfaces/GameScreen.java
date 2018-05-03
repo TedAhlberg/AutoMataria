@@ -9,20 +9,18 @@ import gameobjects.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 
-public class GameScreen extends JPanel {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+public class GameScreen extends JPanel implements GameServerListener {
     private GamePanel gamePanel;
     private GameServerConnection client;
     private Player player;
-    private Audio backgroundMusic;
     private HashSet<Player> players = new HashSet<>();
-    private int framesPerSecond = 60;
+    private final int framesPerSecond = 60;
     private UserInterface userInterface;
+    private String username;
 
     public GameScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -74,114 +72,8 @@ public class GameScreen extends JPanel {
 
 
     public void connect(String ip, int port, String username) {
-        client = new GameServerConnection(new GameServerListener() {
-            public void onConnect() {
-                System.out.println("Connected to server.");
-                client.send(username);
-            }
-
-            public void onDisconnect() {
-                if (backgroundMusic != null) {
-                    backgroundMusic.stop();
-                }
-                gamePanel.stop();
-            }
-
-            public void onData(Object data) {
-                if (data instanceof GameServerUpdate) {
-                    GameServerUpdate message = (GameServerUpdate) data;
-                    gamePanel.updateGameObjects(message.gameObjects);
-                    gamePanel.setGameState(message.state);
-                    if (message.state == GameState.Warmup) {
-                        for (GameObject gameObject : message.gameObjects) {
-                            if (gameObject instanceof Player) {
-                                if (gameObject.equals(player)) {
-                                    player = (Player) gameObject;
-                                } else {
-                                    players.add((Player) gameObject);
-                                }
-                            }
-                        }
-                        gamePanel.setReadyPlayers(Utility.getReadyPlayerPercentage(players));
-                    }
-                    player = message.player;
-                } else if (data instanceof ConnectionMessage) {
-                    ConnectionMessage message = (ConnectionMessage) data;
-                    if (message.success) {
-                        gamePanel.setServerTickRate(message.tickRate);
-                        player = message.player;
-                        GameMap map = message.currentMap;
-                        gamePanel.setBackground(map.getBackground());
-                        gamePanel.setGrid(map.getGrid());
-                        gamePanel.start(framesPerSecond);
-                        MusicManager.changeTrack();
-                        MusicManager.getInstance().gameTrack1();
-                        System.out.println("CLIENT: Connected to server successfully");
-                    } else {
-                        gamePanel.stop();
-                        System.out.println("CLIENT: Failed to connect to server");
-                    }
-                } else if (data instanceof PlayerMessage) {
-                    PlayerMessage playerMessage = (PlayerMessage) data;
-
-                    if (playerMessage.getEvent() == (PlayerMessage.Event.Connected)) {
-                        System.out.println(playerMessage.getPlayer().getName() + " has connected.");
-
-                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Disconnected) {
-                        System.out.println(playerMessage.getPlayer().getName() + " has disconnected.");
-
-                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Crashed) {
-                        System.out.println(playerMessage.getPlayer().getName() + " has crashed.");
-                        SoundFx.getInstance().crash();
-
-                    } else if (playerMessage.getEvent() == PlayerMessage.Event.ColorChange) {
-                        System.out.println(playerMessage.getPlayer().getName() + " has changed Color to " + playerMessage.getPlayerColor());
-                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Ready) {
-                        System.out.println(playerMessage.getPlayer().getName() + " is ready.");
-                    } else if (playerMessage.getEvent() == PlayerMessage.Event.Unready) {
-                        System.out.println(playerMessage.getPlayer().getName() + " is not ready.");
-                    }
-
-                }
-                else if(data instanceof GameEventMessage) {
-                    String message = ((GameEventMessage) data).data;
-                    if(message.equals("crash")) {
-                        SoundFx.getInstance().crash();
-                   }
-                    else if(message.equals("movement")) {
-                        SoundFx.getInstance().movement();
-                    }
-                }
-                
-                else if(data instanceof PlayerPickupMessage) {
-                    String sound=(((PlayerPickupMessage) data).getPickup().getClass().getName());
-                    String compare ="gameobjects.pickups.";
-                    System.out.print(sound);
-                    if(sound.equals(compare+"EraserPickup")) {
-                        SoundFx.getInstance().EraserPickup();
-                    }
-                    else if(sound.equals(compare+"InvinciblePickup")) {
-                        SoundFx.getInstance().InvinciblePickup();
-                    }
-                    else if(sound.equals(compare+"ReversePickup")) {
-                        SoundFx.getInstance().ReversePickup();
-                    }
-                    else if(sound.equals(compare+"SelfSlowPickup")) {
-                        SoundFx.getInstance().SelfSlowPickup();
-                    }
-                    else if(sound.equals(compare+"SelfSpeedPickup")) {
-                        SoundFx.getInstance().SelfSpeedPickup();
-                    }
-                    else if(sound.equals(compare+"SpeedEnemiesPickup")) {
-                        SoundFx.getInstance().SpeedEnemiesPickup();
-                    }
-                    else if(sound.equals(compare+"SlowEnemiesPickup")) {
-                        SoundFx.getInstance().SlowEnemiesPickup();
-                    }
-                    }
-                }
-              
-        });
+        this.username = username;
+        client = new GameServerConnection(this);
         client.connect(ip, port);
         gamePanel.requestFocus();
     }
@@ -204,5 +96,99 @@ public class GameScreen extends JPanel {
 
     public void onKeyPress(Direction direction) {
         client.send(direction);
+    }
+
+    public void onConnect() {
+        System.out.println("Connected to server.");
+        client.send(username);
+    }
+
+    public void onDisconnect() {
+        gamePanel.stop();
+    }
+
+    public void onData(Object data) {
+        if (data instanceof GameServerUpdate) {
+            handleGameServerUpdate((GameServerUpdate) data);
+        } else if (data instanceof ConnectionMessage) {
+            handleConnectionMessage((ConnectionMessage) data);
+        } else if (data instanceof PlayerMessage) {
+            handlePlayerMessage((PlayerMessage) data);
+        } else if (data instanceof PlayerPickupMessage) {
+            handlePlayerPickupMessage((PlayerPickupMessage) data);
+        }
+    }
+
+    private void handleConnectionMessage(ConnectionMessage message) {
+        if (message.success) {
+            gamePanel.setServerTickRate(message.tickRate);
+            player = message.player;
+            GameMap map = message.currentMap;
+            gamePanel.setBackground(map.getBackground());
+            gamePanel.setGrid(map.getGrid());
+            gamePanel.start(framesPerSecond);
+            MusicManager.changeTrack();
+            MusicManager.getInstance().gameTrack1();
+            System.out.println("CLIENT: Connected to server successfully");
+        } else {
+            gamePanel.stop();
+            System.out.println("CLIENT: Failed to connect to server");
+        }
+    }
+
+    private void handleGameServerUpdate(GameServerUpdate message) {
+        gamePanel.updateGameObjects(message.gameObjects);
+        gamePanel.setGameState(message.state);
+        if (message.state == GameState.Warmup) {
+            for (GameObject gameObject : message.gameObjects) {
+                if (gameObject instanceof Player) {
+                    if (gameObject.equals(player)) {
+                        player = (Player) gameObject;
+                    } else {
+                        players.add((Player) gameObject);
+                    }
+                }
+            }
+            gamePanel.setReadyPlayers(Utility.getReadyPlayerPercentage(players));
+        }
+        player = message.player;
+    }
+
+    private void handlePlayerPickupMessage(PlayerPickupMessage message) {
+        try {
+            String pickupClassName = message.getPickup().getClass().getSimpleName();
+            Method method = SoundFx.class.getMethod(pickupClassName);
+            method.invoke(SoundFx.getInstance());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handlePlayerMessage(PlayerMessage message) {
+        String playerName = message.getPlayer().getName();
+        switch (message.getEvent()) {
+            case Connected:
+                System.out.println(playerName + " has connected.");
+                break;
+            case Disconnected:
+                System.out.println(playerName + " has disconnected.");
+                break;
+            case Ready:
+                System.out.println(playerName + " is ready.");
+                break;
+            case Unready:
+                System.out.println(playerName + " is not ready.");
+                break;
+            case Crashed:
+                System.out.println(playerName + " has crashed.");
+                SoundFx.getInstance().crash();
+                break;
+            case Moved:
+                SoundFx.getInstance().movement();
+                break;
+            case ColorChange:
+                System.out.println(playerName + " has changed color to " + message.getPlayerColor());
+                break;
+        }
     }
 }
