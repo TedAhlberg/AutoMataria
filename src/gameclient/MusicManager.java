@@ -37,30 +37,29 @@ public class MusicManager {
     }
 
     public void menuTrack() {
-       music = Audio.getTrack("AM-MenuTrack.mp3");
-     
-       play(music);
+        music = Audio.getTrack("AM-MenuTrack.mp3");
 
-       
+        play(music);
+
     }
 
     public void play(Audio music) {
-        if (!stop&&music!=null) {
+        if (!stop && music != null) {
             music.play(99);
             music = null;
         }
     }
-    
+
     public static void changeTrack() {
-        stop =!stop;
+        stop = !stop;
         music.setVolume(0);
         music.stop();
         music.setVolume(1);
-        stop=!stop;
+        stop = !stop;
     }
 
     public static void stop() {
-        stop =!stop;
+        stop = !stop;
         music.setVolume(0);
         music.stop();
         music.setVolume(1);
