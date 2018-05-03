@@ -13,6 +13,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
+/**
+ * GameScreen is a JPanel that connects and displays the Game.
+ * It has a GamePanel with the actual game.
+ * But also panels on the sides to display information about the game.
+ */
 public class GameScreen extends JPanel implements GameServerListener {
     private GamePanel gamePanel;
     private GameServerConnection client;
@@ -98,15 +103,28 @@ public class GameScreen extends JPanel implements GameServerListener {
         client.send(direction);
     }
 
+    /**
+     * When we are connected to a GameServer this method will be called
+     * So we send the username to login to the GameServer
+     */
     public void onConnect() {
         System.out.println("Connected to server.");
         client.send(username);
     }
 
+    /**
+     * When we are disconnected from the GameServer this method is called
+     */
     public void onDisconnect() {
         gamePanel.stop();
     }
 
+    /**
+     * When data from the GameServer is received this method is called with the data
+     * this method will then dispatch the message to the correct method to handle the message
+     *
+     * @param data Data received from GameServer
+     */
     public void onData(Object data) {
         if (data instanceof GameServerUpdate) {
             handleGameServerUpdate((GameServerUpdate) data);
