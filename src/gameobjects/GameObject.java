@@ -69,6 +69,9 @@ public abstract class GameObject implements Serializable {
     }
 
     public void setSpeed(int speed) {
+        if (this instanceof Player) {
+            System.out.println(((Player)this).getName() + " CHANGED SPEED TO " + speed);
+        }
         this.speed = speed;
     }
 

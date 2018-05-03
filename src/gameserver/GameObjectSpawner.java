@@ -7,6 +7,8 @@ import gameobjects.Pickup;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -17,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class GameObjectSpawner {
-
+    private HashMap<SpecialGameObject, GameObject> spawnedObjects = new HashMap<>();
     private ConcurrentLinkedQueue<GameObject> gameObjects;
     private GameMap currentMap;
     private int tickRate;
@@ -33,39 +35,55 @@ public class GameObjectSpawner {
      * if the gameobject should be added it has to be instantiated and have a new ID set
      */
     public void tick() {
-        if (currentMap.getGameMapObjects() == null)
-            return;
+        if (currentMap.getGameMapObjects() == null) return;
+
+        // Removes removed gameobject from spawnedObjects HashMap so it can be placed om map again
+        spawnedObjects.values().removeIf(gameObject -> !gameObjects.contains(gameObject));
+
         for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
-            GameObject gameObject = gameMapObject.getGameObject();
             if (gameMapObject.getSpawnInterval() == 0) {
-                if (!gameObjects.contains(gameObject)) {
-                    if (Utility.intersectsNoGameObject(gameObject.getBounds(), gameObjects)) {
+                if (!spawnedObjects.containsKey(gameMapObject)) {
+                    GameObject gameObject = getNewGameObject(gameMapObject.getGameObject());
+                    if (gameObject == null) {
+                        System.out.println("ERROR: Can't find GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
+                        continue;
+                    }
+                    gameObject.setId(ID.getNext());
+                    if (gameObject instanceof Pickup) {
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(gameObject.getX() - quarterGridPixel);
                         gameObject.setY(gameObject.getY() - quarterGridPixel);
-                        gameObject.setId(ID.getNext());
-                        gameObjects.add(gameObject);
-                        System.out.println("Placing on map (Instant): " + gameObject + " Position: "
-                                + new Point(gameObject.getX(), gameObject.getY()));
                     }
+                    gameObjects.add(gameObject);
+                    spawnedObjects.put(gameMapObject, gameObject);
+                    System.out.println("Placing on map (Instant): " + gameObject + " Position: "
+                            + new Point(gameObject.getX(), gameObject.getY()));
                 }
                 continue;
             }
             if (gameMapObject.getTimer() <= 0) {
-                if (gameObjects.contains(gameObject)) {
+                if (spawnedObjects.containsKey(gameMapObject)) {
+                    GameObject gameObject = spawnedObjects.get(gameMapObject);
                     if (gameObject instanceof Pickup) {
-                       PickupState state = ((Pickup) gameObject).getState();
+                        PickupState state = ((Pickup) gameObject).getState();
                         if (state == PickupState.NotTaken) {
                             System.out.println("Removing from map (Timed out): " + gameObject + " Position: "
                                     + new Point(gameObject.getX(), gameObject.getY()));
-                            gameObjects.remove(gameMapObject.getGameObject());
+                            gameObjects.remove(gameObject);
+                            spawnedObjects.remove(gameMapObject);
                             gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                         }
                     } else {
-                        gameObjects.remove(gameMapObject.getGameObject());
+                        gameObjects.remove(gameObject);
+                        spawnedObjects.remove(gameMapObject);
                         gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                     }
                 } else {
+                    GameObject gameObject = getNewGameObject(gameMapObject.getGameObject());
+                    if (gameObject == null) {
+                        System.out.println("ERROR: Can't find copy constructor in GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
+                        continue;
+                    }
                     if (gameMapObject.isSpawnRandom()) {
                         Point point = Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects);
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
@@ -74,6 +92,7 @@ public class GameObjectSpawner {
                     }
                     gameObject.setId(ID.getNext());
                     gameObjects.add(gameObject);
+                    spawnedObjects.put(gameMapObject, gameObject);
                     gameMapObject.setTimer(gameMapObject.getVisibleTime());
                     System.out.println("Placing on map (Spawn time): " + gameObject + " Position: "
                             + new Point(gameObject.getX(), gameObject.getY()));

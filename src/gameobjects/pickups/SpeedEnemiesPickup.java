@@ -17,45 +17,43 @@ import java.util.Collection;
 public class SpeedEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
-    private int timer = 30;
-    private Collection<GameObject> gameObjects;
-    private Player player;
+    private int initialTimerTime;
+    transient private int timer;
+    transient private Collection<GameObject> gameObjects;
 
     public SpeedEnemiesPickup() {
         this(0, 0, 60);
     }
 
-    public SpeedEnemiesPickup(int x, int y, int timer) {
+    public SpeedEnemiesPickup(int x, int y, int initialTimerTime) {
         super(x, y);
-        this.timer = timer;
+        this.initialTimerTime = initialTimerTime;
+        this.timer = initialTimerTime;
+    }
+
+    public SpeedEnemiesPickup(SpeedEnemiesPickup object) {
+        this(object.getX(), object.getY(), object.getInitialTimerTime());
     }
 
     public void tick() {
-
-        if (getState() == PickupState.NotTaken || getState() == PickupState.InUse)
-            return;
+        if (getState() != PickupState.InUse) return;
 
         timer--;
         if (timer == 0) {
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Player && !gameObject.equals(player)) {
                     gameObject.setSpeed((gameObject.getSpeed() / 2));
-                    player.setPickUp(null);
-                    gameObjects.remove(this);
-                    System.out.println("blablabla");
                 }
             }
-
             player.setPickUp(null);
-            // player = null;
-
+            gameObjects.remove(this);
+            setState(PickupState.Used);
         }
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() == PickupState.Taken) {
-            return;
-        }
+        if (getState() != PickupState.NotTaken) return;
+
         this.player = player;
         this.gameObjects = gameObjects;
 
@@ -66,14 +64,10 @@ public class SpeedEnemiesPickup extends InstantPickup {
             }
         }
 
-        setState(PickupState.Used);
+        setState(PickupState.InUse);
     }
 
-    public void render(Graphics2D g) {
-        if (getState() != PickupState.NotTaken) {
-            return;
-        }
-        BufferedImage image = Resources.getImage("EnemiesSpeedUp.png");
-        g.drawImage(image, x, y, width, height, null);
+    public int getInitialTimerTime() {
+        return initialTimerTime;
     }
 }
