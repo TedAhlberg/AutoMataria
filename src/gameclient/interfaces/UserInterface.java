@@ -26,12 +26,11 @@ public class UserInterface extends JPanel {
     }
 
     public UserInterface(Dimension windowSize) {
-        window = new Window(Game.TITLE, windowSize);
-        window.setContentPane(this);
-        window.pack();
-
         setLayout(cardLayout);
         setPreferredSize(windowSize);
+        window = new Window(Game.TITLE, windowSize);
+        window.setContentPane(this);
+        window.setMode(Window.Mode.Windowed);
 
         add(new StartScreen(this), "StartScreen");
         settingsScreen = new SettingsScreen(this);
