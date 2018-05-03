@@ -9,12 +9,11 @@ import java.awt.event.ActionEvent;
  */
 public class SoundFx {
 
-    
-    private Audio sfx;    
+    private Audio sfx;
     private static SoundFx instance = null;
 
     protected SoundFx() {
-        
+
     }
 
     public static SoundFx getInstance() {
@@ -24,12 +23,13 @@ public class SoundFx {
         return instance;
     }
 
-    
     public void play(Audio sfx) {
-        sfx.playSfx();
-        sfx = null;
+        if (sfx != null) {
+            sfx.playSfx();
+            sfx = null;
+        }
     }
-    
+
     public void menuSelect() {
         sfx = Audio.getSFX("Menu_Select.mp3");
         play(sfx);
@@ -40,15 +40,14 @@ public class SoundFx {
         play(sfx);
 
     }
-    
+
     public void SelfSpeedPickup() {
-        sfx=Audio.getSFX("SelfSpeedPickup.mp3");
+        sfx = Audio.getSFX("SelfSpeedPickup.mp3");
         play(sfx);
     }
 
-    
     public void movement() {
-        sfx=Audio.getSFX("Movement.mp3");
+        sfx = Audio.getSFX("Movement.mp3");
         play(sfx);
     }
 
@@ -63,34 +62,34 @@ public class SoundFx {
     }
 
     public void SelfSlowPickup() {
-        sfx=Audio.getSFX("SelfSlowPickup.mp3");
+        sfx = Audio.getSFX("SelfSlowPickup.mp3");
         play(sfx);
-        
+
     }
-    
+
     public void EraserPickup() {
-        sfx=Audio.getSFX("Erase.mp3");
+        sfx = Audio.getSFX("Erase.mp3");
         play(sfx);
     }
-    
+
     public void InvinciblePickup() {
-        sfx=Audio.getSFX("invincible.mp3");
+        sfx = Audio.getSFX("Invincible.mp3");
         play(sfx);
-        
+
     }
-    
+
     public void SlowEnemiesPickup() {
-        sfx=Audio.getSFX("SlowEnemies.mp3");
+        sfx = Audio.getSFX("SlowEnemies.mp3");
         play(sfx);
     }
-    
+
     public void ReversePickup() {
-        sfx=Audio.getSFX("Reverse.mp3");
+        sfx = Audio.getSFX("Reverse.mp3");
         play(sfx);
     }
-    
+
     public void SpeedEnemiesPickup() {
-        sfx=Audio.getSFX("speedEnemies.mp3");
+        sfx = Audio.getSFX("speedEnemies.mp3");
         play(sfx);
     }
 }
