@@ -221,6 +221,11 @@ public class Player extends GameObject {
             System.out.println(name + " HAS DIED");
         }
     }
+    public void setReset() {
+        setReversed(false);
+        setDead(false);
+        setInvincible(false);
+    }
 
     public boolean isReversed() {
         return reversed;

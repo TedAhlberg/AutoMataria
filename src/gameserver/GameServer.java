@@ -233,6 +233,7 @@ public class GameServer implements ClientListener, MessageListener {
         connectedClients.forEach((client, player) -> {
             player.setInvincible(true);
             player.setReady(false);
+            player.setReversed(false);
             player.setDead(false);
             player.setPickUp(null);
             player.setSpeed(playerSpeed);
@@ -260,6 +261,7 @@ public class GameServer implements ClientListener, MessageListener {
             if (gameObject instanceof Player) {
                 Player player = (Player) gameObject;
                 player.setInvincible(false);
+                player.setReversed(false);
                 player.setReady(false);
                 player.setDead(false);
                 player.setPickUp(null);
@@ -284,6 +286,7 @@ public class GameServer implements ClientListener, MessageListener {
         if (state == GameState.Warmup) {
             player.setInvincible(false);
             player.setReady(false);
+            player.setReversed(false);
             player.setDead(false);
             player.setPickUp(null);
             player.setSpeed(playerSpeed);
@@ -303,6 +306,8 @@ public class GameServer implements ClientListener, MessageListener {
             if (player.isDead()) {
                 player.getTrail().remove(mapRectangle);
                 player.setDead(false);
+                player.setInvincible(false);
+                player.setReversed(false);
                 player.setReady(false);
                 player.setPickUp(null);
                 player.setSpeed(playerSpeed);

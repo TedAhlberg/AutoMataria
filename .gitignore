@@ -268,3 +268,4 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/linux,macos,windows,eclipse,intellij,intellij+all,intellij+iml
+resources/settings/username.ser

@@ -41,8 +41,9 @@ public class InvinciblePickup extends InstantPickup {
 
         if (timer == 0) {
             player.setInvincible(false);
+            setState(PickupState.Used);
         }
-        setState(PickupState.Used);
+        
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
