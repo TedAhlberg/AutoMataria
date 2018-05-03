@@ -13,6 +13,7 @@ public class ServerInformation {
     private int serverPort;
     private int connectedClients;
     private int maxPlayers;
+    private long lastUpdateTime;
 
     public ServerInformation(String ip, String serverName, String mapName, String gameState, int serverPort,
                              int connectedClients, int maxPlayers) {
@@ -23,6 +24,11 @@ public class ServerInformation {
         this.serverPort = serverPort;
         this.connectedClients = connectedClients;
         this.maxPlayers = maxPlayers;
+        lastUpdateTime = System.currentTimeMillis();
+    }
+
+    public long getUpdateTime() {
+        return lastUpdateTime;
     }
 
     public String getIp() {
@@ -67,5 +73,12 @@ public class ServerInformation {
             return (servInfo.getIp().equals(ip) && servInfo.getServerPort() == serverPort);
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return "ServerInformation [ip=" + ip + ", serverName=" + serverName + ", mapName=" + mapName + ", gameState="
+                + gameState + ", serverPort=" + serverPort + ", connectedClients=" + connectedClients + ", maxPlayers="
+                + maxPlayers + ", lastUpdateTime=" + lastUpdateTime + "]";
     }
 }

@@ -61,7 +61,6 @@ public class SelfSlowPickup extends Pickup {
         this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
-        SoundFx.getInstance().selfSlowPickup();
 
         setState(PickupState.Used);
     }

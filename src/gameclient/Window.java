@@ -34,14 +34,12 @@ public class Window extends JFrame {
      */
     public Window(String title, Dimension windowSize) {
         this.windowSize = windowSize;
-        this.setBackground(Color.BLACK);
-        this.setTitle(title);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBackground(Color.BLACK);
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         changeDefaultFont();
         modifyLookAndFeel();
-
-        setMode(Mode.Windowed);
     }
 
     /**
@@ -98,43 +96,54 @@ public class Window extends JFrame {
      */
     public void setMode(Mode mode) {
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        this.dispose();
+
+        if (device.getFullScreenWindow() != null) {
+            System.out.println("WINDOW: Exiting fullscreen mode.");
+            device.setFullScreenWindow(null);
+            setAlwaysOnTop(false);
+        }
+
+        if (isDisplayable()) {
+            System.out.println("WINDOW: Is already active. Disposing window before changing mode.");
+            dispose();
+        }
+
         if (mode == Mode.Fullscreen) {
-            System.out.println("Changing to fullscreen mode.");
+            System.out.println("WINDOW: Changing to fullscreen mode.");
 
-            
-            this.setUndecorated(true);
-            this.setResizable(false);
-            this.pack();
-
+            setUndecorated(true);
+            setResizable(false);
             device.setFullScreenWindow(this);
 
         } else if (mode == Mode.Maximized) {
             System.out.println("WINDOW: Changing to maximized window.");
 
-            this.setVisible(false);
-            this.setUndecorated(true);
-            this.setResizable(false);
+            setUndecorated(true);
+            setResizable(false);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setVisible(true);
 
-            this.setVisible(true);
-            this.setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
-        } else {
-            if (windowSize == null) {
-                System.out.println("No windowsize defined. Using 1/4 of available screen.");
-                windowSize = new Dimension(device.getDisplayMode().getWidth() / 2, device.getDisplayMode().getHeight() / 2);
+        } else if (mode == Mode.Windowed && windowSize != null) {
+                
+                System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
+                
+                setUndecorated(false);
+                setResizable(true);
+                setMinimumSize(windowSize);
+                setPreferredSize(windowSize);
+                setLocationRelativeTo(null);
+                setVisible(true);
+                
+            } else if (mode == Mode.Windowed) {
+                System.out.println("WINDOW: Changing to windowed mode.");
+                
+                setUndecorated(false);
+                setResizable(true);
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
+                setVisible(true);
             }
-            System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
-
-            this.dispose();
-            this.setUndecorated(false);
-            this.setResizable(true);
-
-            this.setPreferredSize(windowSize);
-
-            this.setVisible(true);
         }
-    }
-
+         
     /**
      * Changes the size of the window
      * Also changes the Mode to Windowed if it's Fullscreen or Maximized

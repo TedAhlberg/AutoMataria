@@ -23,16 +23,17 @@ public class ServersToBrowse extends JPanel {
 	private JLabel lblGameState;
 	private JLabel lblPlayersCurrently;
 	private JLabel lblPlayersMax;
+	private JLabel lblIP;
+	private JLabel lblPort;
 	private GridBagConstraints gbc = new GridBagConstraints();
 	
 	private Font font = new Font("Orbitron", Font.PLAIN, 12);
 	
 	
 	public ServersToBrowse(String serverName, String mapName, String gameState,
-						   int playersCurrently, int playersMax) {
+						   int playersCurrently, int playersMax, String ip, int port) {
 
 	    setLayout(new GridBagLayout());
-	    //setPreferredSize(new Dimension(getWidth()/2, getHeight()/10));
 	    setOpaque(false);
 	    
 	    lblServerName = new JLabel(serverName);
@@ -47,11 +48,18 @@ public class ServersToBrowse extends JPanel {
 	    
 	    lblPlayersMax = new JLabel(Integer.toString(playersMax));
 	    
+	    lblIP = new JLabel(ip);
+	    
+	    lblPort = new JLabel(Integer.toString(port));
+	    
 	    lblServerName.setFont(font);
 	    lblMapName.setFont(font);
 	    lblGameState.setFont(font);
 	    lblPlayersCurrently.setFont(font);
 	    lblPlayersMax.setFont(font);
+	    lblIP.setFont(font);
+	    lblPort.setFont(font);
+	    
 	    
 	    gbc.gridx = 0;
 	    gbc.weightx = 0.1;
@@ -84,15 +92,21 @@ public class ServersToBrowse extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         add(lblPlayersCurrently, gbc);
         
-	}
-	
-	public void setText(String serverName, String mapName, String gameState,
-                              int playersCurrently, int playersMax) {
-	    
-	    lblServerName = new JLabel(serverName);
-        lblMapName = new JLabel(mapName);
-        lblGameState = new JLabel(gameState);
-        lblPlayersCurrently = new JLabel(Integer.toString(playersCurrently));
-        lblPlayersMax = new JLabel(Integer.toString(playersMax));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 4;
+        gbc.weightx = 0.2;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        add(lblIP, gbc);
+        
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.weightx = 0.2;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        add(lblPort, gbc);
+        
 	}
 }

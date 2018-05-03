@@ -143,7 +143,44 @@ public class GameScreen extends JPanel {
                     }
 
                 }
-            }
+                else if(data instanceof GameEventMessage) {
+                    String message = ((GameEventMessage) data).data;
+                    if(message.equals("crash")) {
+                        SoundFx.getInstance().crash();
+                   }
+                    else if(message.equals("movement")) {
+                        SoundFx.getInstance().movement();
+                    }
+                }
+                
+                else if(data instanceof PlayerPickupMessage) {
+                    String sound=(((PlayerPickupMessage) data).getPickup().getClass().getName());
+                    String compare ="gameobjects.pickups.";
+                    System.out.print(sound);
+                    if(sound.equals(compare+"EraserPickup")) {
+                        SoundFx.getInstance().EraserPickup();
+                    }
+                    else if(sound.equals(compare+"InvinciblePickup")) {
+                        SoundFx.getInstance().InvinciblePickup();
+                    }
+                    else if(sound.equals(compare+"ReversePickup")) {
+                        SoundFx.getInstance().ReversePickup();
+                    }
+                    else if(sound.equals(compare+"SelfSlowPickup")) {
+                        SoundFx.getInstance().SelfSlowPickup();
+                    }
+                    else if(sound.equals(compare+"SelfSpeedPickup")) {
+                        SoundFx.getInstance().SelfSpeedPickup();
+                    }
+                    else if(sound.equals(compare+"SpeedEnemiesPickup")) {
+                        SoundFx.getInstance().SpeedEnemiesPickup();
+                    }
+                    else if(sound.equals(compare+"SlowEnemiesPickup")) {
+                        SoundFx.getInstance().SlowEnemiesPickup();
+                    }
+                    }
+                }
+              
         });
         client.connect(ip, port);
         gamePanel.requestFocus();

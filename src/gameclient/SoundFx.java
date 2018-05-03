@@ -10,8 +10,7 @@ import java.awt.event.ActionEvent;
 public class SoundFx {
 
     
-    private Audio sfx;
-    
+    private Audio sfx;    
     private static SoundFx instance = null;
 
     protected SoundFx() {
@@ -25,6 +24,11 @@ public class SoundFx {
         return instance;
     }
 
+    
+    public void play(Audio sfx) {
+        sfx.playSfx();
+        sfx = null;
+    }
     
     public void menuSelect() {
         sfx = Audio.getSFX("Menu_Select.mp3");
@@ -42,9 +46,10 @@ public class SoundFx {
         play(sfx);
     }
 
-    public void play(Audio sfx) {
-        sfx.playSfx();
-        sfx = null;
+    
+    public void movement() {
+        sfx=Audio.getSFX("Movement.mp3");
+        play(sfx);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -57,9 +62,35 @@ public class SoundFx {
         SoundFx.getInstance().crash();
     }
 
-    public void selfSlowPickup() {
+    public void SelfSlowPickup() {
         sfx=Audio.getSFX("SelfSlowPickup.mp3");
         play(sfx);
         
+    }
+    
+    public void EraserPickup() {
+        sfx=Audio.getSFX("Erase.mp3");
+        play(sfx);
+    }
+    
+    public void InvinciblePickup() {
+        sfx=Audio.getSFX("invincible.mp3");
+        play(sfx);
+        
+    }
+    
+    public void SlowEnemiesPickup() {
+        sfx=Audio.getSFX("SlowEnemies.mp3");
+        play(sfx);
+    }
+    
+    public void ReversePickup() {
+        sfx=Audio.getSFX("Reverse.mp3");
+        play(sfx);
+    }
+    
+    public void SpeedEnemiesPickup() {
+        sfx=Audio.getSFX("speedEnemies.mp3");
+        play(sfx);
     }
 }

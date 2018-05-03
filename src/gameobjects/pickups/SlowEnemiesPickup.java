@@ -2,6 +2,7 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Resources;
+import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;

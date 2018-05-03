@@ -36,6 +36,7 @@ public class PlayerMessage extends Message {
         Ready,
         Unready,
         ColorChange,
-        Crashed
+        Crashed,
+        Moved
     }
 }
