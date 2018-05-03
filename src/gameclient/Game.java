@@ -2,6 +2,8 @@ package gameclient;
 
 import gameclient.interfaces.UserInterface;
 
+import javax.swing.*;
+
 /**
  * Starts the Auto-Mataria Game
  * Contains some important settings.
@@ -18,7 +20,9 @@ public class Game {
         System.setProperty("sun.java2d.opengl", "True");
         System.setProperty("awt.useSystemAAFontSettings", "on");
 
-        userInterface = new UserInterface();
+        SwingUtilities.invokeLater(() -> {
+            userInterface = new UserInterface();
+        });
     }
 
     public static void main(String[] args) {
