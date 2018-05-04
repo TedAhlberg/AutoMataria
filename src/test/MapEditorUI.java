@@ -2,7 +2,6 @@ package test;
 
 import common.*;
 import gameclient.*;
-import gameclient.Window;
 import gameclient.interfaces.UserInterface;
 import gameobjects.*;
 import gameserver.StartingPositions;
@@ -37,6 +36,8 @@ public class MapEditorUI {
     private JPanel gamePanelContainer;
     private JComboBox<Double> playerSpeedComboBox;
     private JButton exitButton;
+    private JSlider pickupActiveTimeSlider;
+    private JLabel pickupActiveTimeLabel;
 
     private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
@@ -48,10 +49,8 @@ public class MapEditorUI {
     private SpecialGameObject selectedObject;
 
     private HashMap<String, Dimension> gridSizes;
-    private UserInterface userInterface;
 
     public MapEditorUI(UserInterface userInterface) {
-        this.userInterface = userInterface;
         $$$setupUI$$$();
 
         addNewGameObjectButton.addActionListener(e -> {
@@ -99,6 +98,8 @@ public class MapEditorUI {
             } else if (selectedObject.getGameObject() instanceof Pickup) {
                 ((CardLayout) gameObjectSettingsPanel.getLayout()).show(gameObjectSettingsPanel, "PickupCard");
                 setFixedPositionRadioButton.setSelected(true);
+                int activeTime = ((Pickup) selectedObject.getGameObject()).getActiveTime();
+                pickupActiveTimeSlider.setValue(activeTime);
             } else {
                 ((CardLayout) gameObjectSettingsPanel.getLayout()).show(gameObjectSettingsPanel, "EmptyCard");
             }
@@ -172,6 +173,15 @@ public class MapEditorUI {
             userInterface.changeToPreviousScreen();
         });
 
+        pickupActiveTimeSlider.addChangeListener(e -> {
+            double activeTimeSeconds = pickupActiveTimeSlider.getValue() / 1000.0;
+            pickupActiveTimeLabel.setText(activeTimeSeconds + " seconds");
+            GameObject gameObject = selectedObject.getGameObject();
+            if (gameObject instanceof Pickup) {
+                ((Pickup) gameObject).setActiveTime(pickupActiveTimeSlider.getValue());
+            }
+        });
+
         updateCurrentMap();
         updateGamePanel();
 
@@ -182,9 +192,10 @@ public class MapEditorUI {
     }
 
     public static void main(String[] args) {
-        Window window = new Window("Auto-Mataria Map Editor", null);
-        window.setContentPane(new MapEditorUI(null).container);
-        window.pack();
+        SwingUtilities.invokeLater(() -> {
+            UserInterface userInterface = new UserInterface();
+            userInterface.changeScreen("MapEditorScreen");
+        });
     }
 
     private void updateWallColors() {
@@ -745,16 +756,60 @@ public class MapEditorUI {
         pickupPanel = new JPanel();
         pickupPanel.setLayout(new GridBagLayout());
         gameObjectSettingsPanel.add(pickupPanel, "PickupCard");
-        setFixedPositionRadioButton = new JRadioButton();
-        setFixedPositionRadioButton.setText("Set Fixed Position");
+        pickupActiveTimeSlider = new JSlider();
+        pickupActiveTimeSlider.setMajorTickSpacing(1000);
+        pickupActiveTimeSlider.setMaximum(15000);
+        pickupActiveTimeSlider.setMinimum(0);
+        pickupActiveTimeSlider.setMinorTickSpacing(500);
+        pickupActiveTimeSlider.setPaintLabels(false);
+        pickupActiveTimeSlider.setPaintTicks(true);
+        pickupActiveTimeSlider.setSnapToTicks(true);
+        pickupActiveTimeSlider.setValue(3500);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.weightx = 2.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        pickupPanel.add(pickupActiveTimeSlider, gbc);
+        final JLabel label10 = new JLabel();
+        label10.setText("Pickup active time:");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        pickupPanel.add(label10, gbc);
+        pickupActiveTimeLabel = new JLabel();
+        pickupActiveTimeLabel.setText("3.5");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        pickupPanel.add(pickupActiveTimeLabel, gbc);
+        final JPanel spacer8 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        pickupPanel.add(spacer8, gbc);
+        setFixedPositionRadioButton = new JRadioButton();
+        setFixedPositionRadioButton.setText("Paint on Map");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.ipadx = 5;
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
         pickupPanel.add(setFixedPositionRadioButton, gbc);
+        final JLabel label11 = new JLabel();
+        label11.setText("Pickup position:");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        pickupPanel.add(label11, gbc);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
@@ -762,8 +817,8 @@ public class MapEditorUI {
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gameObjectPanel.add(panel5, gbc);
-        final JLabel label10 = new JLabel();
-        label10.setText("Spawn Interval");
+        final JLabel label12 = new JLabel();
+        label12.setText("Spawn Interval");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -771,15 +826,15 @@ public class MapEditorUI {
         gbc.ipadx = 5;
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
-        panel5.add(label10, gbc);
-        final JPanel spacer8 = new JPanel();
+        panel5.add(label12, gbc);
+        final JPanel spacer9 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(spacer8, gbc);
-        final JLabel label11 = new JLabel();
-        label11.setText("Spawn Limit");
+        panel5.add(spacer9, gbc);
+        final JLabel label13 = new JLabel();
+        label13.setText("Spawn Limit");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -787,9 +842,9 @@ public class MapEditorUI {
         gbc.ipadx = 5;
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
-        panel5.add(label11, gbc);
-        final JLabel label12 = new JLabel();
-        label12.setText("Visible Time");
+        panel5.add(label13, gbc);
+        final JLabel label14 = new JLabel();
+        label14.setText("Visible Time");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
@@ -797,9 +852,9 @@ public class MapEditorUI {
         gbc.ipadx = 5;
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
-        panel5.add(label12, gbc);
-        final JLabel label13 = new JLabel();
-        label13.setText("Random Spawn");
+        panel5.add(label14, gbc);
+        final JLabel label15 = new JLabel();
+        label15.setText("Random Spawn");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -807,7 +862,7 @@ public class MapEditorUI {
         gbc.ipadx = 5;
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
-        panel5.add(label13, gbc);
+        panel5.add(label15, gbc);
         randomSpawnCheckBox = new JCheckBox();
         randomSpawnCheckBox.setText("");
         gbc = new GridBagConstraints();
@@ -915,25 +970,25 @@ public class MapEditorUI {
         gbc.ipady = 5;
         gbc.insets = new Insets(5, 5, 5, 5);
         panel1.add(addStartingPositionRadioButton, gbc);
-        final JPanel spacer9 = new JPanel();
+        final JPanel spacer10 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 4;
         gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(spacer9, gbc);
-        final JPanel spacer10 = new JPanel();
+        panel1.add(spacer10, gbc);
+        final JPanel spacer11 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 9;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel1.add(spacer10, gbc);
-        final JLabel label14 = new JLabel();
-        label14.setText("Starting Positions");
+        panel1.add(spacer11, gbc);
+        final JLabel label16 = new JLabel();
+        label16.setText("Starting Positions");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 9;
         gbc.anchor = GridBagConstraints.WEST;
-        panel1.add(label14, gbc);
+        panel1.add(label16, gbc);
         final JSeparator separator3 = new JSeparator();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -941,13 +996,13 @@ public class MapEditorUI {
         gbc.gridwidth = 9;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(separator3, gbc);
-        final JPanel spacer11 = new JPanel();
+        final JPanel spacer12 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 9;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 10;
-        panel1.add(spacer11, gbc);
+        panel1.add(spacer12, gbc);
         exitButton = new JButton();
         exitButton.setText("EXIT FROM MAP EDITOR");
         gbc = new GridBagConstraints();
@@ -963,13 +1018,13 @@ public class MapEditorUI {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         container.add(gamePanelContainer, gbc);
-        final JPanel spacer12 = new JPanel();
+        final JPanel spacer13 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipadx = 10;
-        container.add(spacer12, gbc);
+        container.add(spacer13, gbc);
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(drawWallRadioButton);

@@ -14,8 +14,10 @@ import java.util.Collection;
 public abstract class Pickup extends GameObject {
     private static final long serialVersionUID = 1;
 
-    protected PickupState state = PickupState.NotTaken;
     transient protected Player player;
+
+    protected PickupState state = PickupState.NotTaken;
+    protected int activeTime;
 
     public Pickup() {
         this(0, 0);
@@ -47,6 +49,14 @@ public abstract class Pickup extends GameObject {
 
     public void setState(PickupState state) {
         this.state = state;
+    }
+
+    public void setActiveTime(int activeTime) {
+        this.activeTime = activeTime;
+    }
+
+    public int getActiveTime() {
+        return activeTime;
     }
 
     public void take(Player player) {

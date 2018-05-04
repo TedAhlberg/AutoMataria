@@ -38,12 +38,12 @@ public class GameObjectSpawner {
         // Removes removed gameobject from spawnedObjects HashMap so it can be placed om map again
         spawnedObjects.values().removeIf(gameObject -> !gameObjects.contains(gameObject));
 
-        for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
-            if (gameMapObject.getSpawnInterval() == 0) {
-                if (!spawnedObjects.containsKey(gameMapObject)) {
-                    GameObject gameObject = getCopyOfGameObject(gameMapObject.getGameObject());
+        for (SpecialGameObject specialObject : currentMap.getGameMapObjects()) {
+            if (specialObject.getSpawnInterval() == 0) {
+                if (!spawnedObjects.containsKey(specialObject)) {
+                    GameObject gameObject = getCopyOfGameObject(specialObject.getGameObject());
                     if (gameObject == null) {
-                        System.out.println("ERROR: Can't find GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
+                        System.out.println("ERROR: Can't find GameObject " + specialObject.getGameObject().getClass().getSimpleName());
                         continue;
                     }
                     gameObject.setId(ID.getNext());
@@ -53,49 +53,50 @@ public class GameObjectSpawner {
                         gameObject.setY(gameObject.getY() - quarterGridPixel);
                     }
                     gameObjects.add(gameObject);
-                    spawnedObjects.put(gameMapObject, gameObject);
+                    spawnedObjects.put(specialObject, gameObject);
                     System.out.println("Placing on map (Instant): " + gameObject + " Position: "
                             + new Point(gameObject.getX(), gameObject.getY()));
                 }
                 continue;
             }
-            if (gameMapObject.getTimer() <= 0) {
-                if (spawnedObjects.containsKey(gameMapObject)) {
-                    GameObject gameObject = spawnedObjects.get(gameMapObject);
+            if (specialObject.getTimer() <= 0) {
+                if (spawnedObjects.containsKey(specialObject)) {
+                    GameObject gameObject = spawnedObjects.get(specialObject);
                     if (gameObject instanceof Pickup) {
                         PickupState state = ((Pickup) gameObject).getState();
                         if (state == PickupState.NotTaken) {
                             System.out.println("Removing from map (Timed out): " + gameObject + " Position: "
                                     + new Point(gameObject.getX(), gameObject.getY()));
                             gameObjects.remove(gameObject);
-                            spawnedObjects.remove(gameMapObject);
-                            gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                            spawnedObjects.remove(specialObject);
+                            specialObject.setTimer(specialObject.getSpawnInterval());
                         }
                     } else {
                         gameObjects.remove(gameObject);
-                        spawnedObjects.remove(gameMapObject);
-                        gameMapObject.setTimer(gameMapObject.getSpawnInterval());
+                        spawnedObjects.remove(specialObject);
+                        specialObject.setTimer(specialObject.getSpawnInterval());
                     }
                 } else {
-                    GameObject gameObject = getCopyOfGameObject(gameMapObject.getGameObject());
+                    GameObject gameObject = getCopyOfGameObject(specialObject.getGameObject());
                     if (gameObject == null) {
-                        System.out.println("ERROR: Can't find copy constructor in GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
+                        System.out.println("ERROR: Can't find copy constructor in GameObject " + specialObject.getGameObject().getClass().getSimpleName());
                         continue;
                     }
-                    if (gameMapObject.isSpawnRandom()) {
+                    if (specialObject.isSpawnRandom()) {
                         Point point = Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects);
                         int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
                         gameObject.setX(point.x - quarterGridPixel);
                         gameObject.setY(point.y - quarterGridPixel);
                     }
+                    gameObject.setId(ID.getNext());
                     gameObjects.add(gameObject);
-                    spawnedObjects.put(gameMapObject, gameObject);
-                    gameMapObject.setTimer(gameMapObject.getVisibleTime());
+                    spawnedObjects.put(specialObject, gameObject);
+                    specialObject.setTimer(specialObject.getVisibleTime());
                     System.out.println("Placing on map (Spawn time): " + gameObject + " Position: "
                             + new Point(gameObject.getX(), gameObject.getY()));
                 }
             } else {
-                gameMapObject.setTimer(gameMapObject.getTimer() - tickRate);
+                specialObject.setTimer(specialObject.getTimer() - tickRate);
             }
         }
     }

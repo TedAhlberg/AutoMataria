@@ -12,33 +12,30 @@ import java.util.Collection;
  *
  * @author Dante Håkansson
  */
-
 public class InvinciblePickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
     transient private Collection<GameObject> gameObjects;
-    transient private int timer;
-    private int initialTimerTime;
+    transient private long startTime;
 
     public InvinciblePickup() {
-        this(0, 0, 60);
+        this(0, 0, 4000);
     }
 
-    public InvinciblePickup(int x, int y, int initialTimerTime) {
+    public InvinciblePickup(int x, int y, int activeTime) {
         super(x, y);
-        this.initialTimerTime = initialTimerTime;
-        this.timer = initialTimerTime;
+        setActiveTime(activeTime);
     }
 
     public InvinciblePickup(InvinciblePickup object) {
-        this(object.getX(), object.getY(), object.getInitialTimerTime());
+        this(object.getX(), object.getY(), object.getActiveTime());
     }
 
     public void tick() {
         if (getState() != PickupState.InUse) return;
 
-        timer--;
-        if (timer == 0) {
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime >= activeTime) {
             player.setInvincible(false);
             setState(PickupState.Used);
             gameObjects.remove(this);
@@ -48,14 +45,12 @@ public class InvinciblePickup extends InstantPickup {
     public void use(Player player, Collection<GameObject> gameObjects) {
         if (getState() != PickupState.NotTaken) return;
 
+        startTime = System.currentTimeMillis();
+
         this.player = player;
         this.gameObjects = gameObjects;
 
         player.setInvincible(true);
         setState(PickupState.InUse);
-    }
-
-    public int getInitialTimerTime() {
-        return initialTimerTime;
     }
 }
