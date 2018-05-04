@@ -16,8 +16,8 @@ public class Player extends GameObject {
     private static final long serialVersionUID = 2;
 
     transient private final Collection<GameObject> gameObjects;
-    transient private final GameMap currentMap;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
+    transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
 
@@ -186,20 +186,12 @@ public class Player extends GameObject {
 
     public void setNextDirection(Direction direction) {
         if (reversed) {
-            if (direction == Direction.Left) {
-                inputQueue.add(Direction.Right);
-            } else if (direction == Direction.Right) {
-                inputQueue.add(Direction.Left);
-            } else if (direction == Direction.Up) {
-                inputQueue.add(Direction.Down);
-            } else if (direction == Direction.Down) {
-                inputQueue.add(Direction.Up);
-            }
+            inputQueue.add(Utility.getOppositeDirection(direction));
         } else {
+            if (!invincible && Utility.getOppositeDirection(direction) == getDirection()) return;
             inputQueue.add(direction);
         }
         listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
-
     }
 
     public void setPickUp(Pickup pickup) {
@@ -226,13 +218,16 @@ public class Player extends GameObject {
      */
     public void reset() {
         inputQueue.clear();
-        direction = Direction.Static;
+        direction = previousDirection = Direction.Static;
         dead = invincible = reversed = ready = false;
 
         if (pickupSlot != null) {
             //pickupSlot.done();
             setPickUp(null);
         }
+
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
+        trail.remove(mapRectangle);
     }
 
     public boolean isReversed() {

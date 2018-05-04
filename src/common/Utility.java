@@ -179,6 +179,20 @@ public class Utility {
         return new Rectangle(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
     }
 
+    public static Direction getOppositeDirection(Direction direction) {
+        switch (direction) {
+            case Up:
+                return Direction.Down;
+            case Down:
+                return Direction.Up;
+            case Left:
+                return Direction.Right;
+            case Right:
+                return Direction.Left;
+        }
+        return Direction.Static;
+    }
+
     /**
      * Creates a compatible BufferedImage that can be used to paint on
      *

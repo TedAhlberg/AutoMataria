@@ -15,7 +15,6 @@ import java.awt.event.KeyEvent;
 public class KeyInput implements KeyEventDispatcher {
     private GameScreen gameScreen;
     private KeyBindings bindings;
-    private int lastKey = 0;
 
     public KeyInput(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -27,21 +26,17 @@ public class KeyInput implements KeyEventDispatcher {
         int key = e.getKeyCode();
 
         // GoLeft
-        if (key == KeyEvent.VK_LEFT && lastKey != KeyEvent.VK_RIGHT) {
+        if (key == KeyEvent.VK_LEFT) {
             gameScreen.onKeyPress(Direction.Left);
-            lastKey = KeyEvent.VK_LEFT;
             // GoRight
-        } else if (key == KeyEvent.VK_RIGHT && lastKey != KeyEvent.VK_LEFT) {
+        } else if (key == KeyEvent.VK_RIGHT) {
             gameScreen.onKeyPress(Direction.Right);
-            lastKey = KeyEvent.VK_RIGHT;
             // GoUp
-        } else if (key == KeyEvent.VK_UP && lastKey != KeyEvent.VK_DOWN) {
+        } else if (key == KeyEvent.VK_UP) {
             gameScreen.onKeyPress(Direction.Up);
-            lastKey = KeyEvent.VK_UP;
             // GoDown
-        } else if (key == KeyEvent.VK_DOWN && lastKey != KeyEvent.VK_UP) {
+        } else if (key == KeyEvent.VK_DOWN) {
             gameScreen.onKeyPress(Direction.Down);
-            lastKey = KeyEvent.VK_DOWN;
         }
         else if(key == KeyEvent.VK_SPACE) {
             gameScreen.onKeyPress(Action.UsePickup);

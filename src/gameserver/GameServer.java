@@ -197,68 +197,49 @@ public class GameServer implements ClientListener, MessageListener {
 
     private void startNewGameCountdown() {
         System.out.println("SERVER STATE: Warmup -> Countdown");
+        state = GameState.Countdown;
         players.clear();
         players.addAll(connectedClients.values());
-        state = GameState.Countdown;
         currentCountdown = gameStartCountdown;
     }
 
     private void startGameOverCountdown() {
         System.out.println("SERVER STATE: Running -> Game Over");
         state = GameState.GameOver;
+        for (Player player : players) {
+            player.setNextDirection(Direction.Static);
+        }
         currentCountdown = gameOverCountDown;
     }
 
-    private void startNewWarmup() {
-        System.out.println("SERVER STATE: Game Over -> Warmup");
-        state = GameState.Warmup;
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
-        Iterator<GameObject> iterator = gameObjects.iterator();
-        while (iterator.hasNext()) {
-            GameObject gameObject = iterator.next();
-            if (gameObject instanceof Trail) {
-                ((Trail) gameObject).remove(mapRectangle);
-            } else {
-                iterator.remove();
-            }
-        }
+    private void resetGame() {
+        gameObjects.clear();
+
         if (currentMap.getStartingPositions() != null) {
             startingPositions.set(currentMap.getStartingPositions());
         } else {
             startingPositions.generate(currentMap.getGrid(), currentMap.getPlayers());
         }
+
         connectedClients.forEach((client, player) -> {
             player.reset();
             player.setSpeed(playerSpeed);
             player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
             gameObjects.add(player);
+            gameObjects.add(player.getTrail());
         });
+    }
+
+    private void startNewWarmup() {
+        System.out.println("SERVER STATE: Game Over -> Warmup");
+        resetGame();
+        state = GameState.Warmup;
     }
 
     private void startNewGame() {
         System.out.println("SERVER STATE: Countdown -> Running");
+        resetGame();
         state = GameState.Running;
-        if (currentMap.getStartingPositions() != null) {
-            startingPositions.set(currentMap.getStartingPositions());
-        } else {
-            startingPositions.generate(currentMap.getGrid(), connectedClients.size());
-        }
-
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
-        Iterator<GameObject> iterator = gameObjects.iterator();
-        while (iterator.hasNext()) {
-            GameObject gameObject = iterator.next();
-            if (gameObject instanceof Player) {
-                Player player = (Player) gameObject;
-                player.reset();
-                player.setSpeed(playerSpeed);
-                player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
-            } else if (gameObject instanceof Trail) {
-                ((Trail) gameObject).remove(mapRectangle);
-            } else {
-                iterator.remove();
-            }
-        }
     }
 
     private Player newPlayer(String name) {
@@ -278,12 +259,9 @@ public class GameServer implements ClientListener, MessageListener {
     }
 
     private void respawnDeadPlayers() {
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
         startingPositions.reset();
         for (Player player : connectedClients.values()) {
-
             if (player.isDead()) {
-                player.getTrail().remove(mapRectangle);
                 player.reset();
                 player.setSpeed(playerSpeed);
                 player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
@@ -301,9 +279,11 @@ public class GameServer implements ClientListener, MessageListener {
      */
     public void onData(Client client, Object value) {
         if (value instanceof Direction && connectedClients.containsKey(client)) {
-            Direction direction = (Direction) value;
-            Player player = connectedClients.get(client);
-            player.setNextDirection(direction);
+            if (state == GameState.Warmup || state == GameState.Running) {
+                Direction direction = (Direction) value;
+                Player player = connectedClients.get(client);
+                player.setNextDirection(direction);
+            }
         } else if (value instanceof Action) {
             Player player = connectedClients.get(client);
             if (value == Action.UsePickup) {
@@ -337,9 +317,7 @@ public class GameServer implements ClientListener, MessageListener {
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
         colors.giveBackColor(player.getColor());
-        if (state == GameState.Running) {
-            player.setDead(true);
-        } else {
+        if (state != GameState.Running) {
             gameObjects.remove(player.getTrail());
             gameObjects.remove(player);
         }
