@@ -10,8 +10,6 @@ import java.awt.*;
 import java.util.LinkedList;
 
 public class UserInterface extends JPanel {
-
-    private static final long serialVersionUID = 1L;
     /**
      * @eriklundow
      */

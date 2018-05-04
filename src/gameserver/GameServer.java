@@ -362,6 +362,7 @@ public class GameServer implements ClientListener, MessageListener {
      */
     public void onClose(Client client) {
         Player player = connectedClients.remove(client);
+        colors.giveBackColor(player.getColor());
         if (state == GameState.Running) {
             player.setDead(true);
         } else {

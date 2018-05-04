@@ -11,7 +11,6 @@ import gameobjects.GameObject;
  * @author Dante Håkansson
  * @author Johannes Bluml
  */
-
 public class SpecialGameObject implements Serializable {
     public static final long serialVersionUID = 1;
     private GameObject gameObject;

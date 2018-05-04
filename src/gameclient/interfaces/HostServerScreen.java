@@ -12,7 +12,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class HostServerScreen extends JPanel {
-    private Buttons startButton, stopButton, exitButton, joinGameButton;
+    private Buttons startButton, stopButton, backButton, joinGameButton;
     private JComboBox<String> profileComboBox;
     private JSlider playerSpeedSlider, tickRateSlider, ticksPerUpdateSlider;
     private JComboBox<String> mapsComboBox;
@@ -62,14 +62,14 @@ public class HostServerScreen extends JPanel {
         c.anchor = GridBagConstraints.EAST;
         topPanel.add(joinGameButton, c);
 
-        exitButton = new Buttons("EXIT");
+        backButton = new Buttons("BACK");
         c = new GridBagConstraints();
         c.gridx = 2;
         c.ipadx = 80;
         c.ipady = 40;
         c.insets = new Insets(0, 0, 0, 50);
         c.anchor = GridBagConstraints.EAST;
-        topPanel.add(exitButton, c);
+        topPanel.add(backButton, c);
 
 
         c = new GridBagConstraints();
@@ -283,7 +283,7 @@ public class HostServerScreen extends JPanel {
             joinGameButton.setVisible(false);
         });
 
-        exitButton.addActionListener(e -> {
+        backButton.addActionListener(e -> {
             userInterface.changeToPreviousScreen();
         });
 
