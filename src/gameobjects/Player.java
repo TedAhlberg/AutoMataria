@@ -90,9 +90,14 @@ public class Player extends GameObject {
             move(speed);
             return;
         }
-        while (inputQueue.peek() == direction || inputQueue.size() > 2) {
+
+        while (inputQueue.peek() == direction || (!invincible && inputQueue.peek() == Utility.getOppositeDirection(direction)) || inputQueue.size() > 2) {
+            // Remove unnessesary double keypress in same direction
+            // Remove keypress in the opposite direction (you would die instantly if you are not invincible)
+            // Remove all keypress but the last 2 to avoid excessive input delay
             inputQueue.remove();
         }
+
         if (inputQueue.isEmpty()) {
             move(speed);
             return;
@@ -186,11 +191,9 @@ public class Player extends GameObject {
 
     public void setNextDirection(Direction direction) {
         if (reversed) {
-            inputQueue.add(Utility.getOppositeDirection(direction));
-        } else {
-            if (!invincible && Utility.getOppositeDirection(direction) == getDirection()) return;
-            inputQueue.add(direction);
+            direction = Utility.getOppositeDirection(direction);
         }
+        inputQueue.add(direction);
         listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
     }
 
