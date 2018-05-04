@@ -202,8 +202,8 @@ public class Player extends GameObject {
 
     }
 
-    public void setPickUp(Pickup pickUp) {
-        this.pickupSlot = pickUp;
+    public void setPickUp(Pickup pickup) {
+        this.pickupSlot = pickup;
     }
 
     public boolean isDead() {
@@ -216,14 +216,23 @@ public class Player extends GameObject {
         } else {
             direction = Direction.Static;
             this.dead = dead;
-            System.out.println(name + " HAS DIED");
         }
     }
 
-    public void setReset() {
-        setReversed(false);
-        setDead(false);
-        setInvincible(false);
+    /**
+     * Resets player to a good state
+     * used when new games or warmups start
+     * so nothing strange remains when the player spawns
+     */
+    public void reset() {
+        inputQueue.clear();
+        direction = Direction.Static;
+        dead = invincible = reversed = ready = false;
+
+        if (pickupSlot != null) {
+            //pickupSlot.done();
+            setPickUp(null);
+        }
     }
 
     public boolean isReversed() {

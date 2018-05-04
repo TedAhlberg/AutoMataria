@@ -20,9 +20,9 @@ public class Utility {
      * Calculates the percentage of how many players are ready.
      *
      * @param players A Collection of players to iterate through and check if they are ready
-     * @return 0.0 - 1.0
+     * @return 0-100 Represents how many players are ready
      */
-    public static double getReadyPlayerPercentage(Collection<Player> players) {
+    public static int getReadyPlayerPercentage(Collection<Player> players) {
         if (players == null) {
             return 0;
         }
@@ -34,7 +34,7 @@ public class Utility {
         }
         double readyPlayerPercentage = ((double) readyPlayers / (double) players.size());
         readyPlayerPercentage = Math.round(readyPlayerPercentage * 100);
-        return readyPlayerPercentage;
+        return (int) Math.round(readyPlayerPercentage);
     }
 
     /**
