@@ -88,12 +88,12 @@ public abstract class GameObject implements Serializable {
         this.width = width;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean equals(Object obj) {

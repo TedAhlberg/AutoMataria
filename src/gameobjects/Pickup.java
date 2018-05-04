@@ -4,7 +4,6 @@ import common.PickupState;
 import gameclient.Game;
 import gameclient.Resources;
 
-import javax.imageio.IIOException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collection;

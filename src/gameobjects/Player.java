@@ -14,16 +14,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Player extends GameObject {
     private static final long serialVersionUID = 2;
-    private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
-    private final Collection<GameObject> gameObjects;
-    private final GameMap currentMap;
+
+    transient private final Collection<GameObject> gameObjects;
+    transient private final GameMap currentMap;
+    transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
+    transient private Direction previousDirection;
+    transient private MessageListener listener;
+
     private final String name;
     private final Trail trail;
     private Color color;
     private boolean dead, ready, invincible, reversed;
-    private Direction previousDirection;
     private Pickup pickUpSlot;
-    transient private MessageListener listener;
 
     public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;

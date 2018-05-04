@@ -2,11 +2,9 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Game;
-import gameclient.Resources;
 import gameobjects.*;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /**

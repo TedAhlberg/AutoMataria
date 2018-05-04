@@ -12,6 +12,7 @@ import java.util.Collection;
  */
 public class Wall extends GameObject {
     private static final long serialVersionUID = 2;
+
     private Color color, borderColor;
     private Shape shape;
 

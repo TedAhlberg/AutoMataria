@@ -15,9 +15,9 @@ import java.util.Collection;
 public class SlowEnemiesPickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
-    private int initialTimerTime;
-    transient private int timer;
     transient private Collection<GameObject> gameObjects;
+    transient private int timer;
+    private int initialTimerTime;
 
     public SlowEnemiesPickup() {
         this(0, 0, 60);

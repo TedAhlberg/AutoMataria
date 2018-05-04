@@ -1,11 +1,8 @@
 package gameobjects.pickups;
 
 import common.PickupState;
-import gameclient.Resources;
 import gameobjects.*;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /**
@@ -18,9 +15,9 @@ import java.util.Collection;
 public class ReversePickup extends InstantPickup {
     private static final long serialVersionUID = 1;
 
-    private int initialTimerTime;
-    transient private int timer;
     transient private Collection<GameObject> gameObjects;
+    transient private int timer;
+    private int initialTimerTime;
 
     public ReversePickup() {
         this(0, 0, 60);
