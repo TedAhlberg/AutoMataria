@@ -54,8 +54,8 @@ public class GameScreen extends JPanel implements GameServerListener {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        Buttons exitButton = new Buttons("EXIT");
-        exitButton.addActionListener(e -> {
+        Buttons backButton = new Buttons("BACK");
+        backButton.addActionListener(e -> {
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
@@ -65,7 +65,7 @@ public class GameScreen extends JPanel implements GameServerListener {
         c.ipadx = 20;
         c.ipady = 20;
         c.anchor = GridBagConstraints.NORTHEAST;
-        panel.add(exitButton, c);
+        panel.add(backButton, c);
 
         return panel;
     }

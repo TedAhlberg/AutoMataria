@@ -10,7 +10,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class ConnectScreen extends JPanel {
-    private Buttons joinGameButton, exitButton;
+    private Buttons joinGameButton, backButton;
     private JTextField portTextField, serverIPTextField;
     private UserInterface userInterface;
 
@@ -44,14 +44,14 @@ public class ConnectScreen extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         topPanel.add(headerLabel, c);
 
-        exitButton = new Buttons("EXIT");
+        backButton = new Buttons("BACK");
         c = new GridBagConstraints();
         c.gridx = 2;
         c.ipadx = 80;
         c.ipady = 40;
         c.insets = new Insets(0, 0, 0, 50);
         c.anchor = GridBagConstraints.EAST;
-        topPanel.add(exitButton, c);
+        topPanel.add(backButton, c);
 
 
         c = new GridBagConstraints();
@@ -108,7 +108,7 @@ public class ConnectScreen extends JPanel {
         joinGameButton.addActionListener(e -> {
             userInterface.startGame(serverIPTextField.getText(), Integer.parseInt(portTextField.getText()));
         });
-        exitButton.addActionListener(e -> {
+        backButton.addActionListener(e -> {
             userInterface.changeToPreviousScreen();
         });
     }

@@ -1,4 +1,4 @@
-package gameclient;
+package mainserver;
 
 import java.util.HashMap;
 

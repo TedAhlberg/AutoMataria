@@ -1,62 +1,39 @@
 package gameclient.interfaces;
 
 
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import gameclient.*;
+import gameclient.keyinput.KeyBindings;
+import gameclient.keyinput.KeyBindingsPanel;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import gameclient.Audio;
-import gameclient.Buttons;
-import gameclient.MusicManager;
-import gameclient.Resources;
-import gameclient.keyinput.KeyBindings;
-import gameclient.keyinput.KeyBindingsPanel;
+import java.io.*;
 
 /**
  * @author Erik Lundow
  */
-
 public class SettingsScreen extends JPanel implements ActionListener {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
-    private JPanel pnlScreen = new JPanel (new GridBagLayout());
+    private JPanel pnlScreen = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
-
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String user = "Player";
-    private String screen[] = {"WINDOWED","MAXIMIZED","FULLSCREEN"};
-    
-    
-    private JComboBox<String> screenSize =new JComboBox <String>(screen);
+    private String screen[] = {"WINDOWED", "MAXIMIZED", "FULLSCREEN"};
+
+    private JComboBox<String> screenSize = new JComboBox<String>(screen);
 
     private Buttons btnChange = new Buttons("CHANGE");
     private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
     private Buttons btnMusic = new Buttons("MUSIC");
-    private Buttons btnExit = new Buttons("EXIT");
+    private Buttons btnBack = new Buttons("BACK");
     private Buttons btnSFX = new Buttons("SFX");
     private Buttons btnScreen = new Buttons("CHANGE");
 
@@ -69,7 +46,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSettings = new JLabel("SETTINGS");
     private JLabel lblControls = new JLabel("CONTROLS");
     private JLabel lblSpacing = new JLabel(" ");
-    private JLabel lblScreenSettings = new JLabel("SCREEN MODE: "+screen);
+    private JLabel lblScreenSettings = new JLabel("SCREEN MODE: " + screen);
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
 
@@ -136,7 +113,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(pnlKeyBinder, c);
 
-        
+
         //Add lblScreenSettings
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -145,7 +122,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 1;
         lblScreenSettings.setOpaque(false);
         pnlScreen.add(screenSize, c);
-        
+
 //        //Add btnScreen
 //        c = new GridBagConstraints();
 //        c.gridy = 1;
@@ -153,7 +130,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
 //        c.ipadx = 10;
 //        c.ipady = 10;
 //        pnlScreen.add(btnScreen, c);
-        
+
         //Add pnlScreen
         // Add MusicPanel
         c = new GridBagConstraints();
@@ -162,8 +139,8 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 1;
         pnlScreen.setOpaque(false);
         pnlHead.add(pnlScreen, c);
-        
-        
+
+
         // Add musicButton
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -201,7 +178,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridx = 3;
         c.ipadx = 10;
         c.ipady = 10;
-        pnlMusic.add(btnExit, c);
+        pnlMusic.add(btnBack, c);
 
         // Add SFXLabel
         c = new GridBagConstraints();
@@ -251,14 +228,16 @@ public class SettingsScreen extends JPanel implements ActionListener {
             e.printStackTrace();
         }
     }
+
     public String getUsername() {
         return readSettings();
     }
-    public String readSettings(){
+
+    public String readSettings() {
         try {
             FileInputStream fis = new FileInputStream("resources/settings/username.ser");
-            ObjectInputStream ois = new ObjectInputStream(fis);         
-            user=(String) ois.readObject();
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            user = (String) ois.readObject();
             ois.close();
             return user;
         } catch (FileNotFoundException e) {
@@ -266,20 +245,20 @@ public class SettingsScreen extends JPanel implements ActionListener {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-      }
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return "Player";
-        
-          
-      }
+
+
+    }
 
     public void addListeners() {
         btnKeyBinder.addActionListener(this);
         btnChange.addActionListener(this);
         btnMusic.addActionListener(this);
         btnSFX.addActionListener(this);
-        btnExit.addActionListener(this);
+        btnBack.addActionListener(this);
         screenSize.addActionListener(this);
     }
 
@@ -294,29 +273,25 @@ public class SettingsScreen extends JPanel implements ActionListener {
             }
 
         }
-        if(e.getSource()==screenSize) {
-            if(screenSize.getSelectedItem().equals("MAXIMIZED")) {                
+        if (e.getSource() == screenSize) {
+            if (screenSize.getSelectedItem().equals("MAXIMIZED")) {
                 userInterface.setWindowMode(gameclient.Window.Mode.Maximized);
                 repaint();
-            }
-            else if(screenSize.getSelectedItem().equals("WINDOWED")) {
+            } else if (screenSize.getSelectedItem().equals("WINDOWED")) {
                 userInterface.setWindowMode(gameclient.Window.Mode.Windowed);
                 repaint();
-            }
-            else if(screenSize.getSelectedItem().equals("FULLSCREEN")) {
+            } else if (screenSize.getSelectedItem().equals("FULLSCREEN")) {
                 userInterface.setWindowMode(gameclient.Window.Mode.Fullscreen);
                 repaint();
             }
-            
+
         }
 
         if (e.getSource() == btnSFX) {
             if (lblSFX.getText() == "ON") {
                 Audio.sfxOff();
                 lblSFX.setText("OFF");
-            }
-
-            else {
+            } else {
                 lblSFX.setText("ON");
                 Audio.sfxOff();
 
@@ -326,12 +301,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
         if (e.getSource() == btnChange) {
             lblUserName.setText("USER: " + tfUserName.getText());
             writeToFile(tfUserName.getText());
-            user=tfUserName.getText();
+            user = tfUserName.getText();
             tfUserName.setText("");
 
         }
 
-        if (e.getSource() == btnExit) {
+        if (e.getSource() == btnBack) {
             userInterface.changeToPreviousScreen();
         }
 

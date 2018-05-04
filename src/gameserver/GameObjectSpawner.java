@@ -8,7 +8,6 @@ import gameobjects.Pickup;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -17,7 +16,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Dante Håkansson
  * @author Johannes Blüml
  */
-
 public class GameObjectSpawner {
     private HashMap<SpecialGameObject, GameObject> spawnedObjects = new HashMap<>();
     private ConcurrentLinkedQueue<GameObject> gameObjects;
@@ -43,7 +41,7 @@ public class GameObjectSpawner {
         for (SpecialGameObject gameMapObject : currentMap.getGameMapObjects()) {
             if (gameMapObject.getSpawnInterval() == 0) {
                 if (!spawnedObjects.containsKey(gameMapObject)) {
-                    GameObject gameObject = getNewGameObject(gameMapObject.getGameObject());
+                    GameObject gameObject = getCopyOfGameObject(gameMapObject.getGameObject());
                     if (gameObject == null) {
                         System.out.println("ERROR: Can't find GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
                         continue;
@@ -79,7 +77,7 @@ public class GameObjectSpawner {
                         gameMapObject.setTimer(gameMapObject.getSpawnInterval());
                     }
                 } else {
-                    GameObject gameObject = getNewGameObject(gameMapObject.getGameObject());
+                    GameObject gameObject = getCopyOfGameObject(gameMapObject.getGameObject());
                     if (gameObject == null) {
                         System.out.println("ERROR: Can't find copy constructor in GameObject " + gameMapObject.getGameObject().getClass().getSimpleName());
                         continue;
@@ -90,7 +88,6 @@ public class GameObjectSpawner {
                         gameObject.setX(point.x - quarterGridPixel);
                         gameObject.setY(point.y - quarterGridPixel);
                     }
-                    gameObject.setId(ID.getNext());
                     gameObjects.add(gameObject);
                     spawnedObjects.put(gameMapObject, gameObject);
                     gameMapObject.setTimer(gameMapObject.getVisibleTime());
@@ -103,7 +100,13 @@ public class GameObjectSpawner {
         }
     }
 
-    private GameObject getNewGameObject(GameObject gameObject) {
+    /**
+     * Creates a copy of the provided GameObject
+     *
+     * @param gameObject The GameObject you want to copy
+     * @return A copy of the provided GameObject
+     */
+    private GameObject getCopyOfGameObject(GameObject gameObject) {
         try {
             return gameObject.getClass().getConstructor(gameObject.getClass()).newInstance(gameObject);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException
