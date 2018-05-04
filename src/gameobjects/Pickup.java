@@ -2,7 +2,10 @@ package gameobjects;
 
 import common.PickupState;
 import gameclient.Game;
+import gameclient.Resources;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /*
@@ -12,7 +15,7 @@ public abstract class Pickup extends GameObject {
     private static final long serialVersionUID = 1;
 
     protected PickupState state = PickupState.NotTaken;
-    protected Player player;
+    transient protected Player player;
 
     public Pickup() {
         this(0, 0);
@@ -27,6 +30,17 @@ public abstract class Pickup extends GameObject {
     public void tick() {
     }
 
+    public void render(Graphics2D g) {
+        if (getState() != PickupState.NotTaken) return;
+
+        String pickupName = this.getClass().getSimpleName();
+        BufferedImage image = Resources.getImage(pickupName + ".png");
+        if (image == null) {
+            image = Resources.getImage("PlaceHolder.png");
+        }
+        g.drawImage(image, x, y, width, height, null);
+    }
+
     public PickupState getState() {
         return state;
     }
@@ -36,12 +50,11 @@ public abstract class Pickup extends GameObject {
     }
 
     public void take(Player player) {
-        if (state == state.Taken) {
-            return;
-        }
+        if (state != PickupState.NotTaken) return;
+
+        state = PickupState.Taken;
         player.setPickUp(this);
         this.player = player;
-        state = state.Taken;
     }
 
     public abstract void use(Player player, Collection<GameObject> gameObjects);

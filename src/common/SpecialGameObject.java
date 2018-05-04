@@ -19,7 +19,7 @@ public class SpecialGameObject implements Serializable {
     private int spawnLimit;
     private boolean spawnRandom;
     private int visibleTime;
-    private int timer;
+    transient private int timer;
 
     public SpecialGameObject(GameObject gameObject) {
         this(gameObject, 0, 0, false, 0);

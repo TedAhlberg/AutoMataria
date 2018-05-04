@@ -9,8 +9,9 @@ import java.awt.*;
  */
 public class Trail extends Wall {
     private static final long serialVersionUID = 2;
-    private Player player;
-    private Point previousPosition = new Point();
+
+    transient private Player player;
+    transient private Point previousPosition = new Point();
 
     Trail(Player player) {
         super(new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50),

@@ -2,12 +2,9 @@ package gameobjects.pickups;
 
 import common.PickupState;
 import gameclient.Game;
-import gameclient.Resources;
-import gameclient.SoundFx;
 import gameobjects.*;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /**
@@ -26,10 +23,13 @@ public class EraserPickup extends InstantPickup {
         super(x, y);
     }
 
+    public EraserPickup(EraserPickup object) {
+        this(object.getX(), object.getY());
+    }
+
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() == PickupState.Taken) {
-            return;
-        }
+        if (getState() != PickupState.NotTaken) return;
+
         Dimension gridSize = player.getCurrentMap().getGrid();
         gridSize.setSize(gridSize.width * Game.GRID_PIXEL_SIZE, gridSize.height * Game.GRID_PIXEL_SIZE);
         for (GameObject gameObject : gameObjects) {
@@ -37,16 +37,8 @@ public class EraserPickup extends InstantPickup {
                 ((Trail) gameObject).remove(new Rectangle(gridSize));
             }
         }
-        setState(PickupState.Taken);
+
+        setState(PickupState.Used);
         gameObjects.remove(this);
-    }
-
-    public void render(Graphics2D g) {
-        if (getState() != PickupState.NotTaken) {
-            return;
-        }
-        BufferedImage image = Resources.getImage("EraserPickup.png");
-        g.drawImage(image, x, y, width, height, null);
-
     }
 }

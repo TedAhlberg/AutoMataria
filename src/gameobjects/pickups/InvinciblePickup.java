@@ -1,12 +1,8 @@
 package gameobjects.pickups;
 
 import common.PickupState;
-import gameclient.Resources;
-import gameclient.SoundFx;
 import gameobjects.*;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /**
@@ -18,51 +14,48 @@ import java.util.Collection;
  */
 
 public class InvinciblePickup extends InstantPickup {
-
     private static final long serialVersionUID = 1;
-    private int timer;
-    private Player player;
+
+    transient private Collection<GameObject> gameObjects;
+    transient private int timer;
+    private int initialTimerTime;
 
     public InvinciblePickup() {
         this(0, 0, 60);
-
     }
 
-    public InvinciblePickup(int x, int y, int timer) {
+    public InvinciblePickup(int x, int y, int initialTimerTime) {
         super(x, y);
-        this.timer = timer;
+        this.initialTimerTime = initialTimerTime;
+        this.timer = initialTimerTime;
+    }
+
+    public InvinciblePickup(InvinciblePickup object) {
+        this(object.getX(), object.getY(), object.getInitialTimerTime());
     }
 
     public void tick() {
-        if (getState() == PickupState.NotTaken) {
-            return;
-        }
-        timer--;
+        if (getState() != PickupState.InUse) return;
 
+        timer--;
         if (timer == 0) {
             player.setInvincible(false);
             setState(PickupState.Used);
+            gameObjects.remove(this);
         }
-        
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() == PickupState.Taken) {
-            return;
-        }
+        if (getState() != PickupState.NotTaken) return;
+
         this.player = player;
+        this.gameObjects = gameObjects;
 
         player.setInvincible(true);
-        setState(PickupState.Taken);
+        setState(PickupState.InUse);
     }
 
-    public void render(Graphics2D g) {
-        if (getState() != PickupState.NotTaken) {
-            return;
-        }
-        BufferedImage image = Resources.getImage("InvinciblePickup.png");
-        g.drawImage(image, x, y, width, height, null);
-
+    public int getInitialTimerTime() {
+        return initialTimerTime;
     }
-
 }

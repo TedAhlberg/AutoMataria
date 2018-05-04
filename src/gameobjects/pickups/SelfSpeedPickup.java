@@ -1,12 +1,8 @@
 package gameobjects.pickups;
 
 import common.PickupState;
-import gameclient.Resources;
-import gameclient.SoundFx;
 import gameobjects.*;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 /**
@@ -18,46 +14,38 @@ import java.util.Collection;
 public class SelfSpeedPickup extends Pickup {
     private static final long serialVersionUID = 1;
 
-    private int timer = 60;
-    private Player player;
-    private Collection<GameObject> gameObjects;
+    transient private Collection<GameObject> gameObjects;
+    transient private int timer;
+    private int initialTimerTime;
 
     public SelfSpeedPickup() {
         this(0, 0, 60);
     }
 
-    public SelfSpeedPickup(int x, int y, int timer) {
+    public SelfSpeedPickup(int x, int y, int initialTimerTime) {
         super(x, y);
-        this.timer = timer;
+        this.initialTimerTime = initialTimerTime;
+        this.timer = initialTimerTime;
     }
 
     public SelfSpeedPickup(SelfSpeedPickup object) {
-        this(object.getX(), object.getY(), object.getTimer());
+        this(object.getX(), object.getY(), object.getInitialTimerTime());
     }
 
     public void tick() {
-        if (getState() == PickupState.NotTaken || getState() != PickupState.Used) {
-            return;
-        }
+        if (getState() != PickupState.InUse) return;
+
         timer--;
         if (timer == 0) {
             player.setSpeed(player.getSpeed() / 2);
             player.setPickUp(null);
+            setState(PickupState.Used);
             gameObjects.remove(this);
         }
     }
 
-    public void render(Graphics2D g) {
-        if (getState() != PickupState.NotTaken) {
-            return;
-        }
-        BufferedImage image = Resources.getImage("SelfSpeedUp2.png");
-        g.drawImage(image, x, y, width, height, null);
-
-    }
-
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() == PickupState.Used) {
+        if (getState() != PickupState.Taken) {
             return;
         }
         this.player = player;
@@ -65,10 +53,10 @@ public class SelfSpeedPickup extends Pickup {
         int speed = player.getSpeed();
         player.setSpeed(speed * 2);
 
-        setState(PickupState.Used);
+        setState(PickupState.InUse);
     }
 
-    public int getTimer() {
-        return timer;
+    public int getInitialTimerTime() {
+        return initialTimerTime;
     }
 }
