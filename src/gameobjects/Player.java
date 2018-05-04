@@ -25,7 +25,7 @@ public class Player extends GameObject {
     private final Trail trail;
     private Color color;
     private boolean dead, ready, invincible, reversed;
-    private Pickup pickUpSlot;
+    private Pickup pickupSlot;
 
     public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -170,9 +170,9 @@ public class Player extends GameObject {
     }
 
     public void usePickUp() {
-        if (pickUpSlot != null) {
-            listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickUpSlot));
-            pickUpSlot.use(this, gameObjects);
+        if (pickupSlot != null) {
+            listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickupSlot));
+            pickupSlot.use(this, gameObjects);
         }
     }
 
@@ -203,7 +203,7 @@ public class Player extends GameObject {
     }
 
     public void setPickUp(Pickup pickUp) {
-        this.pickUpSlot = pickUp;
+        this.pickupSlot = pickUp;
     }
 
     public boolean isDead() {
@@ -264,10 +264,14 @@ public class Player extends GameObject {
         return trail;
     }
 
+    public Pickup getPickupSlot() {
+        return pickupSlot;
+    }
+
     public String toString() {
         return "Player{" + "id=" + id + ", name='" + name + '\'' + ", color=" + color + ", x=" + x + ", y=" + y
                 + ", width=" + width + ", height=" + height + ", speed=" + speed + ", previousDirection="
                 + previousDirection + ", direction=" + direction + ", dead=" + dead + ", ready=" + ready
-                + ", invincible=" + invincible + ", pickUpSlot=" + pickUpSlot + ", trail=" + trail + '}';
+                + ", invincible=" + invincible + ", pickupSlot=" + pickupSlot + ", trail=" + trail + '}';
     }
 }

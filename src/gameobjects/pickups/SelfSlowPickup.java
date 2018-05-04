@@ -29,7 +29,6 @@ public class SelfSlowPickup extends Pickup {
         super(x, y);
         this.initialTimerTime = initialTimerTime;
         this.timer = initialTimerTime;
-        System.out.println("TIMER: " + timer);
     }
 
     public void tick() {
