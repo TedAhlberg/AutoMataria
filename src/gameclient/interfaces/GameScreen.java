@@ -4,6 +4,8 @@ import common.Action;
 import common.*;
 import common.messages.*;
 import gameclient.*;
+import gameclient.sound.MusicManager;
+import gameclient.sound.SoundFx;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
@@ -54,7 +56,7 @@ public class GameScreen extends JPanel implements GameServerListener {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        Buttons backButton = new Buttons("BACK");
+        AMButton backButton = new AMButton("BACK");
         backButton.addActionListener(e -> {
             MusicManager.changeTrack();
             client.disconnect();

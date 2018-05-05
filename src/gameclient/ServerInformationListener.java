@@ -1,5 +1,7 @@
 package gameclient;
 
+import common.ServerInformation;
+
 import java.util.Collection;
 
 /**

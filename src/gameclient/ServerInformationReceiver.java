@@ -1,5 +1,7 @@
 package gameclient;
 
+import common.ServerInformation;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

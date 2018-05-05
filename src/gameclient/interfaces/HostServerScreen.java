@@ -2,7 +2,6 @@ package gameclient.interfaces;
 
 import common.Maps;
 import gameclient.*;
-import gameclient.Window;
 import gameserver.GameServer;
 
 import javax.swing.*;
@@ -12,7 +11,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class HostServerScreen extends JPanel {
-    private Buttons startButton, stopButton, backButton, joinGameButton;
+    private AMButton startButton, stopButton, backButton, joinGameButton;
     private JComboBox<String> profileComboBox;
     private JSlider playerSpeedSlider, tickRateSlider, ticksPerUpdateSlider;
     private JComboBox<String> mapsComboBox;
@@ -52,21 +51,21 @@ public class HostServerScreen extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         topPanel.add(headerLabel, c);
 
-        joinGameButton = new Buttons("JOIN GAME");
+        joinGameButton = new AMButton("JOIN GAME");
         joinGameButton.setVisible(false);
         c = new GridBagConstraints();
         c.gridx = 1;
-        c.ipadx = 80;
-        c.ipady = 40;
+        c.ipadx = 10;
+        c.ipady = 10;
         c.insets = new Insets(0, 0, 0, 10);
         c.anchor = GridBagConstraints.EAST;
         topPanel.add(joinGameButton, c);
 
-        backButton = new Buttons("BACK");
+        backButton = new AMButton("BACK");
         c = new GridBagConstraints();
         c.gridx = 2;
-        c.ipadx = 80;
-        c.ipady = 40;
+        c.ipadx = 10;
+        c.ipady = 10;
         c.insets = new Insets(0, 0, 0, 50);
         c.anchor = GridBagConstraints.EAST;
         topPanel.add(backButton, c);
@@ -154,15 +153,13 @@ public class HostServerScreen extends JPanel {
         panel.add(portTextField, getFieldConstraints(1, 4));
 
 
-        startButton = new Buttons("START SERVER");
+        startButton = new AMButton("START SERVER");
         c = getFieldConstraints(0, 5);
-        c.ipady = 20;
         panel.add(startButton, c);
 
-        stopButton = new Buttons("STOP SERVER");
+        stopButton = new AMButton("STOP SERVER");
         stopButton.setEnabled(false);
         c = getFieldConstraints(1, 5);
-        c.ipady = 20;
         panel.add(stopButton, c);
 
         return panel;

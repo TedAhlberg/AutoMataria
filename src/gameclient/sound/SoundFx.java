@@ -1,4 +1,4 @@
-package gameclient;
+package gameclient.sound;
 
 import java.awt.event.ActionEvent;
 

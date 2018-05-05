@@ -4,6 +4,8 @@ package gameclient.interfaces;
 import gameclient.*;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
+import gameclient.sound.Audio;
+import gameclient.sound.MusicManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,12 +32,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     private JComboBox<String> screenSize = new JComboBox<String>(screen);
 
-    private Buttons btnChange = new Buttons("CHANGE");
-    private Buttons btnKeyBinder = new Buttons(fileKeyBindPressed, fileKeyBindUnpressed);
-    private Buttons btnMusic = new Buttons("MUSIC");
-    private Buttons btnBack = new Buttons("BACK");
-    private Buttons btnSFX = new Buttons("SFX");
-    private Buttons btnScreen = new Buttons("CHANGE");
+    private AMButton btnChange = new AMButton("CHANGE");
+    private AMButton btnKeyBinder = new AMButton(fileKeyBindPressed, fileKeyBindUnpressed);
+    private AMButton btnMusic = new AMButton("MUSIC");
+    private AMButton btnBack = new AMButton("BACK");
+    private AMButton btnSFX = new AMButton("SFX");
+    private AMButton btnScreen = new AMButton("CHANGE");
 
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
@@ -275,13 +277,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
         if (e.getSource() == screenSize) {
             if (screenSize.getSelectedItem().equals("MAXIMIZED")) {
-                userInterface.setWindowMode(gameclient.Window.Mode.Maximized);
+                userInterface.setWindowMode(Window.Mode.Maximized);
                 repaint();
             } else if (screenSize.getSelectedItem().equals("WINDOWED")) {
-                userInterface.setWindowMode(gameclient.Window.Mode.Windowed);
+                userInterface.setWindowMode(Window.Mode.Windowed);
                 repaint();
             } else if (screenSize.getSelectedItem().equals("FULLSCREEN")) {
-                userInterface.setWindowMode(gameclient.Window.Mode.Fullscreen);
+                userInterface.setWindowMode(Window.Mode.Fullscreen);
                 repaint();
             }
 

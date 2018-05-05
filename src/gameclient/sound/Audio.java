@@ -1,4 +1,6 @@
-package gameclient;
+package gameclient.sound;
+
+import gameclient.Resources;
 
 import java.io.IOException;
 import java.net.URL;

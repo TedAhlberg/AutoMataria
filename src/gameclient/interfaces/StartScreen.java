@@ -1,6 +1,7 @@
 package gameclient.interfaces;
 
 import gameclient.*;
+import gameclient.sound.MusicManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,13 +74,13 @@ public class StartScreen extends JPanel {
     }
 
     private void addButton(String buttonText, ActionListener actionListener) {
-        Buttons button = new Buttons(buttonText);
+        AMButton button = new AMButton(buttonText);
         button.addActionListener(actionListener);
         button.setFont(buttonFont);
 
         GridBagConstraints c = new GridBagConstraints();
-        c.ipadx = 30;
-        c.ipady = 30;
+        c.ipadx = 10;
+        c.ipady = 10;
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
 

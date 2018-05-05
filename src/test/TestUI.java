@@ -1,8 +1,6 @@
 package test;
 
 import common.Maps;
-import gameclient.Game;
-import gameclient.Window;
 import gameclient.interfaces.UserInterface;
 import gameserver.GameServer;
 

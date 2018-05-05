@@ -1,4 +1,4 @@
-package gameclient;
+package common;
 
 /**
  * Represents information from a GameServer

@@ -1,4 +1,6 @@
-package gameclient;
+package gameclient.interfaces;
+
+import gameclient.Resources;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
@@ -56,7 +58,7 @@ public class Window extends JFrame {
                 UIManager.put(key, defaultFontResource);
             }
             /*
-            if (key.toString().startsWith("Slider")) {
+            if (key.toString().startsWith("ScrollPane")) {
                 System.out.println(key + " " + value);
             }
             */
@@ -74,6 +76,9 @@ public class Window extends JFrame {
             e.printStackTrace();
         }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
+
+        UIManager.put("ScrollPane.background", backgroundColor);
+        UIManager.put("ScrollPane.border", "");
 
         UIManager.put("Panel.background", backgroundColor);
         UIManager.put("Label.foreground", new ColorUIResource(255, 255, 255));
@@ -124,26 +129,26 @@ public class Window extends JFrame {
             setVisible(true);
 
         } else if (mode == Mode.Windowed && windowSize != null) {
-                
-                System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
-                
-                setUndecorated(false);
-                setResizable(true);
-                setMinimumSize(windowSize);
-                setPreferredSize(windowSize);
-                setLocationRelativeTo(null);
-                setVisible(true);
-                
-            } else if (mode == Mode.Windowed) {
-                System.out.println("WINDOW: Changing to windowed mode.");
-                
-                setUndecorated(false);
-                setResizable(true);
-                setExtendedState(JFrame.MAXIMIZED_BOTH);
-                setVisible(true);
-            }
+
+            System.out.println("WINDOW: Changing to windowed mode. Dimensions: " + windowSize.getWidth() + "x" + windowSize.getHeight());
+
+            setUndecorated(false);
+            setResizable(true);
+            setMinimumSize(windowSize);
+            setPreferredSize(windowSize);
+            setLocationRelativeTo(null);
+            setVisible(true);
+
+        } else if (mode == Mode.Windowed) {
+            System.out.println("WINDOW: Changing to windowed mode.");
+
+            setUndecorated(false);
+            setResizable(true);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setVisible(true);
         }
-         
+    }
+
     /**
      * Changes the size of the window
      * Also changes the Mode to Windowed if it's Fullscreen or Maximized

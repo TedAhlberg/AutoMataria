@@ -1,7 +1,6 @@
 package gameclient.interfaces;
 
 import gameclient.*;
-import gameclient.Window;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +9,7 @@ import java.awt.*;
  * @author Johannes Blüml
  */
 public class ConnectScreen extends JPanel {
-    private Buttons joinGameButton, backButton;
+    private AMButton joinGameButton, backButton;
     private JTextField portTextField, serverIPTextField;
     private UserInterface userInterface;
 
@@ -44,11 +43,11 @@ public class ConnectScreen extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         topPanel.add(headerLabel, c);
 
-        backButton = new Buttons("BACK");
+        backButton = new AMButton("BACK");
         c = new GridBagConstraints();
         c.gridx = 2;
-        c.ipadx = 80;
-        c.ipady = 40;
+        c.ipadx = 10;
+        c.ipady = 10;
         c.insets = new Insets(0, 0, 0, 50);
         c.anchor = GridBagConstraints.EAST;
         topPanel.add(backButton, c);
@@ -73,9 +72,9 @@ public class ConnectScreen extends JPanel {
         portTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(portTextField, getFieldConstraints(3, 0));
 
-        joinGameButton = new Buttons("JOIN SERVER");
+        joinGameButton = new AMButton("JOIN SERVER");
         c = getFieldConstraints(4, 0);
-        c.ipady = 30;
+        c.ipady = 10;
         panel.add(joinGameButton, c);
 
         c = new GridBagConstraints();
