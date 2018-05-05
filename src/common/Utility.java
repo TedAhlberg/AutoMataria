@@ -48,7 +48,6 @@ public class Utility {
         Rectangle rectangle = getGridRectangle();
         while (true) {
             rectangle.setLocation(convertFromGrid(getRandomPosition(grid)));
-            System.out.println(rectangle);
             if (intersectsNoGameObject(rectangle, gameObjects)) {
                 return rectangle.getLocation();
             }

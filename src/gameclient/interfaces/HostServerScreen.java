@@ -243,6 +243,12 @@ public class HostServerScreen extends JPanel {
             }
         });
 
+        mapsComboBox.addActionListener(e -> {
+            if (server == null) return;
+            String map = (String) mapsComboBox.getSelectedItem();
+            server.changeMap(Maps.getInstance().get(map));
+        });
+
         startButton.addActionListener(e -> {
             if (server != null) return;
             try {

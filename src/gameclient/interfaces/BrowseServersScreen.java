@@ -118,8 +118,6 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         for (ServerInformation info : serverList) {
             column = 0;
 
-            System.out.println(info);
-
             JLabel[] labels = {
                     new JLabel(info.getServerName()),
                     new JLabel(info.getMapName()),
@@ -144,7 +142,6 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
     }
 
     private GridBagConstraints getTableConstraints(int gridx, int gridy) {
-        System.out.println("GRIDX="+gridx+" GRIDY="+gridy);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = gridx;
         c.gridy = gridy;

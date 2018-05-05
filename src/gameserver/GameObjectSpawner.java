@@ -7,6 +7,7 @@ import gameobjects.Pickup;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,15 +18,29 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Johannes Blüml
  */
 public class GameObjectSpawner {
-    private HashMap<SpecialGameObject, GameObject> spawnedObjects = new HashMap<>();
-    private ConcurrentLinkedQueue<GameObject> gameObjects;
+    private final HashMap<SpecialGameObject, GameObject> spawnedObjects = new HashMap<>();
+    private final Collection<GameObject> gameObjects;
+    private final int tickRate;
     private GameMap currentMap;
-    private int tickRate;
 
-    public GameObjectSpawner(ConcurrentLinkedQueue<GameObject> gameObjects, GameMap currentMap, int tickRate) {
+    public GameObjectSpawner(Collection<GameObject> gameObjects, GameMap map, int tickRate) {
         this.gameObjects = gameObjects;
-        this.currentMap = currentMap;
+        this.currentMap = map;
         this.tickRate = tickRate;
+    }
+
+    /**
+     * Clears all spawned GameObjects and changes the map
+     * so the next tick it will spawn the GameObject from the new map
+     *
+     * @param map The GameMap to change to
+     */
+    public void changeMap(GameMap map) {
+        currentMap = map;
+        spawnedObjects.forEach((specialObject, gameObject) -> {
+            gameObjects.remove(gameObject);
+        });
+        spawnedObjects.clear();
     }
 
     /**
@@ -54,8 +69,6 @@ public class GameObjectSpawner {
                     }
                     gameObjects.add(gameObject);
                     spawnedObjects.put(specialObject, gameObject);
-                    System.out.println("Placing on map (Instant): " + gameObject + " Position: "
-                            + new Point(gameObject.getX(), gameObject.getY()));
                 }
                 continue;
             }
@@ -65,8 +78,6 @@ public class GameObjectSpawner {
                     if (gameObject instanceof Pickup) {
                         PickupState state = ((Pickup) gameObject).getState();
                         if (state == PickupState.NotTaken) {
-                            System.out.println("Removing from map (Timed out): " + gameObject + " Position: "
-                                    + new Point(gameObject.getX(), gameObject.getY()));
                             gameObjects.remove(gameObject);
                             spawnedObjects.remove(specialObject);
                             specialObject.setTimer(specialObject.getSpawnInterval());
@@ -92,8 +103,6 @@ public class GameObjectSpawner {
                     gameObjects.add(gameObject);
                     spawnedObjects.put(specialObject, gameObject);
                     specialObject.setTimer(specialObject.getVisibleTime());
-                    System.out.println("Placing on map (Spawn time): " + gameObject + " Position: "
-                            + new Point(gameObject.getX(), gameObject.getY()));
                 }
             } else {
                 specialObject.setTimer(specialObject.getTimer() - tickRate);

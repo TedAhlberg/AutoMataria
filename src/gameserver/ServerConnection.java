@@ -9,7 +9,7 @@ import java.util.LinkedList;
  * @author Johannes Blüml
  */
 public class ServerConnection implements Runnable {
-    private final LinkedList<ClientListener> listeners = new LinkedList<>();
+    private final LinkedList<ConnectionListener> listeners = new LinkedList<>();
     private LinkedList<Client> clients = new LinkedList<>();
     private int port;
     private ServerSocket serverSocket;
@@ -23,18 +23,18 @@ public class ServerConnection implements Runnable {
         running = true;
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             this.serverSocket = serverSocket;
-            System.out.println("Server started on port " + port + ".");
+            listeners.forEach(client -> client.onServerConnectionStarted());
             while (running) {
                 Socket socket = serverSocket.accept();
                 clients.add(new Client(socket, listeners));
             }
         } catch (IOException e) {
         } finally {
-            System.out.println("Server stopped.");
+            listeners.forEach(client -> client.onServerConnectionStopped());
         }
     }
 
-    public void addListener(ClientListener l) {
+    public void addListener(ConnectionListener l) {
         listeners.add(l);
     }
 
@@ -42,6 +42,7 @@ public class ServerConnection implements Runnable {
         if (serverSocket == null) return;
         running = false;
         clients.forEach(client -> client.disconnect());
+        clients.clear();
         try {
             serverSocket.close();
         } catch (IOException e) {

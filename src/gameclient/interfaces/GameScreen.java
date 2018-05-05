@@ -136,16 +136,36 @@ public class GameScreen extends JPanel implements GameServerListener {
             handlePlayerMessage((PlayerMessage) data);
         } else if (data instanceof PlayerPickupMessage) {
             handlePlayerPickupMessage((PlayerPickupMessage) data);
+        } else if (data instanceof NewGameMessage) {
+            handleNewGameMessage((NewGameMessage) data);
+        } else if (data instanceof GameOverMessage) {
+            handleGameOverMessage((GameOverMessage) data);
+        } else if (data instanceof GameMap) {
+            handleMapChange((GameMap) data);
         }
+    }
+
+    private void handleNewGameMessage(NewGameMessage message) {
+        System.out.println("NEW GAME STARTS IN " + message.getTimeUntileGameBegins() + "ms");
+    }
+
+    private void handleMapChange(GameMap gameMap) {
+        System.out.println("MAP CHANGED TO " + gameMap.getName());
+        GameMap map = gameMap;
+        gamePanel.setBackground(map.getBackground());
+        gamePanel.setGrid(map.getGrid());
+    }
+
+    private void handleGameOverMessage(GameOverMessage message) {
+        System.out.println("GAME OVER MESSAGE");
+        System.out.println(message.getScores());
     }
 
     private void handleConnectionMessage(ConnectionMessage message) {
         if (message.success) {
             gamePanel.setServerTickRate(message.tickRate);
             player = message.player;
-            GameMap map = message.currentMap;
-            gamePanel.setBackground(map.getBackground());
-            gamePanel.setGrid(map.getGrid());
+            handleMapChange(message.currentMap);
             gamePanel.start(framesPerSecond);
             MusicManager.changeTrack();
             MusicManager.getInstance().gameTrack1();
@@ -175,12 +195,18 @@ public class GameScreen extends JPanel implements GameServerListener {
     }
 
     private void handlePlayerPickupMessage(PlayerPickupMessage message) {
-        try {
+        if (message.getEvent() == PlayerPickupMessage.Event.PickupUsed) {
+            try {
+                String pickupClassName = message.getPickup().getClass().getSimpleName();
+                System.out.println(message.getPlayer().getName() + " used " + pickupClassName + " it will be active for " + message.getPickup().getActiveTime() + "ms");
+                Method method = SoundFx.class.getMethod(pickupClassName);
+                method.invoke(SoundFx.getInstance());
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } else if (message.getEvent() == PlayerPickupMessage.Event.PickupTaken) {
             String pickupClassName = message.getPickup().getClass().getSimpleName();
-            Method method = SoundFx.class.getMethod(pickupClassName);
-            method.invoke(SoundFx.getInstance());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            System.out.println(message.getPlayer().getName() + " picked up " + pickupClassName);
         }
     }
 

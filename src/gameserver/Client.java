@@ -10,9 +10,9 @@ import java.util.LinkedList;
 public class Client {
     private ObjectOutputStream outputStream;
     private boolean connected;
-    private LinkedList<ClientListener> listeners;
+    private LinkedList<ConnectionListener> listeners;
 
-    public Client(Socket socket, LinkedList<ClientListener> listeners) {
+    public Client(Socket socket, LinkedList<ConnectionListener> listeners) {
         this.listeners = listeners;
         Thread thread = new Thread(() -> listenForDataAndUpdateListeners(socket));
         thread.start();
@@ -26,7 +26,7 @@ public class Client {
             while (connected) {
                 try {
                     Object nextObject = inputStream.readObject();
-                    listeners.forEach(listener -> listener.onData(this, nextObject));
+                    listeners.forEach(listener -> listener.onDataFromClient(this, nextObject));
                 } catch (IOException e) {
                     e.printStackTrace();
                     connected = false;
@@ -34,7 +34,7 @@ public class Client {
                     e.printStackTrace();
                 }
             }
-            listeners.forEach(listener -> listener.onClose(this));
+            listeners.forEach(listener -> listener.onClientDisconnect(this));
         } catch (IOException e) {
             e.printStackTrace();
         }

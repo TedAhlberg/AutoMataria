@@ -2,10 +2,9 @@ package gameserver;
 
 import common.*;
 import common.messages.*;
-import gameobjects.*;
+import gameobjects.GameObject;
+import gameobjects.Player;
 
-import java.awt.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -16,38 +15,35 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author Johannes Blüml
  */
-public class GameServer implements ClientListener, MessageListener {
-    private final GameColors colors = new GameColors();
-    private final StartingPositions startingPositions;
-    private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
+public class GameServer implements ConnectionListener, MessageListener {
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
-    private final int tickRate;
-    private final int amountOfTickBetweenUpdates;
-    private final int gameStartCountdown;
-    private final int gameOverCountDown;
-    private final String serverName;
-    private final int serverPort;
-    private final int serverPlayerSpeed;
-    private int playerSpeed;
+    private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
+    private final LinkedList<Player> players = new LinkedList<>();
+    private final StartingPositions startingPositions = new StartingPositions();
+    private final GameColors colors = new GameColors();
+
+    private final int tickRate, amountOfTickBetweenUpdates, serverPort, serverPlayerSpeed;
+    private int gameStartCountdown, gameOverCountDown, playerSpeed, currentCountdown;
+    private String serverName;
+
+    private boolean running;
     private GameState state;
     private GameMap currentMap;
-    private ServerConnection serverConnection;
-    private boolean running;
-    private int currentCountdown;
-    private LinkedList<Player> players = new LinkedList<>();
-    private GameObjectSpawner gameObjectSpawner;
-    private ServerInformationSender serverInformationSender;
+    private final ServerConnection serverConnection;
+    private final GameObjectSpawner gameObjectSpawner;
+    private final ServerInformationSender serverInformationSender;
+    private final GameScore gameScore;
 
     /**
      * A Controller that connects together the serverConnection part of Auto-Mataria.
      * The game loop, Clients that connect. Everything that happens in the actual game.
      *
-     * @param serverName Name of the server
-     * @param serverPort Port that the server will listen to connections on
-     * @param tickRate How often to run the tick method on all game objects (In milliseconds)
+     * @param serverName                 Name of the server
+     * @param serverPort                 Port that the server will listen to connections on
+     * @param tickRate                   How often to run the tick method on all game objects (In milliseconds)
      * @param amountOfTickBetweenUpdates How often to update the game to all clients
-     * @param playerSpeed How far the players travels each tick
-     * @param map The GameMap that the server will start with
+     * @param playerSpeed                How far the players travels each tick
+     * @param map                        The GameMap that the server will start with
      */
     public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
         this.serverName = serverName;
@@ -64,8 +60,10 @@ public class GameServer implements ClientListener, MessageListener {
         serverConnection = new ServerConnection(serverPort);
         serverConnection.addListener(this);
         serverInformationSender = new ServerInformationSender(this);
-        startingPositions = new StartingPositions();
+        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
+        gameScore = new GameScore();
         changeMap(map);
+        startNewWarmup();
     }
 
     public void start() {
@@ -89,11 +87,18 @@ public class GameServer implements ClientListener, MessageListener {
      * @param map The GameMap to change to
      */
     public void changeMap(GameMap map) {
-        if (map == null) return;
+        if (map == null || map.equals(currentMap) || state != GameState.Warmup) return;
+
         currentMap = map;
         playerSpeed = (int) Math.round(serverPlayerSpeed * map.getPlayerSpeedMultiplier());
-        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
-        //TODO: Send new map to all clients so they can change the GamePanel gridSize
+
+        gameObjectSpawner.changeMap(map);
+
+        connectedClients.forEach((client, player) -> {
+            client.send(map);
+            player.setCurrentMap(map);
+        });
+
         startNewWarmup();
     }
 
@@ -146,7 +151,7 @@ public class GameServer implements ClientListener, MessageListener {
     /**
      * Called from game loop on a regular interval. Runs all tick methods in all game objects.
      * Which for example moves players forward.
-     *
+     * <p>
      * Also handles Game State changes.
      */
     private void tick() {
@@ -156,12 +161,7 @@ public class GameServer implements ClientListener, MessageListener {
 
         switch (state) {
             case Running:
-                int alivePlayers = 0;
-                for (Player player : players) {
-                    if (!player.isDead()) {
-                        alivePlayers += 1;
-                    }
-                }
+                int alivePlayers = gameScore.calculateScores();
                 if (alivePlayers <= 1) {
                     startGameOverCountdown();
                 }
@@ -201,6 +201,7 @@ public class GameServer implements ClientListener, MessageListener {
         players.clear();
         players.addAll(connectedClients.values());
         currentCountdown = gameStartCountdown;
+        newMessage(new NewGameMessage(gameStartCountdown));
     }
 
     private void startGameOverCountdown() {
@@ -210,6 +211,7 @@ public class GameServer implements ClientListener, MessageListener {
             player.setNextDirection(Direction.Static);
         }
         currentCountdown = gameOverCountDown;
+        newMessage(new GameOverMessage(gameScore.getScores(), gameOverCountDown));
     }
 
     private void resetGame() {
@@ -239,6 +241,7 @@ public class GameServer implements ClientListener, MessageListener {
     private void startNewGame() {
         System.out.println("SERVER STATE: Countdown -> Running");
         resetGame();
+        gameScore.start(players);
         state = GameState.Running;
     }
 
@@ -269,6 +272,15 @@ public class GameServer implements ClientListener, MessageListener {
         }
     }
 
+    public void onServerConnectionStarted() {
+        System.out.println("SERVER STARTED SUCCESSFULLY");
+    }
+
+    public void onServerConnectionStopped() {
+        System.out.println("SERVER STOPPED");
+        stop();
+    }
+
     /**
      * Handles everything that is received from connected clients:
      * Login - Creates a new Player
@@ -277,7 +289,7 @@ public class GameServer implements ClientListener, MessageListener {
      * @param client
      * @param value
      */
-    public void onData(Client client, Object value) {
+    public void onDataFromClient(Client client, Object value) {
         if (value instanceof Direction && connectedClients.containsKey(client)) {
             if (state == GameState.Warmup || state == GameState.Running) {
                 Direction direction = (Direction) value;
@@ -291,8 +303,11 @@ public class GameServer implements ClientListener, MessageListener {
             } else if (state == GameState.Warmup) {
                 if (value == Action.TogglePlayerColor) {
                     player.setColor(colors.exchangeColor(player.getColor()));
+                    newMessage(new PlayerMessage(PlayerMessage.Event.ColorChange, player));
                 } else if (value == Action.ToggleReady) {
-                    player.setReady(!player.isReady());
+                    boolean ready = !player.isReady();
+                    player.setReady(ready);
+                    newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
                 }
             }
         } else if (value instanceof String && !connectedClients.containsKey(client)) {
@@ -301,7 +316,7 @@ public class GameServer implements ClientListener, MessageListener {
                 player.setColor(colors.takeColor());
                 connectedClients.put(client, player);
                 client.send(new ConnectionMessage(currentMap, tickRate, tickRate * amountOfTickBetweenUpdates, player));
-                System.out.println("Player connected: " + player);
+                newMessage(new PlayerMessage(PlayerMessage.Event.Connected, player));
             } else {
                 client.send(new ConnectionMessage());
                 System.out.println(value + " tried to connect but no slots are available.");
@@ -314,14 +329,14 @@ public class GameServer implements ClientListener, MessageListener {
      *
      * @param client The client that has disconnected from the server
      */
-    public void onClose(Client client) {
+    public void onClientDisconnect(Client client) {
         Player player = connectedClients.remove(client);
         colors.giveBackColor(player.getColor());
         if (state != GameState.Running) {
             gameObjects.remove(player.getTrail());
             gameObjects.remove(player);
         }
-        System.out.println("Player disconnected: " + player);
+        newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
     }
 
     /**
@@ -345,6 +360,6 @@ public class GameServer implements ClientListener, MessageListener {
      * @param message Message to be sent to all connected clients
      */
     public void newMessage(Message message) {
-        connectedClients.forEach((client, player) -> client.send(message));
+        connectedClients.forEachKey(1, client -> client.send(message));
     }
 }

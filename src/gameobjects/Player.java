@@ -17,12 +17,11 @@ public class Player extends GameObject {
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
+    private final String name;
+    private final Trail trail;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
-
-    private final String name;
-    private final Trail trail;
     private Color color;
     private boolean dead, ready, invincible, reversed;
     private Pickup pickupSlot;
@@ -31,7 +30,6 @@ public class Player extends GameObject {
         this.name = name;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;
-        invincible = true;
         color = Color.LIGHT_GRAY;
         width = Game.GRID_PIXEL_SIZE;
         height = Game.GRID_PIXEL_SIZE;
@@ -147,24 +145,31 @@ public class Player extends GameObject {
         Rectangle playerRectangle = getBounds();
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Wall) {
+
                 if (((Wall) gameObject).intersects(playerRectangle)) {
                     setDead(true);
-                    listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, this));
                 }
+
             } else if (playerRectangle.intersects(gameObject.getBounds())) {
+
                 if (gameObject instanceof Player) {
-                    if (gameObject.equals(this))
-                        continue;
+                    if (gameObject.equals(this)) continue;
+
                     setDead(true);
-                    listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, (Player) gameObject));
                     ((Player) gameObject).setDead(true);
-                } else if (gameObject instanceof InstantPickup) {
-                    ((InstantPickup) gameObject).use(this, gameObjects);
-                    listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, (InstantPickup) gameObject));
-                    System.out.println("Player " + name + "used pickup " + gameObject);
+
                 } else if (gameObject instanceof Pickup) {
-                    ((Pickup) gameObject).take(this);
-                    System.out.println("Player " + name + "picked up " + gameObject);
+
+                    Pickup pickup = (Pickup) gameObject;
+                    if (pickup.getState() != PickupState.NotTaken) continue;
+
+                    if (pickup instanceof InstantPickup) {
+                        pickup.use(this, gameObjects);
+                        listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickup));
+                    } else {
+                        pickup.take(this);
+                        listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupTaken, this, pickup));
+                    }
                 }
             }
         }
@@ -174,8 +179,12 @@ public class Player extends GameObject {
         return currentMap;
     }
 
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
+    }
+
     public void usePickUp() {
-        if (pickupSlot != null) {
+        if (pickupSlot != null && pickupSlot.getState() == PickupState.Taken) {
             listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickupSlot));
             pickupSlot.use(this, gameObjects);
         }
@@ -211,6 +220,7 @@ public class Player extends GameObject {
         } else {
             direction = Direction.Static;
             this.dead = dead;
+            listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, this));
         }
     }
 
