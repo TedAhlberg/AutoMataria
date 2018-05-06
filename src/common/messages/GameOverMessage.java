@@ -10,16 +10,22 @@ import java.util.HashMap;
 public class GameOverMessage extends Message {
     private static final long serialVersionUID = 1L;
 
-    private HashMap<Player, Integer> scores;
+    private HashMap<Player, Integer> roundScores;
+    private HashMap<Player, Integer> accumulatedScores;
     private int timeUntilNextGame;
 
-    public GameOverMessage(HashMap<Player, Integer> scores, int timeUntilNextGame) {
-        this.scores = scores;
+    public GameOverMessage(HashMap<Player, Integer> roundScores, HashMap<Player, Integer> accumulatedScores, int timeUntilNextGame) {
+        this.roundScores = roundScores;
+        this.accumulatedScores = accumulatedScores;
         this.timeUntilNextGame = timeUntilNextGame;
     }
 
-    public HashMap<Player, Integer> getScores() {
-        return scores;
+    public HashMap<Player, Integer> getRoundScores() {
+        return roundScores;
+    }
+
+    public HashMap<Player, Integer> getAccumulatedScores() {
+        return accumulatedScores;
     }
 
     public int getTimeUntilNextGame() {

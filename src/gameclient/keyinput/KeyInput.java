@@ -2,7 +2,6 @@ package gameclient.keyinput;
 
 import common.Action;
 import common.Direction;
-import gameclient.Game;
 import gameclient.interfaces.GameScreen;
 
 import java.awt.*;
@@ -20,7 +19,6 @@ public class KeyInput implements KeyEventDispatcher {
         this.gameScreen = gameScreen;
     }
 
-    @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getID() != KeyEvent.KEY_PRESSED) return false;
         int key = e.getKeyCode();
@@ -37,18 +35,17 @@ public class KeyInput implements KeyEventDispatcher {
             // GoDown
         } else if (key == KeyEvent.VK_DOWN) {
             gameScreen.onKeyPress(Direction.Down);
-        }
-        else if(key == KeyEvent.VK_SPACE) {
+        } else if (key == KeyEvent.VK_SPACE) {
             gameScreen.onKeyPress(Action.UsePickup);
         }
 
-        // ExitGame
+        // InterfaceBack
         else if (key == KeyEvent.VK_ESCAPE) {
-            gameScreen.onKeyPress(Action.ExitGame);
+            gameScreen.onKeyPress(Action.InterfaceBack);
         }
 
         // ToggleInterpolation
-        else if (key == KeyEvent.VK_I) {
+        else if (key == KeyEvent.VK_F2) {
             gameScreen.onKeyPress(Action.ToggleInterpolation);
         }
 

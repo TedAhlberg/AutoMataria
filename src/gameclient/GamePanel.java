@@ -30,7 +30,7 @@ public class GamePanel extends JComponent {
     private BufferedImage background, gridBuffer;
     private GameState gameState = GameState.Warmup;
     private Color backgroundColor = Color.DARK_GRAY;
-    private double scale = 1.0, playerReadyPercentage;
+    private double scale = 1.0;
     private long timeBetweenRenders;
     private int fps, frameCounter;
     private boolean interpolateMovement = true, showDebugInfo = true;
@@ -170,7 +170,7 @@ public class GamePanel extends JComponent {
             gameObject.render(g2);
         }
 
-        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps, playerReadyPercentage);
+        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps);
         if (gameState == GameState.Countdown) gamePanelText.drawNewGameCountdown(g2);
         else if (gameState == GameState.GameOver) gamePanelText.drawGameOverInfo(g2);
 
@@ -206,10 +206,6 @@ public class GamePanel extends JComponent {
 
     public void setGameState(GameState state) {
         gameState = state;
-    }
-
-    public void setReadyPlayers(double readyPercentage) {
-        playerReadyPercentage = readyPercentage;
     }
 
     public void setBackground(String file) {

@@ -78,6 +78,7 @@ public class Window extends JFrame {
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
 
         UIManager.put("ScrollPane.background", backgroundColor);
+        UIManager.put("TextPane.background", backgroundColor);
         UIManager.put("ScrollPane.border", "");
 
         UIManager.put("Panel.background", backgroundColor);

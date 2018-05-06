@@ -183,7 +183,7 @@ public class Player extends GameObject {
         this.currentMap = currentMap;
     }
 
-    public void usePickUp() {
+    public void usePickup() {
         if (pickupSlot != null && pickupSlot.getState() == PickupState.Taken) {
             listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickupSlot));
             pickupSlot.use(this, gameObjects);
@@ -232,7 +232,7 @@ public class Player extends GameObject {
     public void reset() {
         inputQueue.clear();
         direction = previousDirection = Direction.Static;
-        dead = invincible = reversed = ready = false;
+        dead = invincible = reversed = false;
 
         if (pickupSlot != null) {
             //pickupSlot.done();

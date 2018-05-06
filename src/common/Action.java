@@ -7,7 +7,7 @@ package common;
  * @author Ted Ahlberg
  */
 public enum Action {
-    ExitGame,
+    InterfaceBack,
     ToggleInterpolation,
     ToggleReady,
     TogglePlayerColor,

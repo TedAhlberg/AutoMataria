@@ -23,16 +23,15 @@ public class GameServer implements ConnectionListener, MessageListener {
     private final GameColors colors = new GameColors();
 
     private final int tickRate, amountOfTickBetweenUpdates, serverPort, serverPlayerSpeed;
-    private int gameStartCountdown, gameOverCountDown, playerSpeed, currentCountdown;
-    private String serverName;
-
-    private boolean running;
-    private GameState state;
-    private GameMap currentMap;
     private final ServerConnection serverConnection;
     private final GameObjectSpawner gameObjectSpawner;
     private final ServerInformationSender serverInformationSender;
     private final GameScore gameScore;
+    private int gameStartCountdown, gameOverCountDown, playerSpeed, currentCountdown;
+    private String serverName;
+    private boolean running;
+    private GameState state;
+    private GameMap currentMap;
 
     /**
      * A Controller that connects together the serverConnection part of Auto-Mataria.
@@ -55,15 +54,14 @@ public class GameServer implements ConnectionListener, MessageListener {
 
         gameStartCountdown = 5000;
         gameOverCountDown = 10000;
-        state = GameState.Warmup;
 
         serverConnection = new ServerConnection(serverPort);
         serverConnection.addListener(this);
         serverInformationSender = new ServerInformationSender(this);
         gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
-        gameScore = new GameScore();
+        gameScore = new GameScore(players);
         changeMap(map);
-        startNewWarmup();
+        setState(GameState.Warmup);
     }
 
     public void start() {
@@ -99,7 +97,7 @@ public class GameServer implements ConnectionListener, MessageListener {
             player.setCurrentMap(map);
         });
 
-        startNewWarmup();
+        setState(GameState.Warmup);
     }
 
     /**
@@ -161,57 +159,24 @@ public class GameServer implements ConnectionListener, MessageListener {
 
         switch (state) {
             case Running:
-                int alivePlayers = gameScore.calculateScores();
-                if (alivePlayers <= 1) {
-                    startGameOverCountdown();
-                }
+                gameScore.calculateScores();
+                int alivePlayers = (int) players.stream().filter(player -> !player.isDead()).count();
+                if (alivePlayers <= 1) setState(GameState.GameOver);
                 break;
-
             case Warmup:
-                if (Utility.getReadyPlayerPercentage(connectedClients.values()) >= 100 && connectedClients.size() > 1) {
-                    startNewGameCountdown();
-                } else {
-                    respawnDeadPlayers();
-                }
+                respawnDeadPlayers();
                 break;
-
             case GameOver:
-                if (currentCountdown <= 0) {
-                    startNewWarmup();
-                } else {
-                    currentCountdown -= tickRate;
-                }
+                if (currentCountdown <= 0) setState(GameState.Warmup);
+                else currentCountdown -= tickRate;
                 break;
-
             case Countdown:
-                if (currentCountdown <= 0) {
-                    startNewGame();
-                } else {
-                    currentCountdown -= tickRate;
-                }
+                if (currentCountdown <= 0) setState(GameState.Running);
+                else currentCountdown -= tickRate;
                 break;
         }
 
         gameObjectSpawner.tick();
-    }
-
-    private void startNewGameCountdown() {
-        System.out.println("SERVER STATE: Warmup -> Countdown");
-        state = GameState.Countdown;
-        players.clear();
-        players.addAll(connectedClients.values());
-        currentCountdown = gameStartCountdown;
-        newMessage(new NewGameMessage(gameStartCountdown));
-    }
-
-    private void startGameOverCountdown() {
-        System.out.println("SERVER STATE: Running -> Game Over");
-        state = GameState.GameOver;
-        for (Player player : players) {
-            player.setNextDirection(Direction.Static);
-        }
-        currentCountdown = gameOverCountDown;
-        newMessage(new GameOverMessage(gameScore.getScores(), gameOverCountDown));
     }
 
     private void resetGame() {
@@ -224,25 +189,15 @@ public class GameServer implements ConnectionListener, MessageListener {
         }
 
         connectedClients.forEach((client, player) -> {
+            if (state != GameState.Warmup) {
+                player.setReady(false);
+            }
             player.reset();
             player.setSpeed(playerSpeed);
             player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
         });
-    }
-
-    private void startNewWarmup() {
-        System.out.println("SERVER STATE: Game Over -> Warmup");
-        resetGame();
-        state = GameState.Warmup;
-    }
-
-    private void startNewGame() {
-        System.out.println("SERVER STATE: Countdown -> Running");
-        resetGame();
-        gameScore.start(players);
-        state = GameState.Running;
     }
 
     private Player newPlayer(String name) {
@@ -254,7 +209,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         if (state == GameState.Warmup) {
             player.reset();
             player.setSpeed(playerSpeed);
-            player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
+            player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
         }
@@ -262,7 +217,6 @@ public class GameServer implements ConnectionListener, MessageListener {
     }
 
     private void respawnDeadPlayers() {
-        startingPositions.reset();
         for (Player player : connectedClients.values()) {
             if (player.isDead()) {
                 player.reset();
@@ -270,6 +224,33 @@ public class GameServer implements ConnectionListener, MessageListener {
                 player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
             }
         }
+    }
+
+    private void setState(GameState newState) {
+        if (this.state == newState) return;
+        switch (newState) {
+            case Warmup:
+                resetGame();
+                break;
+            case Running:
+                gameScore.startRound();
+                break;
+            case GameOver:
+                for (Player player : players) {
+                    player.setNextDirection(Direction.Static);
+                }
+                currentCountdown = gameOverCountDown;
+                newMessage(new GameOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), gameOverCountDown));
+                break;
+            case Countdown:
+                resetGame();
+                players.clear();
+                players.addAll(connectedClients.values());
+                currentCountdown = gameStartCountdown;
+                newMessage(new NewGameMessage(gameStartCountdown));
+                break;
+        }
+        this.state = newState;
     }
 
     public void onServerConnectionStarted() {
@@ -291,7 +272,7 @@ public class GameServer implements ConnectionListener, MessageListener {
      */
     public void onDataFromClient(Client client, Object value) {
         if (value instanceof Direction && connectedClients.containsKey(client)) {
-            if (state == GameState.Warmup || state == GameState.Running) {
+            if (state == GameState.Running || state == GameState.Warmup) {
                 Direction direction = (Direction) value;
                 Player player = connectedClients.get(client);
                 player.setNextDirection(direction);
@@ -299,7 +280,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         } else if (value instanceof Action) {
             Player player = connectedClients.get(client);
             if (value == Action.UsePickup) {
-                player.usePickUp();
+                player.usePickup();
             } else if (state == GameState.Warmup) {
                 if (value == Action.TogglePlayerColor) {
                     player.setColor(colors.exchangeColor(player.getColor()));
@@ -308,6 +289,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                     boolean ready = !player.isReady();
                     player.setReady(ready);
                     newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
+                    updateReadyPlayers();
                 }
             }
         } else if (value instanceof String && !connectedClients.containsKey(client)) {
@@ -317,11 +299,19 @@ public class GameServer implements ConnectionListener, MessageListener {
                 connectedClients.put(client, player);
                 client.send(new ConnectionMessage(currentMap, tickRate, tickRate * amountOfTickBetweenUpdates, player));
                 newMessage(new PlayerMessage(PlayerMessage.Event.Connected, player));
+                updateReadyPlayers();
             } else {
                 client.send(new ConnectionMessage());
                 System.out.println(value + " tried to connect but no slots are available.");
             }
         }
+    }
+
+    private void updateReadyPlayers() {
+        int playersCount = connectedClients.size();
+        int readyPlayers = (int) connectedClients.values().stream().filter(Player::isReady).count();
+        newMessage(new ReadyPlayersMessage(readyPlayers, playersCount));
+        if (readyPlayers == playersCount) setState(GameState.Countdown);
     }
 
     /**
@@ -335,6 +325,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         if (state != GameState.Running) {
             gameObjects.remove(player.getTrail());
             gameObjects.remove(player);
+            updateReadyPlayers();
         }
         newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
     }

@@ -1,7 +1,8 @@
 package common;
 
 import gameclient.Game;
-import gameobjects.*;
+import gameobjects.GameObject;
+import gameobjects.Wall;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -15,27 +16,6 @@ import java.util.Random;
  */
 public class Utility {
     private static Random random = new Random();
-
-    /**
-     * Calculates the percentage of how many players are ready.
-     *
-     * @param players A Collection of players to iterate through and check if they are ready
-     * @return 0-100 Represents how many players are ready
-     */
-    public static int getReadyPlayerPercentage(Collection<Player> players) {
-        if (players == null) {
-            return 0;
-        }
-        int readyPlayers = 0;
-        for (Player player : players) {
-            if (player.isReady()) {
-                readyPlayers += 1;
-            }
-        }
-        double readyPlayerPercentage = ((double) readyPlayers / (double) players.size());
-        readyPlayerPercentage = Math.round(readyPlayerPercentage * 100);
-        return (int) Math.round(readyPlayerPercentage);
-    }
 
     /**
      * Finds a position on the map that doesn't collide with any existing GameObjects

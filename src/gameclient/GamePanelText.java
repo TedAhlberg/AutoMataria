@@ -16,20 +16,17 @@ public class GamePanelText {
     private Color color = new Color(255, 255, 255, 200);
     private String fontName = "Orbitron";
 
-    public void drawDebugInfo(Graphics2D g2, GameState gameState, int fps, double playerReadyPercentage) {
+    public void drawDebugInfo(Graphics2D g2, GameState gameState, int fps) {
         StringBuilder res = new StringBuilder();
         int x = 120, y = 200, fontSize = 100;
         
         g2.setColor(color);
         g2.setFont(new Font(fontName, Font.PLAIN, fontSize));
         res.append("FPS: " + fps + "/60 | ");
-        res.append("STATE: " + gameState.toString().toUpperCase() + " | ");
-        if (gameState == GameState.Warmup) {
-            res.append(Math.round(playerReadyPercentage * 100) + "% PLAYERS READY (PRESS 'R' TO READY UP)");
-        }
+        res.append("STATE: " + gameState.toString().toUpperCase());
         g2.drawString(res.toString(), x, y);
         res.delete(0, res.length());
-        res.append("CHANGE COLOR: C | TOGGLE HELP: F1 | TOOGLE INTERPOLATION: I");
+        res.append("CHANGE COLOR: C | TOGGLE HELP: F1 | TOOGLE INTERPOLATION: F2");
         g2.drawString(res.toString(), x, y += fontSize);
     }
     

@@ -2,8 +2,6 @@ package common.messages;
 
 import gameobjects.Player;
 
-import java.awt.*;
-
 /**
  * @author eriklundow
  */
@@ -24,10 +22,6 @@ public class PlayerMessage extends Message {
 
     public Event getEvent() {
         return event;
-    }
-
-    public Color getPlayerColor() {
-        return player.getColor();
     }
 
     public enum Event {

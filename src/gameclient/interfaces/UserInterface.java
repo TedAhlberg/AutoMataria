@@ -1,6 +1,7 @@
 package gameclient.interfaces;
 
-import gameclient.*;
+import gameclient.Game;
+import gameclient.Resources;
 import gameclient.keyinput.KeyInput;
 import test.MapEditorUI;
 
@@ -63,6 +64,7 @@ public class UserInterface extends JPanel {
     }
 
     public void changeToPreviousScreen() {
+        if (screenHistory.size() == 1) return;
         screenHistory.removeLast();
         cardLayout.show(this, screenHistory.getLast());
     }

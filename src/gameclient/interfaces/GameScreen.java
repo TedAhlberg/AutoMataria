@@ -6,14 +6,12 @@ import common.messages.*;
 import gameclient.*;
 import gameclient.sound.MusicManager;
 import gameclient.sound.SoundFx;
-import gameobjects.GameObject;
 import gameobjects.Player;
 
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 
 /**
  * GameScreen is a JPanel that connects and displays the Game.
@@ -21,11 +19,11 @@ import java.util.HashSet;
  * But also panels on the sides to display information about the game.
  */
 public class GameScreen extends JPanel implements GameServerListener {
+    private final int framesPerSecond = 60;
+    private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
     private GameServerConnection client;
     private Player player;
-    private HashSet<Player> players = new HashSet<>();
-    private final int framesPerSecond = 60;
     private UserInterface userInterface;
     private String username;
 
@@ -33,15 +31,18 @@ public class GameScreen extends JPanel implements GameServerListener {
         this.userInterface = userInterface;
         setLayout(new GridBagLayout());
 
+        gameInfoPanel = new GameInfoPanel(10);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.weightx = 1;
-        add(createLeftPanel(), gbc);
+        gbc.ipadx = 20;
+        gbc.ipady = 20;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        add(gameInfoPanel, gbc);
 
         gamePanel = new GamePanel();
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.weightx = 3;
+        gbc.weightx = 10;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         add(gamePanel, gbc);
@@ -56,7 +57,7 @@ public class GameScreen extends JPanel implements GameServerListener {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        AMButton backButton = new AMButton("BACK");
+        AMButton backButton = new AMButton("DISCONNECT");
         backButton.addActionListener(e -> {
             MusicManager.changeTrack();
             client.disconnect();
@@ -72,12 +73,6 @@ public class GameScreen extends JPanel implements GameServerListener {
         return panel;
     }
 
-    private JPanel createLeftPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        return panel;
-    }
-
-
     public void connect(String ip, int port, String username) {
         this.username = username;
         client = new GameServerConnection(this);
@@ -86,12 +81,11 @@ public class GameScreen extends JPanel implements GameServerListener {
     }
 
     public void onKeyPress(Action action) {
-        if (action == Action.ExitGame) {
+        if (action == Action.InterfaceBack) {
             if (client != null) {
                 client.disconnect();
-            } else {
-                System.exit(0);
             }
+            userInterface.changeToPreviousScreen();
         } else if (action == Action.ToggleInterpolation) {
             gamePanel.toggleInterpolation();
         } else if (action == Action.ToggleDebugText) {
@@ -110,8 +104,8 @@ public class GameScreen extends JPanel implements GameServerListener {
      * So we send the username to login to the GameServer
      */
     public void onConnect() {
-        System.out.println("Connected to server.");
         client.send(username);
+        gameInfoPanel.add("# Trying to connect with username: " + username);
     }
 
     /**
@@ -119,6 +113,7 @@ public class GameScreen extends JPanel implements GameServerListener {
      */
     public void onDisconnect() {
         gamePanel.stop();
+        gameInfoPanel.add("# Connection closed", Color.RED);
     }
 
     /**
@@ -142,23 +137,33 @@ public class GameScreen extends JPanel implements GameServerListener {
             handleGameOverMessage((GameOverMessage) data);
         } else if (data instanceof GameMap) {
             handleMapChange((GameMap) data);
+        } else if (data instanceof ReadyPlayersMessage) {
+            handleReadyPlayersMessage((ReadyPlayersMessage) data);
         }
     }
 
-    private void handleNewGameMessage(NewGameMessage message) {
-        System.out.println("NEW GAME STARTS IN " + message.getTimeUntileGameBegins() + "ms");
+    private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
+        gameInfoPanel.add(message.getReadyPlayerCount() + "/" + message.getPlayerCount() + " ready players");
     }
 
-    private void handleMapChange(GameMap gameMap) {
-        System.out.println("MAP CHANGED TO " + gameMap.getName());
-        GameMap map = gameMap;
+    private void handleNewGameMessage(NewGameMessage message) {
+        gameInfoPanel.add(":: Game starts in " + message.getTimeUntileGameBegins() / 1000.0 + " seconds");
+    }
+
+    private void handleMapChange(GameMap map) {
+        gameInfoPanel.add(":: Map changed to: " + map.getName());
         gamePanel.setBackground(map.getBackground());
         gamePanel.setGrid(map.getGrid());
     }
 
     private void handleGameOverMessage(GameOverMessage message) {
-        System.out.println("GAME OVER MESSAGE");
-        System.out.println(message.getScores());
+        gameInfoPanel.add(":: Game Over");
+        message.getRoundScores().forEach((player, score) -> {
+            gameInfoPanel.add("Round score: " + player.getName() + " :: " + score, player.getColor());
+        });
+        message.getAccumulatedScores().forEach((player, score) -> {
+            gameInfoPanel.add("Total score: " + player.getName() + " :: " + score, player.getColor());
+        });
     }
 
     private void handleConnectionMessage(ConnectionMessage message) {
@@ -169,28 +174,16 @@ public class GameScreen extends JPanel implements GameServerListener {
             gamePanel.start(framesPerSecond);
             MusicManager.changeTrack();
             MusicManager.getInstance().gameTrack1();
-            System.out.println("CLIENT: Connected to server successfully");
+            gameInfoPanel.add("# Connected to server successfully", Color.GREEN);
         } else {
             gamePanel.stop();
-            System.out.println("CLIENT: Failed to connect to server");
+            gameInfoPanel.add("# Failed to connect to server", Color.RED);
         }
     }
 
     private void handleGameServerUpdate(GameServerUpdate message) {
         gamePanel.updateGameObjects(message.gameObjects);
         gamePanel.setGameState(message.state);
-        if (message.state == GameState.Warmup) {
-            for (GameObject gameObject : message.gameObjects) {
-                if (gameObject instanceof Player) {
-                    if (gameObject.equals(player)) {
-                        player = (Player) gameObject;
-                    } else {
-                        players.add((Player) gameObject);
-                    }
-                }
-            }
-            gamePanel.setReadyPlayers(Utility.getReadyPlayerPercentage(players));
-        }
         player = message.player;
     }
 
@@ -198,7 +191,7 @@ public class GameScreen extends JPanel implements GameServerListener {
         if (message.getEvent() == PlayerPickupMessage.Event.PickupUsed) {
             try {
                 String pickupClassName = message.getPickup().getClass().getSimpleName();
-                System.out.println(message.getPlayer().getName() + " used " + pickupClassName + " it will be active for " + message.getPickup().getActiveTime() + "ms");
+                gameInfoPanel.add(message.getPlayer().getName() + " used " + pickupClassName + " it will be active for " + message.getPickup().getActiveTime() / 1000.0 + "s", message.getPlayer().getColor());
                 Method method = SoundFx.class.getMethod(pickupClassName);
                 method.invoke(SoundFx.getInstance());
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -206,34 +199,35 @@ public class GameScreen extends JPanel implements GameServerListener {
             }
         } else if (message.getEvent() == PlayerPickupMessage.Event.PickupTaken) {
             String pickupClassName = message.getPickup().getClass().getSimpleName();
-            System.out.println(message.getPlayer().getName() + " picked up " + pickupClassName);
+            gameInfoPanel.add(message.getPlayer().getName() + " picked up " + pickupClassName, message.getPlayer().getColor());
         }
     }
 
     private void handlePlayerMessage(PlayerMessage message) {
         String playerName = message.getPlayer().getName();
+        Color playerColor = message.getPlayer().getColor();
         switch (message.getEvent()) {
             case Connected:
-                System.out.println(playerName + " has connected.");
+                gameInfoPanel.add(playerName + " has connected", playerColor);
                 break;
             case Disconnected:
-                System.out.println(playerName + " has disconnected.");
+                gameInfoPanel.add(playerName + " has disconnected", playerColor);
                 break;
             case Ready:
-                System.out.println(playerName + " is ready.");
+                gameInfoPanel.add(playerName + " is ready", playerColor);
                 break;
             case Unready:
-                System.out.println(playerName + " is not ready.");
+                gameInfoPanel.add(playerName + " is not ready", playerColor);
                 break;
             case Crashed:
-                System.out.println(playerName + " has crashed.");
+                gameInfoPanel.add(playerName + " has crashed", playerColor);
                 SoundFx.getInstance().crash();
                 break;
             case Moved:
                 SoundFx.getInstance().movement();
                 break;
             case ColorChange:
-                System.out.println(playerName + " has changed color to " + message.getPlayerColor());
+                gameInfoPanel.add(playerName + " has changed color", playerColor);
                 break;
         }
     }

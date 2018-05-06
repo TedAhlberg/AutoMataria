@@ -12,8 +12,8 @@ public class DefaultKeyBindings {
 	private HashMap<Action, Integer> bindings = new HashMap<Action, Integer>();
 
 	public DefaultKeyBindings() {
-		bindings.put(Action.ExitGame, KeyEvent.VK_ESCAPE);
-		bindings.put(Action.ToggleInterpolation, KeyEvent.VK_I);
+		bindings.put(Action.InterfaceBack, KeyEvent.VK_ESCAPE);
+		bindings.put(Action.ToggleInterpolation, KeyEvent.VK_F2);
 		bindings.put(Action.ToggleNames, KeyEvent.VK_SHIFT);
 		bindings.put(Action.ToggleDebugText, KeyEvent.VK_F1);
 		bindings.put(Action.ToggleReady, KeyEvent.VK_R);

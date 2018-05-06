@@ -4,7 +4,7 @@ import common.ServerInformation;
 import gameclient.*;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.Collection;
 
@@ -40,10 +40,20 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         c.anchor = GridBagConstraints.WEST;
         topPanel.add(headerLabel, c);
 
+        AMButton hostServerButton = new AMButton("HOST SERVER");
+        hostServerButton.addActionListener(e -> userInterface.changeScreen("HostServerScreen"));
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.ipadx = 10;
+        c.ipady = 10;
+        c.insets = new Insets(0, 0, 0, 10);
+        c.anchor = GridBagConstraints.EAST;
+        topPanel.add(hostServerButton, c);
+
         AMButton customConnectButton = new AMButton("CUSTOM CONNECT");
         customConnectButton.addActionListener(e -> userInterface.changeScreen("ConnectScreen"));
         c = new GridBagConstraints();
-        c.gridx = 1;
+        c.gridx = 2;
         c.ipadx = 10;
         c.ipady = 10;
         c.insets = new Insets(0, 0, 0, 10);
@@ -53,7 +63,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         AMButton backButton = new AMButton("BACK");
         backButton.addActionListener(e -> userInterface.changeToPreviousScreen());
         c = new GridBagConstraints();
-        c.gridx = 2;
+        c.gridx = 3;
         c.ipadx = 10;
         c.ipady = 10;
         c.insets = new Insets(0, 0, 0, 50);
@@ -106,7 +116,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         row += 1;
 
         JPanel separator = new JPanel();
-        separator.setBorder(new MatteBorder(1,0,0,0,Color.MAGENTA.darker().darker()));
+        separator.setBorder(new MatteBorder(1, 0, 0, 0, Color.MAGENTA.darker().darker()));
         c = new GridBagConstraints();
         c.gridwidth = headerLabels.length;
         c.gridy = row;
@@ -145,7 +155,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = gridx;
         c.gridy = gridy;
-        c.insets = new Insets(10,10,10,10);
+        c.insets = new Insets(10, 10, 10, 10);
         return c;
     }
 }
