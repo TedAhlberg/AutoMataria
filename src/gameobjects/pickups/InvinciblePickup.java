@@ -36,9 +36,7 @@ public class InvinciblePickup extends InstantPickup {
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            player.setInvincible(false);
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+            done();
         }
     }
 
@@ -52,5 +50,13 @@ public class InvinciblePickup extends InstantPickup {
 
         player.setInvincible(true);
         setState(PickupState.InUse);
+    }
+
+    
+    public void done() {
+        player.setInvincible(false);
+        setState(PickupState.Used);
+        gameObjects.remove(this);
+        
     }
 }

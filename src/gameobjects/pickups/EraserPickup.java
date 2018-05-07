@@ -41,4 +41,9 @@ public class EraserPickup extends InstantPickup {
         setState(PickupState.Used);
         gameObjects.remove(this);
     }
+
+    
+    public void done() {
+        
+    }
 }

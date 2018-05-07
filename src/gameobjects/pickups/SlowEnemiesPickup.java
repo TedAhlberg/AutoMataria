@@ -36,16 +36,7 @@ public class SlowEnemiesPickup extends InstantPickup {
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Player) {
-                    if (!gameObject.equals(player)) {
-                        int speed = gameObject.getSpeed();
-                        gameObject.setSpeed(speed * 2);
-                    }
-                }
-            }
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+           done();
         }
     }
 
@@ -67,5 +58,23 @@ public class SlowEnemiesPickup extends InstantPickup {
         }
 
         setState(PickupState.InUse);
+    }
+
+    /**
+     * Returns the enemies speed to normal, sets the pickups state to used
+     * and removes the pickup from the collection of GameObjects.
+     */
+    public void done() {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Player) {
+                if (!gameObject.equals(player)) {
+                    int speed = gameObject.getSpeed();
+                    gameObject.setSpeed(speed * 2);
+                }
+            }
+        }
+        setState(PickupState.Used);
+        gameObjects.remove(this);
+        
     }
 }
