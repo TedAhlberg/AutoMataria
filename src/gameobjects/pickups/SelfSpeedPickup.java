@@ -35,10 +35,7 @@ public class SelfSpeedPickup extends Pickup {
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            player.setSpeed(player.getSpeed() / 2);
-            player.setPickUp(null);
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+            done();
         }
     }
 
@@ -53,5 +50,18 @@ public class SelfSpeedPickup extends Pickup {
         player.setSpeed(speed * 2);
 
         setState(PickupState.InUse);
+    }
+
+    /**
+     * returns the players speed to normal, sets the pickupSlot to null
+     * and removes the pickup from the collection of GameObjects.
+     * 
+     */
+    public void done() {
+        player.setSpeed(player.getSpeed() / 2);
+        player.setPickUp(null);
+        setState(PickupState.Used);
+        gameObjects.remove(this);
+        
     }
 }
