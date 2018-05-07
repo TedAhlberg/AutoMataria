@@ -31,7 +31,7 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
@@ -40,7 +40,8 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.Taken) return;
+        if (state != PickupState.Taken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -48,8 +49,6 @@ public class SelfSpeedPickup extends Pickup {
         this.gameObjects = gameObjects;
         int speed = player.getSpeed();
         player.setSpeed(speed * 2);
-
-        setState(PickupState.InUse);
     }
 
     /**
@@ -58,10 +57,9 @@ public class SelfSpeedPickup extends Pickup {
      * 
      */
     public void done() {
+        setState(PickupState.Used);
         player.setSpeed(player.getSpeed() / 2);
         player.setPickUp(null);
-        setState(PickupState.Used);
         gameObjects.remove(this);
-        
     }
 }

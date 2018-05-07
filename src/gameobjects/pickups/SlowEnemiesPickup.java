@@ -32,7 +32,7 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
@@ -41,7 +41,8 @@ public class SlowEnemiesPickup extends InstantPickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.NotTaken) return;
+        if (state != PickupState.NotTaken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -56,8 +57,6 @@ public class SlowEnemiesPickup extends InstantPickup {
                 }
             }
         }
-
-        setState(PickupState.InUse);
     }
 
     /**
@@ -65,6 +64,7 @@ public class SlowEnemiesPickup extends InstantPickup {
      * and removes the pickup from the collection of GameObjects.
      */
     public void done() {
+        setState(PickupState.Used);
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player) {
                 if (!gameObject.equals(player)) {
@@ -73,7 +73,6 @@ public class SlowEnemiesPickup extends InstantPickup {
                 }
             }
         }
-        setState(PickupState.Used);
         gameObjects.remove(this);
         
     }

@@ -19,11 +19,11 @@ public class Player extends GameObject {
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
     transient private final Trail trail;
-    private final String name;
     transient private Pickup pickupSlot;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
+    private final String name;
     private Color color;
     private boolean dead, ready, invincible, reversed;
 
@@ -45,7 +45,7 @@ public class Player extends GameObject {
 
     public void render(Graphics2D g) {
         if (invincible) {
-            g.setColor(color.darker().darker());
+            g.setColor(color.darker());
             g.drawRect(x - 40, y - 40, width + 80, height + 80);
         }
         g.setColor(color);
@@ -64,8 +64,7 @@ public class Player extends GameObject {
     }
 
     public void tick() {
-        if (dead)
-            return;
+        if (dead) return;
 
         updateDirection();
         checkCollisions();
@@ -183,12 +182,26 @@ public class Player extends GameObject {
         }
     }
 
-    public GameMap getCurrentMap() {
-        return currentMap;
+    /**
+     * Resets player to a good state
+     * used when new games or warmups start
+     * so nothing strange remains when the player spawns
+     */
+    public void reset() {
+        inputQueue.clear();
+        direction = previousDirection = Direction.Static;
+        dead = invincible = reversed = false;
+
+        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
+            pickupSlot.done();
+        }
+
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
+        trail.remove(mapRectangle);
     }
 
-    public void setCurrentMap(GameMap currentMap) {
-        this.currentMap = currentMap;
+    public void setPickUp(Pickup pickup) {
+        this.pickupSlot = pickup;
     }
 
     public void usePickup() {
@@ -214,8 +227,12 @@ public class Player extends GameObject {
         listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
     }
 
-    public void setPickUp(Pickup pickup) {
-        this.pickupSlot = pickup;
+    public Direction getPreviousDirection() {
+        return previousDirection;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public boolean isDead() {
@@ -232,31 +249,8 @@ public class Player extends GameObject {
         }
     }
 
-    /**
-     * Resets player to a good state
-     * used when new games or warmups start
-     * so nothing strange remains when the player spawns
-     */
-    public void reset() {
-        inputQueue.clear();
-        direction = previousDirection = Direction.Static;
-        dead = invincible = reversed = false;
-
-        if (pickupSlot != null) {
-            //pickupSlot.done();
-            setPickUp(null);
-        }
-
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
-        trail.remove(mapRectangle);
-    }
-
     public boolean isReversed() {
         return reversed;
-    }
-
-    public void setReversed(boolean reversed) {
-        this.reversed = reversed;
     }
 
     public boolean isReady() {
@@ -267,8 +261,8 @@ public class Player extends GameObject {
         this.ready = ready;
     }
 
-    public Direction getPreviousDirection() {
-        return previousDirection;
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
     }
 
     public String getName() {
