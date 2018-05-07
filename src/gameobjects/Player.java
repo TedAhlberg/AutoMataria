@@ -3,6 +3,7 @@ package gameobjects;
 import common.*;
 import common.messages.*;
 import gameclient.Game;
+import gameclient.Resources;
 
 import java.awt.*;
 import java.util.Collection;
@@ -17,14 +18,14 @@ public class Player extends GameObject {
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
+    transient private final Trail trail;
     private final String name;
-    private final Trail trail;
+    transient private Pickup pickupSlot;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
     private Color color;
     private boolean dead, ready, invincible, reversed;
-    private Pickup pickupSlot;
 
     public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -44,13 +45,16 @@ public class Player extends GameObject {
 
     public void render(Graphics2D g) {
         if (invincible) {
-            g.setColor(trail.getBorderColor());
+            g.setColor(color.darker().darker());
             g.drawRect(x - 40, y - 40, width + 80, height + 80);
         }
         g.setColor(color);
         g.fillRect(x - 10, y - 10, width + 20, height + 20);
+        if (dead) {
+            g.drawImage(Resources.getImage("DeadSkull.png"), x - 10, y - 10, width + 20, height + 20, null);
+        }
         g.setColor(color.darker());
-        Font font = new Font("Orbitron", Font.BOLD, 100);
+        Font font = new Font("Orbitron", Font.BOLD, 80);
         g.setFont(font);
         String displayName = name.toUpperCase();
         FontMetrics fontMetrics = g.getFontMetrics(font);
