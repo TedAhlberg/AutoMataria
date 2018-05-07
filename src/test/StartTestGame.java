@@ -26,7 +26,7 @@ public class StartTestGame {
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server
-        GameServer server = new GameServer("AM-test-server 1", 32000, 100, 2, Game.GRID_PIXEL_SIZE / 2, map);
+        GameServer server = new GameServer("StartTestGameServer", 32000, 75, 2, Game.GRID_PIXEL_SIZE / 2, map);
         server.start();
 
         // Start a game client
