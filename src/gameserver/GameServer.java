@@ -331,20 +331,10 @@ public class GameServer implements ConnectionListener, MessageListener {
     }
 
     /**
-     * Creates a byte array that conains info about this serverConnection that is used
-     * in clients to view active servers on the local network
-     *
-     * @return byte array that conains info about this serverConnection - maximum length is 76 bytes
+     * @return Returns the state of the current GameServer as a ServerInformation object
      */
-    public byte[] getServerAliveUpdateMessage() {
-        String string = serverName + "\n"
-                + currentMap.getName() + "\n"
-                + state + "\n"
-                + serverPort + "\n"
-                + connectedClients.size() + "\n"
-                + currentMap.getPlayers() + "\0";
-
-        return string.getBytes();
+    public ServerInformation getServerInformation() {
+        return new ServerInformation(null, serverName, currentMap.getName(), state.toString(), serverPort, connectedClients.size(), currentMap.getPlayers());
     }
 
     /**

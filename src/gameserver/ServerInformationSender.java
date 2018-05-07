@@ -1,6 +1,7 @@
 package gameserver;
 
 import common.Maps;
+import common.ServerInformation;
 import gameclient.Game;
 
 import java.io.IOException;
@@ -34,7 +35,8 @@ public class ServerInformationSender implements Runnable {
         HashSet<InetAddress> localBroadcastAddresses = getBroadcastAddresses();
 
         while (running) {
-            byte[] data = gameServer.getServerAliveUpdateMessage();
+            ServerInformation serverInformation = gameServer.getServerInformation();
+            byte[] data = serverInformation.toByteArray();
 
             try (DatagramSocket socket = new DatagramSocket()) {
                 for (InetAddress localBroadcastAddress : localBroadcastAddresses) {

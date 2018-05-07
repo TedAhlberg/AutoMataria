@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Dante Håkansson
  */
 public class Player extends GameObject {
-    private static final long serialVersionUID = 2;
+    private static final long serialVersionUID = 3;
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
@@ -43,8 +43,12 @@ public class Player extends GameObject {
     }
 
     public void render(Graphics2D g) {
+        if (invincible) {
+            g.setColor(trail.getBorderColor());
+            g.drawRect(x - 40, y - 40, width + 80, height + 80);
+        }
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillRect(x - 10, y - 10, width + 20, height + 20);
         g.setColor(color.darker());
         Font font = new Font("Orbitron", Font.BOLD, 100);
         g.setFont(font);

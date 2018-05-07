@@ -69,13 +69,23 @@ public class ServerInformation {
 
     public boolean equals(Object obj) {
         if (obj instanceof ServerInformation) {
-            ServerInformation servInfo = (ServerInformation) obj;
-            return (servInfo.getIp().equals(ip) && servInfo.getServerPort() == serverPort);
+            ServerInformation serverInformation = (ServerInformation) obj;
+            return (serverInformation.getIp().equals(ip) && serverInformation.getServerPort() == serverPort);
         }
         return false;
     }
-    
-    @Override
+
+    public byte[] toByteArray() {
+        String string = serverName + "\n"
+                + mapName + "\n"
+                + gameState + "\n"
+                + serverPort + "\n"
+                + connectedClients + "\n"
+                + maxPlayers + "\0";
+
+        return string.getBytes();
+    }
+
     public String toString() {
         return "ServerInformation [ip=" + ip + ", serverName=" + serverName + ", mapName=" + mapName + ", gameState="
                 + gameState + ", serverPort=" + serverPort + ", connectedClients=" + connectedClients + ", maxPlayers="
