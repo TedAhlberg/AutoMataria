@@ -58,7 +58,7 @@ public class Window extends JFrame {
                 UIManager.put(key, defaultFontResource);
             }
             /*
-            if (key.toString().startsWith("ScrollPane")) {
+            if (key.toString().startsWith("CheckBox")) {
                 System.out.println(key + " " + value);
             }
             */
@@ -76,6 +76,7 @@ public class Window extends JFrame {
             e.printStackTrace();
         }
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
+        ColorUIResource foregroundColor = new ColorUIResource(255, 255, 255);
 
         UIManager.put("ScrollPane.background", backgroundColor);
         UIManager.put("TextPane.background", backgroundColor);
@@ -91,6 +92,11 @@ public class Window extends JFrame {
         UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
 
         UIManager.put("Slider.background", backgroundColor);
+        UIManager.put("Slider.altTrackColor", new ColorUIResource(Color.MAGENTA));
+
+        UIManager.put("CheckBox.background", backgroundColor);
+        UIManager.put("CheckBox.foreground", foregroundColor);
+        UIManager.put("CheckBox.focus", backgroundColor);
     }
 
     /**

@@ -196,8 +196,7 @@ public class Player extends GameObject {
             pickupSlot.done();
         }
 
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
-        trail.remove(mapRectangle);
+        trail.clear();
     }
 
     public void setPickUp(Pickup pickup) {
