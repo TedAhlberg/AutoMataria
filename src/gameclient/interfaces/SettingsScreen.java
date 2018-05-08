@@ -34,9 +34,9 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     private AMButton btnChange = new AMButton("CHANGE");
     private AMButton btnKeyBinder = new AMButton(fileKeyBindPressed, fileKeyBindUnpressed);
-    private AMButton btnMusic = new AMButton("MUSIC");
+    private AMButton btnMusic = new AMButton("MUSIC: ON  ");
     private AMButton btnBack = new AMButton("BACK");
-    private AMButton btnSFX = new AMButton("SFX");
+    private AMButton btnSFX = new AMButton("SFX: ON  ");
     private AMButton btnScreen = new AMButton("CHANGE");
 
     private KeyBindings keyBindings = new KeyBindings();
@@ -99,7 +99,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.HORIZONTAL;
         pnlHead.add(pnlUserName, c);
-
+        
         // Add ControlLabel
         c = new GridBagConstraints();
         c.gridx = 1;
@@ -153,12 +153,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlMusic.add(btnMusic, c);
 
         // Add musicLabel
-        c = new GridBagConstraints();
-        c.gridy = 1;
-        c.gridx = 2;
-        c.ipadx = 10;
+//        c = new GridBagConstraints();
+//        c.gridy = 1;
+//        c.gridx = 2;
+//        c.ipadx = 10;
 
-        pnlMusic.add(lblMusic, c);
+//        pnlMusic.add(lblMusic, c);
 
         c = new GridBagConstraints();
         c.gridy = 1;
@@ -183,12 +183,12 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlMusic.add(btnBack, c);
 
         // Add SFXLabel
-        c = new GridBagConstraints();
-        c.gridy = 1;
-        c.gridx = 5;
-        c.ipadx = 10;
-
-        pnlMusic.add(lblSFX, c);
+//        c = new GridBagConstraints();
+//        c.gridy = 1;
+//        c.gridx = 5;
+//        c.ipadx = 10;
+//
+//        pnlMusic.add(lblSFX, c);
 
         // Add MusicPanel
         c = new GridBagConstraints();
@@ -267,14 +267,17 @@ public class SettingsScreen extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
             MusicManager.stop();
-            if (lblMusic.getText() == "ON")
-                lblMusic.setText("OFF");
+            if (lblMusic.getText() == "ON") {
+                btnMusic.setText("MUSIC: OFF");
+                lblMusic.setText("OFF");}
             else {
                 lblMusic.setText("ON");
+                btnMusic.setText("MUSIC: ON  ");
                 MusicManager.getInstance().menuTrack();
             }
 
         }
+    
         if (e.getSource() == screenSize) {
             if (screenSize.getSelectedItem().equals("MAXIMIZED")) {
                 userInterface.setWindowMode(Window.Mode.Maximized);
@@ -293,9 +296,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
             if (lblSFX.getText() == "ON") {
                 Audio.sfxOff();
                 lblSFX.setText("OFF");
+                btnSFX.setText("SFX: OFF");
             } else {
                 lblSFX.setText("ON");
                 Audio.sfxOff();
+                btnSFX.setText("SFX: ON  ");
 
             }
         }
