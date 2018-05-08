@@ -8,6 +8,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.util.Enumeration;
+import java.util.LinkedList;
 
 /**
  * Window is a customized JFrame that has some extra features.
@@ -57,11 +58,11 @@ public class Window extends JFrame {
             if (value instanceof FontUIResource) {
                 UIManager.put(key, defaultFontResource);
             }
-            /*
-            if (key.toString().startsWith("CheckBox")) {
+
+            if (key.toString().startsWith("Slider")) {
                 System.out.println(key + " " + value);
             }
-            */
+
         }
     }
 
@@ -75,6 +76,7 @@ public class Window extends JFrame {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+        ColorUIResource accentColor = new ColorUIResource(Color.MAGENTA);
         ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
         ColorUIResource foregroundColor = new ColorUIResource(255, 255, 255);
 
@@ -91,8 +93,21 @@ public class Window extends JFrame {
         UIManager.put("ComboBox.selectionBackground", backgroundColor);
         UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
 
+        LinkedList gradient = new LinkedList();
+        gradient.add(0.0);
+        gradient.add(0.0);
+        gradient.add(accentColor);
+        gradient.add(accentColor);
+        gradient.add(accentColor);
+        UIManager.put("Slider.gradient", gradient);
+        UIManager.put("Slider.focusGradient", gradient);
         UIManager.put("Slider.background", backgroundColor);
-        UIManager.put("Slider.altTrackColor", new ColorUIResource(Color.MAGENTA));
+        UIManager.put("Slider.foreground", accentColor);
+        UIManager.put("Slider.highlight", accentColor);
+        UIManager.put("Slider.shadow", accentColor);
+        UIManager.put("Slider.focus", accentColor);
+        UIManager.put("Slider.altTrackColor", accentColor);
+        UIManager.put("Slider.tickColor", accentColor);
 
         UIManager.put("CheckBox.background", backgroundColor);
         UIManager.put("CheckBox.foreground", foregroundColor);

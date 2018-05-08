@@ -12,6 +12,7 @@ import java.util.HashSet;
 public class MapPoolPanel extends JPanel {
     private int gridY = 0;
     private HashSet<String> selectedMaps = new HashSet<>();
+    private HashSet<JCheckBox> checkBoxes = new HashSet<>();
 
     public MapPoolPanel() {
         setLayout(new GridBagLayout());
@@ -46,5 +47,12 @@ public class MapPoolPanel extends JPanel {
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.WEST;
         add(checkBox, c);
+        checkBoxes.add(checkBox);
+    }
+
+    public void setEnabled(boolean enabled) {
+        for (JCheckBox checkBox : checkBoxes) {
+            checkBox.setEnabled(enabled);
+        }
     }
 }

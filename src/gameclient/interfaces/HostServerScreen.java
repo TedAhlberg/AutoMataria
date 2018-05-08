@@ -290,12 +290,14 @@ public class HostServerScreen extends JPanel {
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
                 joinGameButton.setVisible(true);
+                setAllEnabled(false);
             } catch (Exception error) {
                 serverStatusLabel.setText("OFFLINE");
                 serverStatusLabel.setForeground(Color.RED);
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 joinGameButton.setVisible(false);
+                setAllEnabled(true);
             }
         });
 
@@ -308,6 +310,7 @@ public class HostServerScreen extends JPanel {
             startButton.setEnabled(true);
             stopButton.setEnabled(false);
             joinGameButton.setVisible(false);
+            setAllEnabled(true);
         });
 
         backButton.addActionListener(e -> {
@@ -319,5 +322,21 @@ public class HostServerScreen extends JPanel {
                 userInterface.startGame("127.0.0.1", portSlider.getValue());
             }
         });
+    }
+
+    private void setAllEnabled(boolean enabled) {
+        serverNameTextField.setEnabled(enabled);
+        roundLimitSlider.setEnabled(enabled);
+        scoreLimitSlider.setEnabled(enabled);
+        portSlider.setEnabled(enabled);
+        mapPoolPanel.setEnabled(enabled);
+
+        profileComboBox.setEnabled(enabled);
+        tickRateSlider.setEnabled(enabled);
+        ticksPerUpdateSlider.setEnabled(enabled);
+        playerSpeedSlider.setEnabled(enabled);
+        if (enabled) {
+            profileComboBox.setSelectedIndex(profileComboBox.getSelectedIndex());
+        }
     }
 }
