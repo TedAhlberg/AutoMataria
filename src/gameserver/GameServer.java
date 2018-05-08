@@ -27,7 +27,7 @@ public class GameServer implements ConnectionListener, MessageListener {
     private final ServerInformationSender serverInformationSender;
     private final GameScore gameScore;
     private final GameServerSettings settings;
-    private int currentPlayerSpeed, currentCountdown;
+    private int currentPlayerSpeed, currentCountdown, currentMapPoolIndex;
     private boolean running;
     private GameState state;
     private GameMap currentMap;
@@ -82,8 +82,16 @@ public class GameServer implements ConnectionListener, MessageListener {
             client.send(map);
             player.setCurrentMap(map);
         });
+    }
 
-        setState(GameState.Warmup);
+    /**
+     * Changes to the next Map in the Map pool
+     */
+    public void changeToNextMap() {
+        currentMapPoolIndex = (currentMapPoolIndex + 1) % settings.mapPool.length;
+        String nextMapName = settings.mapPool[currentMapPoolIndex];
+        GameMap nextMap = Maps.getInstance().get(nextMapName);
+        changeMap(nextMap);
     }
 
     /**
@@ -160,8 +168,10 @@ public class GameServer implements ConnectionListener, MessageListener {
                 else currentCountdown -= settings.tickRate;
                 break;
             case GameOver:
-                if (currentCountdown <= 0) setState(GameState.Warmup);
-                else currentCountdown -= settings.tickRate;
+                if (currentCountdown <= 0) {
+                    changeToNextMap();
+                    setState(GameState.Warmup);
+                } else currentCountdown -= settings.tickRate;
                 break;
             case Countdown:
                 if (currentCountdown <= 0) setState(GameState.Running);

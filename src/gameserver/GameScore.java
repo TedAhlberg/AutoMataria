@@ -30,13 +30,18 @@ public class GameScore {
         this.players = players;
 
         gameComplete = roundComplete = false;
-        highestScore = roundsPlayed = 0;
+        deadPlayers = highestScore = roundsPlayed = 0;
+
+        roundScores.clear();
+        accumulatedScores.clear();
     }
 
     /**
      * Resets values to a state that represents that a new round in the game has begun
+     * If game is completed newGame() method has to be called to start a new game
      */
     synchronized public void startRound() {
+        if (gameComplete) return;
         deadPlayers = 0;
         roundComplete = false;
         roundScores.clear();
@@ -48,7 +53,7 @@ public class GameScore {
 
     /**
      * Increments round count and checks if game is completed
-     * If game is completed newGame() methos has to be called to start a new game
+     * If game is completed newGame() method has to be called to start a new game
      */
     private void endRound() {
         if (gameComplete) return;
