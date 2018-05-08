@@ -1,7 +1,6 @@
 package test;
 
-import common.GameMap;
-import common.Maps;
+import common.GameServerSettings;
 import gameserver.GameServer;
 
 /**
@@ -14,14 +13,15 @@ public class StartServer {
             System.exit(1);
         }
 
-        String serverName = args[0];
-        int port = Integer.parseInt(args[1]);
-        int tickRate = Integer.parseInt(args[2]);
-        int amountOfUpdatesPerTick = Integer.parseInt(args[3]);
-        int playerSpeed = Integer.parseInt(args[4]);
-        GameMap map = Maps.getInstance().get(args[5]);
+        GameServerSettings settings = new GameServerSettings();
+        settings.name = args[0];
+        settings.port = Integer.parseInt(args[1]);
+        settings.tickRate = Integer.parseInt(args[2]);
+        settings.amountOfTickBetweenUpdates = Integer.parseInt(args[3]);
+        settings.playerSpeed = Integer.parseInt(args[4]);
+        settings.mapPool = new String[]{args[5]};
 
-        GameServer server = new GameServer(serverName, port, tickRate, amountOfUpdatesPerTick, playerSpeed, map);
+        GameServer server = new GameServer(settings);
         server.start();
     }
 }

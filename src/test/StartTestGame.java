@@ -26,8 +26,17 @@ public class StartTestGame {
         map.setGameMapObjects(gameMapObjects);
 
         // Start a game server
-        GameServer server = new GameServer("StartTestGameServer", 32000, 75, 2, Game.GRID_PIXEL_SIZE / 2, map);
+        GameServerSettings settings = new GameServerSettings();
+        settings.name = "StartTestGameServer";
+        settings.port = 32000;
+        settings.tickRate = 75;
+        settings.amountOfTickBetweenUpdates = 2;
+        settings.playerSpeed = Game.GRID_PIXEL_SIZE / 2;
+        settings.mapPool = new String[]{map.getName()};
+
+        GameServer server = new GameServer(settings);
         server.start();
+        server.changeMap(map);
 
         // Start a game client
         SwingUtilities.invokeLater(() -> {
