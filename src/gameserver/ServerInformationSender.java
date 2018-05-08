@@ -1,6 +1,5 @@
 package gameserver;
 
-import common.Maps;
 import common.ServerInformation;
 import gameclient.Game;
 
@@ -22,11 +21,6 @@ public class ServerInformationSender implements Runnable {
 
     public ServerInformationSender(GameServer gameServer) {
         this.gameServer = gameServer;
-    }
-
-    public static void main(String[] args) {
-        GameServer gameServer = new GameServer("Best Server", 3000, 10, 10, 50, Maps.getInstance().get("Small Map 1"));
-        gameServer.start();
     }
 
     public void run() {

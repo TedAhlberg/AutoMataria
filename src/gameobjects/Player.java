@@ -3,6 +3,7 @@ package gameobjects;
 import common.*;
 import common.messages.*;
 import gameclient.Game;
+import gameclient.Resources;
 
 import java.awt.*;
 import java.util.Collection;
@@ -17,14 +18,14 @@ public class Player extends GameObject {
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
-    private final String name;
-    private final Trail trail;
+    transient private final Trail trail;
+    transient private Pickup pickupSlot;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
+    private final String name;
     private Color color;
     private boolean dead, ready, invincible, reversed;
-    private Pickup pickupSlot;
 
     public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -44,13 +45,16 @@ public class Player extends GameObject {
 
     public void render(Graphics2D g) {
         if (invincible) {
-            g.setColor(trail.getBorderColor());
+            g.setColor(color.darker());
             g.drawRect(x - 40, y - 40, width + 80, height + 80);
         }
         g.setColor(color);
         g.fillRect(x - 10, y - 10, width + 20, height + 20);
+        if (dead) {
+            g.drawImage(Resources.getImage("DeadSkull.png"), x - 10, y - 10, width + 20, height + 20, null);
+        }
         g.setColor(color.darker());
-        Font font = new Font("Orbitron", Font.BOLD, 100);
+        Font font = new Font("Orbitron", Font.BOLD, 80);
         g.setFont(font);
         String displayName = name.toUpperCase();
         FontMetrics fontMetrics = g.getFontMetrics(font);
@@ -60,8 +64,7 @@ public class Player extends GameObject {
     }
 
     public void tick() {
-        if (dead)
-            return;
+        if (dead) return;
 
         updateDirection();
         checkCollisions();
@@ -179,12 +182,26 @@ public class Player extends GameObject {
         }
     }
 
-    public GameMap getCurrentMap() {
-        return currentMap;
+    /**
+     * Resets player to a good state
+     * used when new games or warmups start
+     * so nothing strange remains when the player spawns
+     */
+    public void reset() {
+        inputQueue.clear();
+        direction = previousDirection = Direction.Static;
+        dead = invincible = reversed = false;
+
+        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
+            pickupSlot.done();
+        }
+
+        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
+        trail.remove(mapRectangle);
     }
 
-    public void setCurrentMap(GameMap currentMap) {
-        this.currentMap = currentMap;
+    public void setPickUp(Pickup pickup) {
+        this.pickupSlot = pickup;
     }
 
     public void usePickup() {
@@ -210,8 +227,12 @@ public class Player extends GameObject {
         listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
     }
 
-    public void setPickUp(Pickup pickup) {
-        this.pickupSlot = pickup;
+    public Direction getPreviousDirection() {
+        return previousDirection;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public boolean isDead() {
@@ -228,31 +249,8 @@ public class Player extends GameObject {
         }
     }
 
-    /**
-     * Resets player to a good state
-     * used when new games or warmups start
-     * so nothing strange remains when the player spawns
-     */
-    public void reset() {
-        inputQueue.clear();
-        direction = previousDirection = Direction.Static;
-        dead = invincible = reversed = false;
-
-        if (pickupSlot != null) {
-            //pickupSlot.done();
-            setPickUp(null);
-        }
-
-        Rectangle mapRectangle = new Rectangle(Utility.convertFromGrid(currentMap.getGrid()));
-        trail.remove(mapRectangle);
-    }
-
     public boolean isReversed() {
         return reversed;
-    }
-
-    public void setReversed(boolean reversed) {
-        this.reversed = reversed;
     }
 
     public boolean isReady() {
@@ -263,8 +261,8 @@ public class Player extends GameObject {
         this.ready = ready;
     }
 
-    public Direction getPreviousDirection() {
-        return previousDirection;
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
     }
 
     public String getName() {

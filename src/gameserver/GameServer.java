@@ -22,13 +22,12 @@ public class GameServer implements ConnectionListener, MessageListener {
     private final StartingPositions startingPositions = new StartingPositions();
     private final GameColors colors = new GameColors();
 
-    private final int tickRate, amountOfTickBetweenUpdates, serverPort, serverPlayerSpeed;
     private final ServerConnection serverConnection;
     private final GameObjectSpawner gameObjectSpawner;
     private final ServerInformationSender serverInformationSender;
     private final GameScore gameScore;
-    private int gameStartCountdown, gameOverCountDown, playerSpeed, currentCountdown;
-    private String serverName;
+    private final GameServerSettings settings;
+    private int currentPlayerSpeed, currentCountdown;
     private boolean running;
     private GameState state;
     private GameMap currentMap;
@@ -37,30 +36,17 @@ public class GameServer implements ConnectionListener, MessageListener {
      * A Controller that connects together the serverConnection part of Auto-Mataria.
      * The game loop, Clients that connect. Everything that happens in the actual game.
      *
-     * @param serverName                 Name of the server
-     * @param serverPort                 Port that the server will listen to connections on
-     * @param tickRate                   How often to run the tick method on all game objects (In milliseconds)
-     * @param amountOfTickBetweenUpdates How often to update the game to all clients
-     * @param playerSpeed                How far the players travels each tick
-     * @param map                        The GameMap that the server will start with
+     * @param settings Object containing all settings for this server
      */
-    public GameServer(String serverName, int serverPort, int tickRate, int amountOfTickBetweenUpdates, int playerSpeed, GameMap map) {
-        this.serverName = serverName;
-        this.serverPort = serverPort;
-        this.tickRate = tickRate;
-        this.amountOfTickBetweenUpdates = amountOfTickBetweenUpdates;
-        this.serverPlayerSpeed = this.playerSpeed = playerSpeed;
-        this.currentMap = map;
+    public GameServer(GameServerSettings settings) {
+        this.settings = settings;
 
-        gameStartCountdown = 5000;
-        gameOverCountDown = 10000;
-
-        serverConnection = new ServerConnection(serverPort);
+        serverConnection = new ServerConnection(settings.port);
         serverConnection.addListener(this);
         serverInformationSender = new ServerInformationSender(this);
-        gameObjectSpawner = new GameObjectSpawner(gameObjects, map, tickRate);
-        gameScore = new GameScore(players);
-        changeMap(map);
+        gameObjectSpawner = new GameObjectSpawner(gameObjects, currentMap, settings.tickRate);
+        gameScore = new GameScore();
+        changeMap(Maps.getInstance().get(settings.mapPool[0]));
         setState(GameState.Warmup);
     }
 
@@ -85,11 +71,11 @@ public class GameServer implements ConnectionListener, MessageListener {
      * @param map The GameMap to change to
      */
     public void changeMap(GameMap map) {
-        if (map == null || map.equals(currentMap) || state != GameState.Warmup) return;
+        if (map == null) return;
 
         currentMap = map;
-        playerSpeed = (int) Math.round(serverPlayerSpeed * map.getPlayerSpeedMultiplier());
-
+        currentPlayerSpeed = (int) Math.round(settings.playerSpeed * map.getPlayerSpeedMultiplier());
+        gameScore.startGame(players, settings.roundLimit, settings.scoreLimit);
         gameObjectSpawner.changeMap(map);
 
         connectedClients.forEach((client, player) -> {
@@ -105,7 +91,7 @@ public class GameServer implements ConnectionListener, MessageListener {
      */
     private void gameLoop() {
         int ticksSinceLastUpdate = 0;
-        long tickRate = this.tickRate * 1000000;
+        long tickRate = settings.tickRate * 1000000;
         long previousTickTime = System.nanoTime();
         while (running) {
             long nowTime = System.nanoTime();
@@ -115,7 +101,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                 previousTickTime = System.nanoTime() - (timeSinceLastTick - tickRate);
                 tick();
                 ticksSinceLastUpdate += 1;
-                if (ticksSinceLastUpdate >= amountOfTickBetweenUpdates) {
+                if (ticksSinceLastUpdate >= settings.amountOfTickBetweenUpdates) {
                     update();
                     ticksSinceLastUpdate = 0;
                 }
@@ -160,19 +146,26 @@ public class GameServer implements ConnectionListener, MessageListener {
         switch (state) {
             case Running:
                 gameScore.calculateScores();
-                int alivePlayers = (int) players.stream().filter(player -> !player.isDead()).count();
-                if (alivePlayers <= 1) setState(GameState.GameOver);
+                if (gameScore.isGameComplete()) {
+                    setState(GameState.GameOver);
+                } else if (gameScore.isRoundComplete()) {
+                    setState(GameState.RoundOver);
+                }
                 break;
             case Warmup:
                 respawnDeadPlayers();
                 break;
+            case RoundOver:
+                if (currentCountdown <= 0) setState(GameState.Countdown);
+                else currentCountdown -= settings.tickRate;
+                break;
             case GameOver:
                 if (currentCountdown <= 0) setState(GameState.Warmup);
-                else currentCountdown -= tickRate;
+                else currentCountdown -= settings.tickRate;
                 break;
             case Countdown:
                 if (currentCountdown <= 0) setState(GameState.Running);
-                else currentCountdown -= tickRate;
+                else currentCountdown -= settings.tickRate;
                 break;
         }
 
@@ -193,7 +186,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                 player.setReady(false);
             }
             player.reset();
-            player.setSpeed(playerSpeed);
+            player.setSpeed(currentPlayerSpeed);
             player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
@@ -205,10 +198,10 @@ public class GameServer implements ConnectionListener, MessageListener {
         Player player = new Player(name, gameObjects, currentMap);
         player.setListener(this);
         player.setId(ID.getNext());
-        player.setSpeed(playerSpeed);
+        player.setSpeed(currentPlayerSpeed);
         if (state == GameState.Warmup) {
             player.reset();
-            player.setSpeed(playerSpeed);
+            player.setSpeed(currentPlayerSpeed);
             player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
@@ -220,7 +213,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         for (Player player : connectedClients.values()) {
             if (player.isDead()) {
                 player.reset();
-                player.setSpeed(playerSpeed);
+                player.setSpeed(currentPlayerSpeed);
                 player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
             }
         }
@@ -235,30 +228,37 @@ public class GameServer implements ConnectionListener, MessageListener {
             case Running:
                 gameScore.startRound();
                 break;
+            case RoundOver:
+                for (Player player : players) {
+                    player.setNextDirection(Direction.Static);
+                }
+                currentCountdown = settings.roundOverCountdown < 1000 ? 1000 : settings.roundOverCountdown;
+                newMessage(new RoundOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), currentCountdown));
+                break;
             case GameOver:
                 for (Player player : players) {
                     player.setNextDirection(Direction.Static);
                 }
-                currentCountdown = gameOverCountDown;
-                newMessage(new GameOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), gameOverCountDown));
+                currentCountdown = settings.gameOverCountdown < 1000 ? 1000 : settings.gameOverCountdown;
+                newMessage(new GameOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), currentCountdown));
                 break;
             case Countdown:
                 resetGame();
                 players.clear();
                 players.addAll(connectedClients.values());
-                currentCountdown = gameStartCountdown;
-                newMessage(new NewGameMessage(gameStartCountdown));
+                currentCountdown = settings.newGameCountdown < 1000 ? 1000 : settings.newGameCountdown;
+                newMessage(new NewGameMessage(currentCountdown));
                 break;
         }
         this.state = newState;
     }
 
     public void onServerConnectionStarted() {
-        System.out.println("SERVER STARTED SUCCESSFULLY");
+        System.out.println("Server Connection started");
     }
 
     public void onServerConnectionStopped() {
-        System.out.println("SERVER STOPPED");
+        System.out.println("Server Connection ended");
         stop();
     }
 
@@ -297,7 +297,7 @@ public class GameServer implements ConnectionListener, MessageListener {
             if (player != null) {
                 player.setColor(colors.takeColor());
                 connectedClients.put(client, player);
-                client.send(new ConnectionMessage(currentMap, tickRate, tickRate * amountOfTickBetweenUpdates, player));
+                client.send(new ConnectionMessage(currentMap, settings.tickRate, settings.tickRate * settings.amountOfTickBetweenUpdates, player));
                 newMessage(new PlayerMessage(PlayerMessage.Event.Connected, player));
                 updateReadyPlayers();
             } else {
@@ -311,6 +311,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         int playersCount = connectedClients.size();
         int readyPlayers = (int) connectedClients.values().stream().filter(Player::isReady).count();
         newMessage(new ReadyPlayersMessage(readyPlayers, playersCount));
+        if (playersCount < 2) return;
         if (readyPlayers == playersCount) setState(GameState.Countdown);
     }
 
@@ -334,7 +335,7 @@ public class GameServer implements ConnectionListener, MessageListener {
      * @return Returns the state of the current GameServer as a ServerInformation object
      */
     public ServerInformation getServerInformation() {
-        return new ServerInformation(null, serverName, currentMap.getName(), state.toString(), serverPort, connectedClients.size(), currentMap.getPlayers());
+        return new ServerInformation(null, settings.name, currentMap.getName(), state.toString(), settings.port, connectedClients.size(), currentMap.getPlayers());
     }
 
     /**

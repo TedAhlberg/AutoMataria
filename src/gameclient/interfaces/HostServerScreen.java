@@ -1,7 +1,9 @@
 package gameclient.interfaces;
 
+import common.GameServerSettings;
 import common.Maps;
-import gameclient.*;
+import gameclient.Game;
+import gameclient.Resources;
 import gameserver.GameServer;
 
 import javax.swing.*;
@@ -15,10 +17,11 @@ public class HostServerScreen extends JPanel {
     private JComboBox<String> profileComboBox;
     private JSlider playerSpeedSlider, tickRateSlider, ticksPerUpdateSlider;
     private JComboBox<String> mapsComboBox;
-    private JTextField portTextField, serverNameTextField;
+    private JTextField serverNameTextField;
     private JLabel serverStatusLabel;
     private GameServer server;
     private UserInterface userInterface;
+    private JSlider roundLimitSlider, scoreLimitSlider, portSlider;
 
     public HostServerScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -109,10 +112,30 @@ public class HostServerScreen extends JPanel {
         c.weightx = 1;
         c.ipadx = 10;
         c.ipady = 10;
-        c.insets = new Insets(10, 50, 10, 50);
+        c.insets = new Insets(10, 10, 10, 10);
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.HORIZONTAL;
         return c;
+    }
+
+    private JPanel createCustomSlider(JSlider slider) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        JLabel label = new JLabel(Integer.toString(slider.getValue()));
+
+        slider.addChangeListener(e -> label.setText(Integer.toString(slider.getValue())));
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        panel.add(slider, c);
+
+        c = new GridBagConstraints();
+        c.gridy = 0;
+        c.fill = GridBagConstraints.BOTH;
+        panel.add(label, c);
+
+        return panel;
     }
 
     private JPanel createLeftPanel() {
@@ -120,46 +143,42 @@ public class HostServerScreen extends JPanel {
         JPanel panel = new JPanel(new GridBagLayout());
 
         panel.add(new JLabel("SERVER STATUS"), getFieldConstraints(0, 0));
-
         serverStatusLabel = new JLabel("OFFLINE");
         serverStatusLabel.setForeground(Color.RED);
         panel.add(serverStatusLabel, getFieldConstraints(1, 0));
 
-
         panel.add(new JLabel("SERVER NAME"), getFieldConstraints(0, 1));
-
         serverNameTextField = new JTextField("Auto-Mataria Server");
         serverNameTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 
-
         panel.add(new JLabel("MAP POOL"), getFieldConstraints(0, 2));
-
         mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
         panel.add(mapsComboBox, getFieldConstraints(1, 2));
 
+        panel.add(new JLabel("ROUND LIMIT"), getFieldConstraints(0, 3));
+        roundLimitSlider = new JSlider(0, 25, 3);
+        roundLimitSlider.setSnapToTicks(true);
+        roundLimitSlider.setMajorTickSpacing(1);
+        panel.add(createCustomSlider(roundLimitSlider), getFieldConstraints(1, 3));
 
-        panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 3));
+        panel.add(new JLabel("SCORE LIMIT"), getFieldConstraints(0, 4));
+        scoreLimitSlider = new JSlider(0, 100, 0);
+        scoreLimitSlider.setSnapToTicks(true);
+        scoreLimitSlider.setMajorTickSpacing(5);
+        panel.add(createCustomSlider(scoreLimitSlider), getFieldConstraints(1, 4));
 
-        profileComboBox = new JComboBox<>(new String[]{
-                "CUSTOM", "LOW PERFORMANCE", "NORMAL (DEFAULT)", "HIGH PERFORMANCE", "EXTREME PERFORMANCE"});
-        panel.add(profileComboBox, getFieldConstraints(1, 3));
-
-
-        panel.add(new JLabel("SERVER PORT"), getFieldConstraints(0, 4));
-
-        portTextField = new JTextField("32000");
-        portTextField.setMargin(new Insets(4, 6, 0, 0));
-        panel.add(portTextField, getFieldConstraints(1, 4));
-
+        panel.add(new JLabel("SERVER PORT"), getFieldConstraints(0, 5));
+        portSlider = new JSlider(32000, 32100, 32000);
+        panel.add(createCustomSlider(portSlider), getFieldConstraints(1, 5));
 
         startButton = new AMButton("START SERVER");
-        c = getFieldConstraints(0, 5);
+        c = getFieldConstraints(0, 6);
         panel.add(startButton, c);
 
         stopButton = new AMButton("STOP SERVER");
         stopButton.setEnabled(false);
-        c = getFieldConstraints(1, 5);
+        c = getFieldConstraints(1, 6);
         panel.add(stopButton, c);
 
         return panel;
@@ -169,38 +188,30 @@ public class HostServerScreen extends JPanel {
         GridBagConstraints c;
         JPanel panel = new JPanel(new GridBagLayout());
 
-        JLabel serverProfileLabel = new JLabel("CUSTOM ADVANCED SETTINGS");
+        JLabel serverProfileLabel = new JLabel("ADVANCED SETTINGS");
         serverProfileLabel.setForeground(Color.LIGHT_GRAY);
         c = getFieldConstraints(0, 0);
         c.gridwidth = 2;
         panel.add(serverProfileLabel, c);
 
+        panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 1));
+        profileComboBox = new JComboBox<>(new String[]{
+                "CUSTOM", "LOW PERFORMANCE", "NORMAL (DEFAULT)", "HIGH PERFORMANCE", "EXTREME PERFORMANCE"});
+        panel.add(profileComboBox, getFieldConstraints(1, 1));
 
-        panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 1));
-
-        tickRateSlider = new JSlider(50, 200, 100);
-        tickRateSlider.setMajorTickSpacing(50);
-        tickRateSlider.setPaintLabels(true);
-        tickRateSlider.setSnapToTicks(true);
-        panel.add(tickRateSlider, getFieldConstraints(1, 1));
-
-
-        panel.add(new JLabel("TICKS / UPDATE"), getFieldConstraints(0, 2));
-
-        ticksPerUpdateSlider = new JSlider(1, 4, 2);
-        ticksPerUpdateSlider.setMajorTickSpacing(1);
-        ticksPerUpdateSlider.setPaintLabels(true);
-        tickRateSlider.setSnapToTicks(true);
-        panel.add(ticksPerUpdateSlider, getFieldConstraints(1, 2));
+        panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 2));
+        tickRateSlider = new JSlider(10, 200, 100);
+        panel.add(createCustomSlider(tickRateSlider), getFieldConstraints(1, 2));
 
 
-        panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 3));
+        panel.add(new JLabel("TICKS / UPDATE"), getFieldConstraints(0, 3));
+        ticksPerUpdateSlider = new JSlider(1, 10, 2);
+        panel.add(createCustomSlider(ticksPerUpdateSlider), getFieldConstraints(1, 3));
 
-        playerSpeedSlider = new JSlider(0, Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE / 4);
-        playerSpeedSlider.setMajorTickSpacing(Game.GRID_PIXEL_SIZE / 4);
-        playerSpeedSlider.setPaintLabels(true);
-        playerSpeedSlider.setSnapToTicks(true);
-        panel.add(playerSpeedSlider, getFieldConstraints(1, 3));
+
+        panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 4));
+        playerSpeedSlider = new JSlider(Game.GRID_PIXEL_SIZE / 4, Game.GRID_PIXEL_SIZE * 2, Game.GRID_PIXEL_SIZE / 4);
+        panel.add(createCustomSlider(playerSpeedSlider), getFieldConstraints(1, 4));
 
         return panel;
     }
@@ -222,23 +233,23 @@ public class HostServerScreen extends JPanel {
 
             switch (profile) {
                 case "LOW PERFORMANCE":
-                    playerSpeedSlider.setValue(75);
+                    playerSpeedSlider.setValue(100);
                     tickRateSlider.setValue(150);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "HIGH PERFORMANCE":
-                    playerSpeedSlider.setValue(15);
+                    playerSpeedSlider.setValue(50);
                     tickRateSlider.setValue(50);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "EXTREME PERFORMANCE":
-                    playerSpeedSlider.setValue(15);
-                    tickRateSlider.setValue(50);
-                    ticksPerUpdateSlider.setValue(1);
+                    playerSpeedSlider.setValue(20);
+                    tickRateSlider.setValue(25);
+                    ticksPerUpdateSlider.setValue(2);
                     break;
                 default:
                     playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(100);
+                    tickRateSlider.setValue(75);
                     ticksPerUpdateSlider.setValue(2);
             }
         });
@@ -252,14 +263,17 @@ public class HostServerScreen extends JPanel {
         startButton.addActionListener(e -> {
             if (server != null) return;
             try {
-                String name = serverNameTextField.getText();
-                int port = Integer.parseInt(portTextField.getText());
-                int tickRate = tickRateSlider.getValue();
-                int ticksBetweenUpdates = ticksPerUpdateSlider.getValue();
-                int playerSpeed = playerSpeedSlider.getValue();
-                String map = (String) mapsComboBox.getSelectedItem();
+                GameServerSettings settings = new GameServerSettings();
+                settings.name = serverNameTextField.getText();
+                settings.port = portSlider.getValue();
+                settings.tickRate = tickRateSlider.getValue();
+                settings.amountOfTickBetweenUpdates = ticksPerUpdateSlider.getValue();
+                settings.playerSpeed = playerSpeedSlider.getValue();
+                settings.mapPool = new String[]{(String) mapsComboBox.getSelectedItem()};
+                settings.roundLimit = roundLimitSlider.getValue();
+                settings.scoreLimit = scoreLimitSlider.getValue();
 
-                server = new GameServer(name, port, tickRate, ticksBetweenUpdates, playerSpeed, Maps.getInstance().get(map));
+                server = new GameServer(settings);
                 server.start();
                 serverStatusLabel.setText("ONLINE");
                 serverStatusLabel.setForeground(Color.GREEN);
@@ -292,7 +306,7 @@ public class HostServerScreen extends JPanel {
 
         joinGameButton.addActionListener(e -> {
             if (server != null) {
-                userInterface.startGame("127.0.0.1", Integer.parseInt(portTextField.getText()));
+                userInterface.startGame("127.0.0.1", portSlider.getValue());
             }
         });
     }

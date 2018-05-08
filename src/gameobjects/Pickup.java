@@ -61,11 +61,12 @@ public abstract class Pickup extends GameObject {
 
     public void take(Player player) {
         if (state != PickupState.NotTaken) return;
-
         state = PickupState.Taken;
         player.setPickUp(this);
         this.player = player;
     }
+    public abstract void done();
 
     public abstract void use(Player player, Collection<GameObject> gameObjects);
 }
+

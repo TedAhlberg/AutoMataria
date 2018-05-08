@@ -1,5 +1,6 @@
 package test;
 
+import common.GameServerSettings;
 import common.Maps;
 import gameclient.interfaces.UserInterface;
 import gameserver.GameServer;
@@ -81,7 +82,15 @@ public class TestUI {
             updateAllVariables();
             System.out.println(toString());
             if (server == null) {
-                server = new GameServer("AM-test-server", serverPort, tickRate, ticksBetweenUpdates, playerSpeed, Maps.getInstance().get(gameMap));
+                GameServerSettings settings = new GameServerSettings();
+                settings.name = "TestUIServer";
+                settings.port = serverPort;
+                settings.tickRate = tickRate;
+                settings.amountOfTickBetweenUpdates = ticksBetweenUpdates;
+                settings.playerSpeed = playerSpeed;
+                settings.mapPool = new String[]{gameMap};
+
+                server = new GameServer(settings);
                 server.start();
             }
         });

@@ -32,18 +32,17 @@ public class InvinciblePickup extends InstantPickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            player.setInvincible(false);
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+            done();
         }
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.NotTaken) return;
+        if (state != PickupState.NotTaken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -51,6 +50,11 @@ public class InvinciblePickup extends InstantPickup {
         this.gameObjects = gameObjects;
 
         player.setInvincible(true);
-        setState(PickupState.InUse);
+    }
+
+    public void done() {
+        setState(PickupState.Used);
+        player.setInvincible(false);
+        gameObjects.remove(this);
     }
 }

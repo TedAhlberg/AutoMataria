@@ -31,19 +31,17 @@ public class SelfSpeedPickup extends Pickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            player.setSpeed(player.getSpeed() / 2);
-            player.setPickUp(null);
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+            done();
         }
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.Taken) return;
+        if (state != PickupState.Taken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -51,7 +49,17 @@ public class SelfSpeedPickup extends Pickup {
         this.gameObjects = gameObjects;
         int speed = player.getSpeed();
         player.setSpeed(speed * 2);
+    }
 
-        setState(PickupState.InUse);
+    /**
+     * returns the players speed to normal, sets the pickupSlot to null
+     * and removes the pickup from the collection of GameObjects.
+     * 
+     */
+    public void done() {
+        setState(PickupState.Used);
+        player.setSpeed(player.getSpeed() / 2);
+        player.setPickUp(null);
+        gameObjects.remove(this);
     }
 }

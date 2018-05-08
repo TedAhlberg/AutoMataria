@@ -1,10 +1,8 @@
 package gameobjects.pickups;
 
 import common.PickupState;
-import gameclient.Game;
 import gameobjects.*;
 
-import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -28,17 +26,18 @@ public class EraserPickup extends InstantPickup {
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.NotTaken) return;
+        if (state != PickupState.NotTaken) return;
+        setState(PickupState.Used);
 
-        Dimension gridSize = player.getCurrentMap().getGrid();
-        gridSize.setSize(gridSize.width * Game.GRID_PIXEL_SIZE, gridSize.height * Game.GRID_PIXEL_SIZE);
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Trail) {
-                ((Trail) gameObject).remove(new Rectangle(gridSize));
+                ((Trail) gameObject).clear();
             }
         }
 
-        setState(PickupState.Used);
         gameObjects.remove(this);
     }
+
+
+    public void done() {}
 }

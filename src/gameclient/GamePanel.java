@@ -8,8 +8,7 @@ import gameobjects.Player;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * GamePanel is a custom swing component that displays the game
@@ -163,11 +162,20 @@ public class GamePanel extends JComponent {
 
         g2.scale(scale, scale);
 
+        // Extract players so we can render them on top
+        ArrayList<Player> players = new ArrayList<>();
         for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Player && interpolateMovement) {
-                interpolation.interpolate((Player) gameObject);
+            if (gameObject instanceof Player) {
+                players.add((Player) gameObject);
+            } else {
+                gameObject.render(g2);
             }
-            gameObject.render(g2);
+        }
+        for (Player player : players) {
+            if (interpolateMovement) {
+                interpolation.interpolate(player);
+            }
+            player.render(g2);
         }
 
         if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps);

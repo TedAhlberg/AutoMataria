@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  * But also panels on the sides to display information about the game.
  */
 public class GameScreen extends JPanel implements GameServerListener {
-    private final int framesPerSecond = 60;
+    private final int framesPerSecond = 30;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
     private GameServerConnection client;
@@ -133,6 +133,8 @@ public class GameScreen extends JPanel implements GameServerListener {
             handlePlayerPickupMessage((PlayerPickupMessage) data);
         } else if (data instanceof NewGameMessage) {
             handleNewGameMessage((NewGameMessage) data);
+        } else if (data instanceof RoundOverMessage) {
+            handleRoundOverMessage((RoundOverMessage) data);
         } else if (data instanceof GameOverMessage) {
             handleGameOverMessage((GameOverMessage) data);
         } else if (data instanceof GameMap) {
@@ -156,14 +158,28 @@ public class GameScreen extends JPanel implements GameServerListener {
         gamePanel.setGrid(map.getGrid());
     }
 
-    private void handleGameOverMessage(GameOverMessage message) {
-        gameInfoPanel.add(":: Game Over");
+    private void handleRoundOverMessage(RoundOverMessage message) {
+        gameInfoPanel.add(":: Round Ended :: Round Scores");
         message.getRoundScores().forEach((player, score) -> {
-            gameInfoPanel.add("Round score: " + player.getName() + " :: " + score, player.getColor());
+            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
         });
+        gameInfoPanel.add(":: Round Ended :: Total Scores");
         message.getAccumulatedScores().forEach((player, score) -> {
-            gameInfoPanel.add("Total score: " + player.getName() + " :: " + score, player.getColor());
+            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
         });
+        gameInfoPanel.add(":: Next round starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
+    }
+
+    private void handleGameOverMessage(GameOverMessage message) {
+        gameInfoPanel.add(":: Game Over :: Round Scores");
+        message.getRoundScores().forEach((player, score) -> {
+            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
+        });
+        gameInfoPanel.add(":: Game Over :: Total Scores");
+        message.getAccumulatedScores().forEach((player, score) -> {
+            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
+        });
+        gameInfoPanel.add(":: Next map starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
     }
 
     private void handleConnectionMessage(ConnectionMessage message) {

@@ -91,6 +91,13 @@ public class Wall extends GameObject {
     }
 
     /**
+     * Removes the wall completely
+     */
+    public void clear() {
+        shape = null;
+    }
+
+    /**
      * Check if provided rectangle is inside this Wall GameObject
      *
      * @param rectangle Rectangle that you want to test

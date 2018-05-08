@@ -6,9 +6,11 @@ import gameobjects.*;
 import java.util.Collection;
 
 /**
- * Pickup that when activated/used slows down the player for a short duration.
+ * Pickup that when activated/used slows down the player for a short duration,
+ * after a few seconds the player goes back to their normal speed.
  *
  * @author Erik Lundow
+ * @author Dante Håkansson
  */
 public class SelfSlowPickup extends Pickup {
     private static final long serialVersionUID = 1;
@@ -30,19 +32,17 @@ public class SelfSlowPickup extends Pickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            player.setSpeed(player.getSpeed() * 2);
-            player.setPickUp(null);
-            setState(PickupState.Used);
-            gameObjects.remove(this);
+           done();
         }
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.Taken) return;
+        if (state != PickupState.Taken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -50,7 +50,16 @@ public class SelfSlowPickup extends Pickup {
         this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
+    }
 
-        setState(PickupState.InUse);
+    /**
+     * Sets the player speed back to normal, sets the pickupSlot to null, sets the pickups state to used
+     * and removes the pickup from the collection of GameObjects.
+     */
+    public void done() {
+        setState(PickupState.Used);
+        player.setSpeed(player.getSpeed() * 2);
+        player.setPickUp(null);
+        gameObjects.remove(this);
     }
 }

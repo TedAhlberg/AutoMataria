@@ -30,23 +30,17 @@ public class SpeedEnemiesPickup extends InstantPickup {
     }
 
     public void tick() {
-        if (getState() != PickupState.InUse) return;
+        if (state != PickupState.InUse) return;
 
         long elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= activeTime) {
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Player && !gameObject.equals(player)) {
-                    gameObject.setSpeed((gameObject.getSpeed() / 2));
-                }
-            }
-            player.setPickUp(null);
-            gameObjects.remove(this);
-            setState(PickupState.Used);
+            done();
         }
     }
 
     public void use(Player player, Collection<GameObject> gameObjects) {
-        if (getState() != PickupState.NotTaken) return;
+        if (state != PickupState.NotTaken) return;
+        setState(PickupState.InUse);
 
         startTime = System.currentTimeMillis();
 
@@ -59,7 +53,17 @@ public class SpeedEnemiesPickup extends InstantPickup {
                 gameObject.setSpeed(speed * 2);
             }
         }
+    }
 
-        setState(PickupState.InUse);
+   
+    public void done() {
+        setState(PickupState.Used);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Player && !gameObject.equals(player)) {
+                gameObject.setSpeed((gameObject.getSpeed() / 2));
+            }
+        }
+        player.setPickUp(null);
+        gameObjects.remove(this);
     }
 }
