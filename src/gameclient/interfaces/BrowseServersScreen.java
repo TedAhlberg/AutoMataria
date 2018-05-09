@@ -26,7 +26,6 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         setOpaque(false);
         setLayout(new GridBagLayout());
 
-        int column = 0, row = 0;
         GridBagConstraints c;
 
         JPanel topPanel = new JPanel(new GridBagLayout());
