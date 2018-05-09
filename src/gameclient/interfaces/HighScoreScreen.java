@@ -4,12 +4,14 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.HashMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 
 import gameclient.Resources;
+import mainserver.HighScore;
 
 public class HighScoreScreen extends JPanel {
     private UserInterface userInterface;
@@ -19,6 +21,7 @@ public class HighScoreScreen extends JPanel {
         this.userInterface = userInterface;
         
 		createLayout();
+		update();
 		
 	}
 	
@@ -26,6 +29,7 @@ public class HighScoreScreen extends JPanel {
         setOpaque(false);
         setLayout(new GridBagLayout());
         
+        int column = 0, row = 0;
         GridBagConstraints c;
 
         JPanel topPanel = new JPanel(new GridBagLayout());
@@ -68,7 +72,15 @@ public class HighScoreScreen extends JPanel {
 	}
 	
 	public void update() {
-		panel.removeAll();
+//		panel.removeAll();
+		
+		HighScore highScore = new HighScore();
+		highScore.put("Henko", 100);
+		highScore.put("Erik", 200);
+		highScore.put("Ted", 300);
+		highScore.put("Dante", 400);
+		highScore.put("Johannes", 500);
+		
 		
         int column = 0, row = 0;
         GridBagConstraints c;
@@ -88,7 +100,7 @@ public class HighScoreScreen extends JPanel {
         row += 1;
         
         JPanel separator = new JPanel();
-        separator.setBorder(new MatteBorder(1, 0, 0, 0, Color.RED));
+        separator.setBorder(new MatteBorder(1, 0, 0, 0, Color.MAGENTA.darker().darker()));
         c = new GridBagConstraints();
         c.gridwidth = headerLabels.length;
         c.gridy = row;
@@ -96,6 +108,15 @@ public class HighScoreScreen extends JPanel {
         panel.add(separator, c);
 
         row += 1;
+        
+        column = 0;
+        JLabel[] labels = new JLabel[10];
+        
+
+        for (JLabel label : labels) {
+            panel.add(label, getTableConstraints(column, row));
+            column += 1;
+        }
 
         revalidate();
         repaint();

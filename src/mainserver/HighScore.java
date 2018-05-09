@@ -1,9 +1,14 @@
 package mainserver;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+
 
 public class HighScore {
     private HashMap<String, Integer> highScores = new HashMap<>();
+    private static boolean ASC = true;
+    private static boolean DESC = false;
     
     public synchronized void put(String key, Integer value) {
         highScores.put(key, value);
@@ -23,4 +28,12 @@ public class HighScore {
         highScores.remove(key);
         highScores.put(newUserName, highScore);
     }
+    
+    public synchronized void sort() {
+//    	ArrayList<String> usernames = new ArrayList<String>(highScores.keySet());
+    	ArrayList<Integer> highscores = new ArrayList<Integer>(highScores.values());
+    	Collections.sort(highscores);
+    	
+    }
+  
 }
