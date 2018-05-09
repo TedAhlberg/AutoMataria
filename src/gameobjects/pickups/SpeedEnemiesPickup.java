@@ -51,6 +51,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
             if (gameObject instanceof Player && !gameObject.equals(player)) {
                 int speed = gameObject.getSpeed();
                 gameObject.setSpeed(speed * 2);
+                ((Player) gameObject).setImage("SpeedPickupTransparent.png");
             }
         }
     }
@@ -61,6 +62,7 @@ public class SpeedEnemiesPickup extends InstantPickup {
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Player && !gameObject.equals(player)) {
                 gameObject.setSpeed((gameObject.getSpeed() / 2));
+                ((Player) gameObject).setImage(null);
             }
         }
         player.setPickUp(null);
