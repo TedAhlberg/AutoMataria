@@ -19,7 +19,7 @@ public class GameColors {
         allColors.add(new Color(0xff148c));
         allColors.add(new Color(0xAA88B4));
         allColors.add(new Color(0x8147ff));
-        allColors.add(new Color(0x2A38FF));
+        allColors.add(new Color(0x4147FF));
         allColors.add(new Color(0x1e96ff));
         allColors.add(new Color(0x5DBFCC));
         allColors.add(new Color(0xB4A76E));
