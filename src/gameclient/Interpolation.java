@@ -65,7 +65,7 @@ public class Interpolation {
         if (current.equals(target)) {
             // Since we are at the target position which only happens if server updates are delayed
             // a new target position is calculated based on the last difference between updates
-            double difference = differenceBetweenUpdates.get(player);
+            double difference = differenceBetweenUpdates.get(player) / 2; // division by 2 for smoother movement
             switch (player.getDirection()) {
                 case Left:
                     target = new Point(current.x - (int) difference, current.y);
