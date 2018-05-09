@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
  */
 public class GameScreen extends JPanel implements GameServerListener {
     private final int framesPerSecond = 60;
+    private final JPanel leftPanel;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
     private GameServerConnection client;
@@ -31,26 +32,37 @@ public class GameScreen extends JPanel implements GameServerListener {
         this.userInterface = userInterface;
         setLayout(new GridBagLayout());
 
-        gameInfoPanel = new GameInfoPanel(10);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.ipadx = 20;
-        gbc.ipady = 20;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        add(gameInfoPanel, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        leftPanel = createLeftPanel();
+        add(leftPanel, gbc);
 
         gamePanel = new GamePanel();
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.weightx = 10;
+        gbc.weightx = 1;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         add(gamePanel, gbc);
 
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
         add(createRightPanel(), gbc);
+    }
+
+    private JPanel createLeftPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        gameInfoPanel = new GameInfoPanel(10, 100);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(gameInfoPanel, gbc);
+
+        return panel;
     }
 
     private JPanel createRightPanel() {

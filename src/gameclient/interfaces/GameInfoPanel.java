@@ -11,21 +11,17 @@ import java.util.ArrayList;
 public class GameInfoPanel extends JTextPane {
     private StyledDocument document;
     private MutableAttributeSet style;
-    private GridBagConstraints gridBagConstraints = new GridBagConstraints();
     private ArrayList<Integer> textItems;
     private int lines;
     private Color defaultColor = Color.CYAN;
+    private int lineLimit;
 
 
-    public GameInfoPanel(int lines) {
+    public GameInfoPanel(int lines, int lineLimit) {
         this.lines = lines;
-        textItems = new ArrayList<Integer>(lines);
-        setLayout(new GridBagLayout());
+        this.lineLimit = lineLimit;
 
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.ipady = 3;
-        gridBagConstraints.anchor = GridBagConstraints.WEST;
-
+        textItems = new ArrayList<>(lines);
         document = getStyledDocument();
 
         style = new SimpleAttributeSet();
@@ -41,7 +37,7 @@ public class GameInfoPanel extends JTextPane {
     public void add(String text, Color color) {
         try {
             StyleConstants.setForeground(style, color);
-            text += "\n";
+            text = getLimitedString(text, lineLimit);
             document.insertString(document.getLength(), text, style);
             textItems.add(text.length());
             if (textItems.size() > lines) {
@@ -52,15 +48,23 @@ public class GameInfoPanel extends JTextPane {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-        /*
-        JLabel textLabel = new JLabel(text.toUpperCase());
-        textLabel.setForeground(color);
-        textLabel.setFont(Resources.getInstance().getDefaultFont().deriveFont(Font.BOLD, 10));
-        add(textLabel, gridBagConstraints);
-        textItems.add(textLabel);
-        if (textItems.size() > lines) remove(textItems.removeFirst());
-        revalidate();
-        repaint();
-        */
+    }
+
+    /**
+     * Adds newline character at the lineLimit (maximum characters in a row)
+     *
+     * @param text      Text to split with newline character
+     * @param lineLimit How many characters should each line have
+     * @return A new String with newline character at every lineLimit index
+     */
+    private String getLimitedString(String text, int lineLimit) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < text.length(); i += lineLimit) {
+            int end = i + lineLimit;
+            if (end > text.length()) end = text.length();
+            stringBuilder.append(text, i, end);
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 }
