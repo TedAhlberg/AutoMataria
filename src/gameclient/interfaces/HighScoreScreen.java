@@ -7,6 +7,7 @@ import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.MatteBorder;
 
 import gameclient.Resources;
 
@@ -85,6 +86,17 @@ public class HighScoreScreen extends JPanel {
             column += 1;
         }
         row += 1;
+        
+        JPanel separator = new JPanel();
+        separator.setBorder(new MatteBorder(1, 0, 0, 0, Color.RED));
+        c = new GridBagConstraints();
+        c.gridwidth = headerLabels.length;
+        c.gridy = row;
+        c.fill = GridBagConstraints.BOTH;
+        panel.add(separator, c);
+
+        row += 1;
+
         revalidate();
         repaint();
 	}

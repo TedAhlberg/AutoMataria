@@ -33,7 +33,7 @@ public class StartScreen extends JPanel {
         addButton("PLAY", "BrowseScreen");
         addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
-        addButton("HIGHSCORES", "");
+        addButton("HIGHSCORES", "HighScoreScreen");
         addButton("SETTINGS", "SettingsScreen");
         addButton("EXIT", new ActionListener() {
             public void actionPerformed(ActionEvent event) {
