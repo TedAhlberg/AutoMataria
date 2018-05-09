@@ -29,9 +29,9 @@ public class StartTestGame {
         GameServerSettings settings = new GameServerSettings();
         settings.name = "StartTestGameServer";
         settings.port = 32000;
-        settings.tickRate = 75;
-        settings.amountOfTickBetweenUpdates = 2;
-        settings.playerSpeed = Game.GRID_PIXEL_SIZE / 2;
+        settings.tickRate = 33;
+        settings.amountOfTickBetweenUpdates = 3;
+        settings.playerSpeed = Game.GRID_PIXEL_SIZE / 4;
         settings.mapPool = new String[]{map.getName()};
 
         GameServer server = new GameServer(settings);

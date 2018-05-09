@@ -242,24 +242,24 @@ public class HostServerScreen extends JPanel {
 
             switch (profile) {
                 case "LOW PERFORMANCE":
-                    playerSpeedSlider.setValue(100);
-                    tickRateSlider.setValue(150);
+                    playerSpeedSlider.setValue(50);
+                    tickRateSlider.setValue(66);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "HIGH PERFORMANCE":
-                    playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(50);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "EXTREME PERFORMANCE":
-                    playerSpeedSlider.setValue(20);
-                    tickRateSlider.setValue(25);
-                    ticksPerUpdateSlider.setValue(2);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
+                    ticksPerUpdateSlider.setValue(1);
                     break;
                 default:
-                    playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(75);
-                    ticksPerUpdateSlider.setValue(2);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
+                    ticksPerUpdateSlider.setValue(3);
             }
         });
 
