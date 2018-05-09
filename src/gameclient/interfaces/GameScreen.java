@@ -23,6 +23,7 @@ public class GameScreen extends JPanel implements GameServerListener {
     private final JPanel leftPanel;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
+    private ScorePanel scorePanel;
     private GameServerConnection client;
     private Player player;
     private UserInterface userInterface;
@@ -77,10 +78,18 @@ public class GameScreen extends JPanel implements GameServerListener {
             userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
+        c.gridy = 0;
         c.ipadx = 20;
         c.ipady = 20;
         c.anchor = GridBagConstraints.NORTHEAST;
+        c.fill = GridBagConstraints.HORIZONTAL;
         panel.add(backButton, c);
+
+        scorePanel = new ScorePanel();
+        c.gridy = 1;
+        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(scorePanel, c);
 
         return panel;
     }
@@ -102,6 +111,7 @@ public class GameScreen extends JPanel implements GameServerListener {
             gamePanel.toggleInterpolation();
         } else if (action == Action.ToggleDebugText) {
             gamePanel.toggleDebugInfo();
+            gameInfoPanel.setVisible(!gameInfoPanel.isVisible());
         } else {
             client.send(action);
         }
@@ -149,11 +159,17 @@ public class GameScreen extends JPanel implements GameServerListener {
             handleRoundOverMessage((RoundOverMessage) data);
         } else if (data instanceof GameOverMessage) {
             handleGameOverMessage((GameOverMessage) data);
+        } else if (data instanceof ScoreUpdateMessage) {
+            handleScoreUpdateMessage((ScoreUpdateMessage) data);
         } else if (data instanceof GameMap) {
             handleMapChange((GameMap) data);
         } else if (data instanceof ReadyPlayersMessage) {
             handleReadyPlayersMessage((ReadyPlayersMessage) data);
         }
+    }
+
+    private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
+        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
     }
 
     private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
@@ -171,26 +187,10 @@ public class GameScreen extends JPanel implements GameServerListener {
     }
 
     private void handleRoundOverMessage(RoundOverMessage message) {
-        gameInfoPanel.add(":: Round Ended :: Round Scores");
-        message.getRoundScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
-        gameInfoPanel.add(":: Round Ended :: Total Scores");
-        message.getAccumulatedScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
         gameInfoPanel.add(":: Next round starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
     }
 
     private void handleGameOverMessage(GameOverMessage message) {
-        gameInfoPanel.add(":: Game Over :: Round Scores");
-        message.getRoundScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
-        gameInfoPanel.add(":: Game Over :: Total Scores");
-        message.getAccumulatedScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
         gameInfoPanel.add(":: Next map starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
     }
 
@@ -236,10 +236,10 @@ public class GameScreen extends JPanel implements GameServerListener {
         Color playerColor = message.getPlayer().getColor();
         switch (message.getEvent()) {
             case Connected:
-                gameInfoPanel.add(playerName + " has connected", playerColor);
+                gameInfoPanel.add(playerName + " has connected to the server", playerColor);
                 break;
             case Disconnected:
-                gameInfoPanel.add(playerName + " has disconnected", playerColor);
+                gameInfoPanel.add(playerName + " has disconnected from the server", playerColor);
                 break;
             case Ready:
                 gameInfoPanel.add(playerName + " is ready", playerColor);

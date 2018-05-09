@@ -187,7 +187,7 @@ public class GamePanel extends JComponent {
                 gamePanelText.drawText(g2, "ROUND OVER", GamePanelText.FontSize.Large, GamePanelText.Location.Center);
                 break;
             case Warmup:
-                gamePanelText.drawText(g2, "WARMUP ROUND\n\nWAITING FOR PLAYERS TO READY UP", GamePanelText.FontSize.Small, GamePanelText.Location.Bottom);
+                gamePanelText.drawText(g2, "WARMUP ROUND\n\nWAITING FOR PLAYERS TO READY UP", GamePanelText.FontSize.Small, GamePanelText.Location.Center);
                 if (showDebugInfo) gamePanelText.drawTopLeftText(g2, fps + " FPS");
                 break;
         }

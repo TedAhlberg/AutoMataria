@@ -45,7 +45,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         serverConnection.addListener(this);
         serverInformationSender = new ServerInformationSender(this);
         gameObjectSpawner = new GameObjectSpawner(gameObjects, currentMap, settings.tickRate);
-        gameScore = new GameScore();
+        gameScore = new GameScore(this);
         changeMap(Maps.getInstance().get(settings.mapPool[0]));
         setState(GameState.Warmup);
     }
@@ -154,7 +154,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         switch (state) {
             case Running:
                 gameScore.calculateScores();
-                if (gameScore.isGameComplete()) {
+                if (gameScore.isGameOver()) {
                     setState(GameState.GameOver);
                 } else if (gameScore.isRoundComplete()) {
                     setState(GameState.RoundOver);
@@ -243,14 +243,12 @@ public class GameServer implements ConnectionListener, MessageListener {
                     player.setNextDirection(Direction.Static);
                 }
                 currentCountdown = settings.roundOverCountdown < 1000 ? 1000 : settings.roundOverCountdown;
-                newMessage(new RoundOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), currentCountdown));
                 break;
             case GameOver:
                 for (Player player : players) {
                     player.setNextDirection(Direction.Static);
                 }
                 currentCountdown = settings.gameOverCountdown < 1000 ? 1000 : settings.gameOverCountdown;
-                newMessage(new GameOverMessage(gameScore.getRoundScores(), gameScore.getAccumulatedScores(), currentCountdown));
                 break;
             case Countdown:
                 resetGame();
