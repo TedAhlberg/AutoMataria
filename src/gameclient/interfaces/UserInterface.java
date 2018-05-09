@@ -37,6 +37,7 @@ public class UserInterface extends JPanel {
         add(new MapEditorUI(this).container, "MapEditorScreen");
         add(new BrowseServersScreen(this), "BrowseScreen");
         add(new ConnectScreen(this), "ConnectScreen");
+        add(new HighScoreScreen(this), "HighScoreScreen");
         gameScreen = new GameScreen(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(gameScreen));
         add(gameScreen, "GameScreen");

@@ -23,8 +23,4 @@ public class HighScore {
         highScores.remove(key);
         highScores.put(newUserName, highScore);
     }
-    
-    
-    
-
 }
