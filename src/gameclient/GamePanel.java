@@ -78,8 +78,6 @@ public class GamePanel extends JComponent {
 
     /**
      * Changes the grid that is displayed above the background
-     * Also note that this method will resize the panel in some cases
-     * to display the grid evenly
      *
      * @param gridSize Amount of vertical and horizontal grid lines to draw
      */

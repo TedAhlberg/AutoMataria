@@ -1,12 +1,11 @@
 package gameclient;
 
 import common.Direction;
-import common.Utility;
-import gameobjects.*;
+import gameobjects.GameObject;
+import gameobjects.Player;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Interpolation handles the smooth movement of a character between updates from the server
@@ -18,6 +17,7 @@ import java.util.concurrent.*;
 public class Interpolation {
     private final ConcurrentHashMap<GameObject, Point> currentPositions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<GameObject, Point> targetPositions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<GameObject, Double> differenceBetweenUpdates = new ConcurrentHashMap<>();
     private int tickRate = 100;
     private double currentDeltaTime;
 
@@ -27,11 +27,28 @@ public class Interpolation {
      * @param player A gameobject that will be used as target for the same gameobjects current position
      */
     public void addTarget(Player player) {
-        if (targetPositions.get(player) == null) {
-            targetPositions.put(player, player.getPoint());
+        Point previousTarget = targetPositions.get(player);
+        Point newTarget = player.getPoint();
+        if (previousTarget == null) {
+            previousTarget = newTarget;
         }
-        currentPositions.put(player, targetPositions.get(player));
-        targetPositions.put(player, player.getPoint());
+        currentPositions.put(player, previousTarget);
+        targetPositions.put(player, newTarget);
+
+        differenceBetweenUpdates.put(player, difference(previousTarget, newTarget));
+    }
+
+    /**
+     * Calculates the difference between two Points
+     *
+     * @param p1 First Point
+     * @param p2 Second Point
+     * @return Distance between the two Points
+     */
+    public double difference(Point p1, Point p2) {
+        return Math.sqrt(
+                (p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + ((p1.getY() - p2.getY()) * (p1.getY() - p2.getY()))
+        );
     }
 
     /**
@@ -40,10 +57,34 @@ public class Interpolation {
      * @param player The Player to interpolate (Move closer to target position)
      */
     public void interpolate(Player player) {
+        if (player.getDirection() == Direction.Static) return;
         Point current = currentPositions.get(player);
         Point target = targetPositions.get(player);
 
         if (target == null) return;
+        if (current.equals(target)) {
+            // Since we are at the target position which only happens if server updates are delayed
+            // a new target position is calculated based on the last difference between updates
+            double difference = differenceBetweenUpdates.get(player);
+            switch (player.getDirection()) {
+                case Left:
+                    target = new Point(current.x - (int) difference, current.y);
+                    targetPositions.put(player, target);
+                    break;
+                case Right:
+                    target = new Point(current.x + (int) difference, current.y);
+                    targetPositions.put(player, target);
+                    break;
+                case Up:
+                    target = new Point(current.x, current.y - (int) difference);
+                    targetPositions.put(player, target);
+                    break;
+                case Down:
+                    target = new Point(current.x, current.y + (int) difference);
+                    targetPositions.put(player, target);
+                    break;
+            }
+        }
 
         int speedPerSecond = (1000 / tickRate) * player.getSpeed();
         double interpolation = currentDeltaTime * speedPerSecond;

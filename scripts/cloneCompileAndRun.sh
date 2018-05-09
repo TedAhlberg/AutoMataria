@@ -11,5 +11,5 @@ mkdir ./bin
 javac -encoding UTF-8 -d ./bin -sourcepath ./src -cp ./lib/mp3plugin.jar -classpath ./src $(find ./ -name "*.java")
 
 # Start the server
-java -cp ./bin/ test.StartServer "Auto-Mataria Test Server 1" 32000 50 2 25 "Small Map 1"
+java -cp ./bin/ test.StartServer "Auto-Mataria Test Server 1" 32000 33 3 25 "Small Map 1"
 
