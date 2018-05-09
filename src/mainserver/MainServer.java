@@ -108,9 +108,6 @@ public class MainServer {
             }
         }
     }
-    
-    
-    
     public static void main(String[] args) {
         MainServer hsh = new MainServer();
         hsh.started();
