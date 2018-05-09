@@ -110,12 +110,18 @@ public class HighScoreScreen extends JPanel {
         row += 1;
         
         column = 0;
-        JLabel[] labels = new JLabel[10];
-        
+        JLabel[] labels = { 
+        					new JLabel("Henko" + " " + highScore.get("Henko")),
+        					new JLabel("Erik" + " " + highScore.get("Erik")),
+        					new JLabel("Ted" + " " + highScore.get("Ted")),
+        					new JLabel("Dante" + " " + highScore.get("Dante")),
+        					new JLabel("Johannes" + " " + highScore.get("Johannes"))
+        };
 
         for (JLabel label : labels) {
             panel.add(label, getTableConstraints(column, row));
-            column += 1;
+//            column += 1;
+            row += 1;
         }
 
         revalidate();
