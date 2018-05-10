@@ -65,6 +65,7 @@ public abstract class Pickup extends GameObject {
         player.setPickUp(this);
         this.player = player;
     }
+
     public abstract void done();
 
     public abstract void use(Player player, Collection<GameObject> gameObjects);

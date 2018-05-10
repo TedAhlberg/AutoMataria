@@ -174,6 +174,9 @@ public class Player extends GameObject {
                         pickup.use(this, gameObjects);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickup));
                     } else {
+                        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
+                            pickupSlot.done();
+                        }
                         pickup.take(this);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupTaken, this, pickup));
                     }
