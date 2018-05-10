@@ -5,55 +5,45 @@ import gameobjects.Player;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.Collection;
 
 /**
  * @author Johannes Blüml
  */
-public class ScorePanel extends JPanel {
-    public ScorePanel() {
+public class ReadyPlayersPanel extends JPanel {
+    public ReadyPlayersPanel() {
         setLayout(new GridBagLayout());
     }
 
-    public void update(HashMap<Player, Integer> scores, int scoreLimit, int roundLimit, int playedRounds, boolean gameOver) {
+    public void update(Collection<Player> players, int scoreLimit, int roundLimit, int ready, int amountPlayers) {
         removeAll();
 
         int row = 0;
+        addTableRow(row++, "SCORE LIMIT", scoreLimit < 1 ? "UNLIMITED" : Integer.toString(scoreLimit));
+        addTableRow(row++, "ROUND LIMIT", roundLimit < 1 ? "UNLIMITED" : Integer.toString(roundLimit));
+        addRowSpacer(row++, 10);
+        addTableRow(row++, "READY", ready + " / " + amountPlayers);
+        addRowSpacer(row++, 10);
 
-        if (scoreLimit > 0) {
-            addTableRow(row, "SCORE LIMIT", Integer.toString(scoreLimit));
-            row += 1;
-        }
-
-        if (roundLimit > 0) {
-            addTableRow(row, "ROUND", playedRounds + " / " + roundLimit);
-            row += 1;
-        } else {
-            addTableRow(row, "ROUND", Integer.toString(playedRounds));
-            row += 1;
-        }
-
-        addRowSpacer(row, 10);
-        row += 1;
-
-        JLabel titleLabel1 = new JLabel("PLAYER SCORES");
+        JLabel titleLabel1 = new JLabel("PLAYERS");
         titleLabel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.MAGENTA));
         GridBagConstraints gbc = getTableConstraints(0, row);
         gbc.insets = new Insets(0, 0, 5, 0);
         gbc.gridwidth = 2;
         add(titleLabel1, gbc);
+
         row += 1;
 
-        for (Player player : scores.keySet()) {
-            JLabel nameLabel = new JLabel(player.getName());
+        for (Player player : players) {
+
+            JLabel nameLabel = new JLabel(player.getName().toUpperCase());
             nameLabel.setForeground(player.getColor());
-
-            JLabel scoreLabel = new JLabel(Integer.toString(scores.get(player)));
-            scoreLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-            scoreLabel.setForeground(player.getColor());
-
             add(nameLabel, getTableConstraints(0, row));
-            add(scoreLabel, getTableConstraints(1, row));
+
+            JLabel readyLabel = new JLabel(player.isReady() ? "READY" : "");
+            readyLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+            readyLabel.setForeground(player.getColor());
+            add(readyLabel, getTableConstraints(1, row));
 
             row += 1;
         }

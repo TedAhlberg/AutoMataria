@@ -14,12 +14,10 @@ public class GameInfoPanel extends JTextPane {
     private ArrayList<Integer> textItems;
     private int lines;
     private Color defaultColor = Color.CYAN;
-    private int lineLimit;
 
 
-    public GameInfoPanel(int lines, int lineLimit) {
+    public GameInfoPanel(int lines) {
         this.lines = lines;
-        this.lineLimit = lineLimit;
 
         textItems = new ArrayList<>(lines);
         document = getStyledDocument();
@@ -37,8 +35,7 @@ public class GameInfoPanel extends JTextPane {
     public void add(String text, Color color) {
         try {
             StyleConstants.setForeground(style, color);
-            text = getLimitedString(text, lineLimit);
-            document.insertString(document.getLength(), text, style);
+            document.insertString(document.getLength(), text + "\n", style);
             textItems.add(text.length());
             if (textItems.size() > lines) {
                 int charsToRemove = textItems.get(0);
@@ -48,23 +45,5 @@ public class GameInfoPanel extends JTextPane {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Adds newline character at the lineLimit (maximum characters in a row)
-     *
-     * @param text      Text to split with newline character
-     * @param lineLimit How many characters should each line have
-     * @return A new String with newline character at every lineLimit index
-     */
-    private String getLimitedString(String text, int lineLimit) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < text.length(); i += lineLimit) {
-            int end = i + lineLimit;
-            if (end > text.length()) end = text.length();
-            stringBuilder.append(text, i, end);
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
     }
 }

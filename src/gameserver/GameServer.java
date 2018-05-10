@@ -234,6 +234,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         switch (newState) {
             case Warmup:
                 resetGame();
+                updateReadyPlayers();
                 break;
             case Running:
                 gameScore.startRound();
@@ -293,6 +294,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                 if (value == Action.TogglePlayerColor) {
                     player.setColor(colors.exchangeColor(player.getColor()));
                     newMessage(new PlayerMessage(PlayerMessage.Event.ColorChange, player));
+                    updateReadyPlayers();
                 } else if (value == Action.ToggleReady) {
                     boolean ready = !player.isReady();
                     player.setReady(ready);
@@ -316,11 +318,12 @@ public class GameServer implements ConnectionListener, MessageListener {
     }
 
     private void updateReadyPlayers() {
-        int playersCount = connectedClients.size();
-        int readyPlayers = (int) connectedClients.values().stream().filter(Player::isReady).count();
-        newMessage(new ReadyPlayersMessage(readyPlayers, playersCount));
-        if (playersCount < 2) return;
-        if (readyPlayers == playersCount) setState(GameState.Countdown);
+        ReadyPlayersMessage message = new ReadyPlayersMessage(connectedClients.values());
+        message.setScoreLimit(settings.scoreLimit);
+        message.setRoundLimit(settings.roundLimit);
+        newMessage(message);
+        if (message.getReadyPlayerCount() < 2) return;
+        if (message.getReadyPlayerCount() == message.getPlayerCount()) setState(GameState.Countdown);
     }
 
     /**
