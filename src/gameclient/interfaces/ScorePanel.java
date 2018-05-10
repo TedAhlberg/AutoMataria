@@ -15,26 +15,14 @@ public class ScorePanel extends JPanel {
         setLayout(new GridBagLayout());
     }
 
-    public void update(HashMap<Player, Integer> scores, int scoreLimit, int roundLimit, int playedRounds, boolean gameOver) {
+    public void update(HashMap<Player, Integer> scores, int scoreLimit, int highestScore, int roundLimit, int playedRounds, boolean gameOver) {
         removeAll();
 
-        int row = 0;
+        int row = 0, currentRound = playedRounds + 1;
+        addTableRow(row++, "SCORE LIMIT", scoreLimit < 1 ? "UNLIMITED" : highestScore + " / " + scoreLimit);
+        addTableRow(row++, "ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
 
-        if (scoreLimit > 0) {
-            addTableRow(row, "SCORE LIMIT", Integer.toString(scoreLimit));
-            row += 1;
-        }
-
-        if (roundLimit > 0) {
-            addTableRow(row, "ROUND", playedRounds + " / " + roundLimit);
-            row += 1;
-        } else {
-            addTableRow(row, "ROUND", Integer.toString(playedRounds));
-            row += 1;
-        }
-
-        addRowSpacer(row, 10);
-        row += 1;
+        addRowSpacer(row++, 10);
 
         JLabel titleLabel1 = new JLabel("PLAYER SCORES");
         titleLabel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.MAGENTA));

@@ -201,7 +201,7 @@ public class GameScreen extends JPanel implements GameServerListener {
     private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
         readyPlayersPanel.setVisible(false);
         scorePanel.setVisible(true);
-        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
+        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getHighestScore(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
     }
 
     private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
