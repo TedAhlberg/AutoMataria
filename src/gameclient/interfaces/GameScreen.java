@@ -20,10 +20,11 @@ import java.lang.reflect.Method;
  */
 public class GameScreen extends JPanel implements GameServerListener {
     private final int framesPerSecond = 60;
-    private final JPanel leftPanel;
+    private final JPanel leftPanel, rightPanel;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
     private ScorePanel scorePanel;
+    private ReadyPlayersPanel readyPlayersPanel;
     private GameServerConnection client;
     private Player player;
     private UserInterface userInterface;
@@ -35,6 +36,7 @@ public class GameScreen extends JPanel implements GameServerListener {
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
+        gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         leftPanel = createLeftPanel();
         add(leftPanel, gbc);
@@ -49,18 +51,28 @@ public class GameScreen extends JPanel implements GameServerListener {
 
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
+        gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        add(createRightPanel(), gbc);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        rightPanel = createRightPanel();
+        add(rightPanel, gbc);
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Dimension sidePanelSize = new Dimension((getWidth() - gamePanel.getHeight()) / 2, gamePanel.getHeight());
+        leftPanel.setPreferredSize(sidePanelSize);
+        rightPanel.setPreferredSize(sidePanelSize);
     }
 
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
 
-        gameInfoPanel = new GameInfoPanel(10, 100);
+        gameInfoPanel = new GameInfoPanel(10);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
+        gbc.weightx = 1;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.BOTH;
         panel.add(gameInfoPanel, gbc);
 
         return panel;
@@ -68,33 +80,54 @@ public class GameScreen extends JPanel implements GameServerListener {
 
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
 
-        AMButton backButton = new AMButton("DISCONNECT");
-        backButton.addActionListener(e -> {
+        AMButton disconnectButton = new AMButton("DISCONNECT");
+        disconnectButton.addActionListener(e -> {
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
             userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
-        c.gridy = 0;
-        c.ipadx = 20;
-        c.ipady = 20;
-        c.anchor = GridBagConstraints.NORTHEAST;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(backButton, c);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.NORTHEAST;
+        panel.add(disconnectButton, gbc);
+
+        AMButton settingsButton = new AMButton("SETTINGS");
+        settingsButton.addActionListener(e -> userInterface.changeScreen("SettingsScreen"));
+        gbc = new GridBagConstraints();
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.NORTHEAST;
+        panel.add(settingsButton, gbc);
+
+        readyPlayersPanel = new ReadyPlayersPanel();
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(readyPlayersPanel, gbc);
 
         scorePanel = new ScorePanel();
-        c.gridy = 1;
-        c.anchor = GridBagConstraints.NORTH;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(scorePanel, c);
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(scorePanel, gbc);
 
         return panel;
     }
 
     public void connect(String ip, int port, String username) {
+        if (client != null && client.isConnected()) return;
         this.username = username;
         client = new GameServerConnection(this);
         client.connect(ip, port);
@@ -103,9 +136,6 @@ public class GameScreen extends JPanel implements GameServerListener {
 
     public void onKeyPress(Action action) {
         if (action == Action.InterfaceBack) {
-            if (client != null) {
-                client.disconnect();
-            }
             userInterface.changeToPreviousScreen();
         } else if (action == Action.ToggleInterpolation) {
             gamePanel.toggleInterpolation();
@@ -169,11 +199,15 @@ public class GameScreen extends JPanel implements GameServerListener {
     }
 
     private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
-        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
+        readyPlayersPanel.setVisible(false);
+        scorePanel.setVisible(true);
+        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getHighestScore(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
     }
 
     private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
-        gameInfoPanel.add(message.getReadyPlayerCount() + "/" + message.getPlayerCount() + " ready players");
+        scorePanel.setVisible(false);
+        readyPlayersPanel.setVisible(true);
+        readyPlayersPanel.update(message.getPlayers(), message.getScoreLimit(), message.getRoundLimit(), message.getReadyPlayerCount(), message.getPlayerCount());
     }
 
     private void handleNewGameMessage(NewGameMessage message) {
