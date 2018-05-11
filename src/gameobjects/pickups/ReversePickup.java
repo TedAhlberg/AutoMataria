@@ -6,8 +6,8 @@ import gameobjects.*;
 import java.util.Collection;
 
 /**
- * Pickup that reverses all movements for a short amount of time for all
- * opponents.
+ * Pickup that reverses all movements for a short amount of time, 
+ * but only for opponents.
  *
  * @author Dante Håkansson
  */
