@@ -15,8 +15,10 @@ import java.io.*;
 
 public class SettingsScreen extends JPanel implements ActionListener {
     /**
-     * The settingsScreen handles all personal settings for the user such as keybinding, 
-     * name change, screensize and sound managing. The panel is added to the cardLayout in UserInterface.
+     * The settingsScreen handles all personal settings for the user such as
+     * keybinding, name change, screensize and sound managing. The panel is added to
+     * the cardLayout in UserInterface.
+     * 
      * @author Erik Lundow
      */
     private static final long serialVersionUID = 1L;
@@ -147,7 +149,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
-        //Add spacing
+        // Add spacing
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
@@ -283,12 +285,16 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnChange) {
-            lblUserName.setText("USER: " + tfUserName.getText());
-            writeToFile(tfUserName.getText());
-            user = tfUserName.getText();
-            tfUserName.setText("");
+            if (tfUserName.getText().equals("")) {
+                lblUserName.setText("USER: PLAYER");
+                writeToFile("PLAYER");
+            } else {
+                lblUserName.setText("USER: " + tfUserName.getText());
+                writeToFile(tfUserName.getText());
+                user = tfUserName.getText();
+                tfUserName.setText("");
+            }
         }
-
         if (e.getSource() == btnBack) {
             userInterface.changeToPreviousScreen();
         }
