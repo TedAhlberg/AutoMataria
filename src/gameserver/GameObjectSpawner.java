@@ -9,7 +9,6 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Spawns game objects from the map into the gameObjects collection.
@@ -38,6 +37,9 @@ public class GameObjectSpawner {
     public void changeMap(GameMap map) {
         currentMap = map;
         spawnedObjects.forEach((specialObject, gameObject) -> {
+            if (gameObject instanceof Pickup && ((Pickup) gameObject).getState() == PickupState.InUse) {
+                ((Pickup) gameObject).done();
+            }
             gameObjects.remove(gameObject);
         });
         spawnedObjects.clear();
@@ -50,64 +52,89 @@ public class GameObjectSpawner {
     public void tick() {
         if (currentMap.getGameMapObjects() == null) return;
 
-        // Removes removed gameobject from spawnedObjects HashMap so it can be placed om map again
+        // Removes removed gameobject from spawnedObjects HashMap so they can be placed om map again
         spawnedObjects.values().removeIf(gameObject -> !gameObjects.contains(gameObject));
 
         for (SpecialGameObject specialObject : currentMap.getGameMapObjects()) {
-            if (specialObject.getSpawnInterval() == 0) {
-                if (!spawnedObjects.containsKey(specialObject)) {
-                    GameObject gameObject = getCopyOfGameObject(specialObject.getGameObject());
-                    if (gameObject == null) {
-                        System.out.println("ERROR: Can't find GameObject " + specialObject.getGameObject().getClass().getSimpleName());
-                        continue;
-                    }
-                    gameObject.setId(ID.getNext());
-                    if (gameObject instanceof Pickup) {
-                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameObject.setX(gameObject.getX() - quarterGridPixel);
-                        gameObject.setY(gameObject.getY() - quarterGridPixel);
-                    }
-                    gameObjects.add(gameObject);
-                    spawnedObjects.put(specialObject, gameObject);
-                }
+            boolean isSpawnRandom = specialObject.isSpawnRandom();
+            boolean isSpawnInstantly = !isSpawnRandom && specialObject.getSpawnInterval() == 0;
+            boolean isTimerExpired = !isSpawnInstantly && specialObject.getTimer() <= 0;
+            boolean isSpawned = spawnedObjects.containsKey(specialObject);
+            boolean hasSpawnLimit = specialObject.getSpawnLimit() > 0;
+
+            if (hasSpawnLimit) {
+                int spawnsLeft = specialObject.getSpawnLimit() - specialObject.getTimesSpawned();
+                if (spawnsLeft <= 0) continue;
+            }
+
+            GameObject gameObject = isSpawned ? spawnedObjects.get(specialObject) : getCopyOfGameObject(specialObject.getGameObject());
+
+            if (gameObject == null) continue;
+
+            if (!isSpawned && (isSpawnInstantly || isTimerExpired)) {
+                spawn(specialObject, gameObject, isSpawnRandom);
                 continue;
             }
-            if (specialObject.getTimer() <= 0) {
-                if (spawnedObjects.containsKey(specialObject)) {
-                    GameObject gameObject = spawnedObjects.get(specialObject);
-                    if (gameObject instanceof Pickup) {
-                        PickupState state = ((Pickup) gameObject).getState();
-                        if (state == PickupState.NotTaken) {
-                            gameObjects.remove(gameObject);
-                            spawnedObjects.remove(specialObject);
-                            specialObject.setTimer(specialObject.getSpawnInterval());
-                        }
-                    } else {
-                        gameObjects.remove(gameObject);
-                        spawnedObjects.remove(specialObject);
-                        specialObject.setTimer(specialObject.getSpawnInterval());
-                    }
-                } else {
-                    GameObject gameObject = getCopyOfGameObject(specialObject.getGameObject());
-                    if (gameObject == null) {
-                        System.out.println("ERROR: Can't find copy constructor in GameObject " + specialObject.getGameObject().getClass().getSimpleName());
-                        continue;
-                    }
-                    if (specialObject.isSpawnRandom()) {
-                        Point point = Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects);
-                        int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
-                        gameObject.setX(point.x - quarterGridPixel);
-                        gameObject.setY(point.y - quarterGridPixel);
-                    }
-                    gameObject.setId(ID.getNext());
-                    gameObjects.add(gameObject);
-                    spawnedObjects.put(specialObject, gameObject);
-                    specialObject.setTimer(specialObject.getVisibleTime());
-                }
-            } else {
-                specialObject.setTimer(specialObject.getTimer() - tickRate);
+
+            if (isSpawned && isTimerExpired) {
+                remove(specialObject, gameObject);
+                continue;
+            }
+
+            specialObject.setTimer(specialObject.getTimer() - tickRate);
+        }
+    }
+
+    /**
+     * Removed a spawned GameObject from the current map
+     *
+     * @param specialObject Settings Object for the GameObject
+     * @param gameObject    The already spawned GameObject to remove
+     */
+    private void remove(SpecialGameObject specialObject, GameObject gameObject) {
+
+        if (gameObject instanceof Pickup) {
+            // Only remove pickups if they are not taken or in use
+            switch (((Pickup) gameObject).getState()) {
+                case InUse:
+                case Taken:
+                    return;
             }
         }
+
+        gameObjects.remove(gameObject);
+        spawnedObjects.remove(specialObject);
+
+        specialObject.setTimer(specialObject.getSpawnInterval());
+    }
+
+    /**
+     * Spawns a GameObject on the current map
+     *
+     * @param specialObject Settings Object for the GameObject
+     * @param gameObject    The new GameObject to spawn
+     * @param isSpawnRandom If true the GameObject will be spawned at a random position on the Map
+     */
+    private void spawn(SpecialGameObject specialObject, GameObject gameObject, boolean isSpawnRandom) {
+
+        if (isSpawnRandom) {
+            Point point = Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects);
+            gameObject.setPoint(point);
+        }
+
+        if (gameObject instanceof Pickup) {
+            int quarterGridPixel = Game.GRID_PIXEL_SIZE / 4;
+            gameObject.setX(gameObject.getX() - quarterGridPixel);
+            gameObject.setY(gameObject.getY() - quarterGridPixel);
+        }
+
+        gameObject.setId(ID.getNext());
+
+        gameObjects.add(gameObject);
+        spawnedObjects.put(specialObject, gameObject);
+
+        specialObject.setTimer(specialObject.getVisibleTime());
+        specialObject.incrementTimesSpawned();
     }
 
     /**

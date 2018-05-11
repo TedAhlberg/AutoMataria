@@ -1,8 +1,8 @@
 package common;
 
-import java.io.Serializable;
-
 import gameobjects.GameObject;
+
+import java.io.Serializable;
 
 /**
  * Contains a GameObject and adds extra settings for it.
@@ -19,6 +19,7 @@ public class SpecialGameObject implements Serializable {
     private boolean spawnRandom;
     private int visibleTime;
     transient private int timer;
+    transient private int timesSpawned;
 
     public SpecialGameObject(GameObject gameObject) {
         this(gameObject, 0, 0, false, 0);
@@ -58,6 +59,14 @@ public class SpecialGameObject implements Serializable {
 
     public void setTimer(int timer) {
         this.timer = timer;
+    }
+
+    public void incrementTimesSpawned() {
+        this.timesSpawned += 1;
+    }
+
+    public int getTimesSpawned() {
+        return timesSpawned;
     }
 
     public String toString() {
