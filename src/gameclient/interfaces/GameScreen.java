@@ -286,6 +286,7 @@ public class GameScreen extends JPanel implements GameServerListener {
                 SoundFx.getInstance().crash();
                 break;
             case Moved:
+                if(message.getPlayer().equals(player))
                 SoundFx.getInstance().movement();
                 break;
             case ColorChange:
