@@ -1,6 +1,5 @@
 package gameclient.interfaces;
 
-
 import gameclient.*;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
@@ -14,21 +13,28 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-/**
- * @author Erik Lundow
- */
 public class SettingsScreen extends JPanel implements ActionListener {
+    /**
+     * The settingsScreen handles all personal settings for the user such as
+     * keybinding, name change, screensize and sound managing. The panel is added to
+     * the cardLayout in UserInterface.
+     * 
+     * @author Erik Lundow
+     */
+    private static final long serialVersionUID = 1L;
     private JPanel pnlHead = new JPanel(new GridBagLayout());
     private JPanel pnlUserName = new JPanel(new GridBagLayout());
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private JPanel pnlScreen = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
     private BufferedImage backgroundImage;
+    private boolean music = true;
+    private boolean sfx = true;
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String user = "Player";
-    private String screen[] = {"WINDOWED", "MAXIMIZED", "FULLSCREEN"};
+    private String screen[] = { "WINDOWED", "MAXIMIZED", "FULLSCREEN" };
 
     private JComboBox<String> screenSize = new JComboBox<String>(screen);
 
@@ -37,14 +43,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private AMButton btnMusic = new AMButton("MUSIC: ON  ");
     private AMButton btnBack = new AMButton("BACK");
     private AMButton btnSFX = new AMButton("SFX: ON  ");
-    private AMButton btnScreen = new AMButton("CHANGE");
 
     private KeyBindings keyBindings = new KeyBindings();
     private KeyBindingsPanel pnlKeyBinder = new KeyBindingsPanel(keyBindings);
 
     private JLabel lblUserName = new JLabel("USER: " + readSettings());
-    private JLabel lblMusic = new JLabel("ON");
-    private JLabel lblSFX = new JLabel("ON");
     private JLabel lblSettings = new JLabel("SETTINGS");
     private JLabel lblControls = new JLabel("CONTROLS");
     private JLabel lblSpacing = new JLabel(" ");
@@ -52,6 +55,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JLabel lblSpacing2 = new JLabel("                                 ");
     private UserInterface userInterface;
 
+    /**
+     * Builds the settingsScreen.
+     * 
+     * @param userInterface
+     *            userInterface is used to connect the settings screen with the main
+     *            screen.
+     */
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
         backgroundImage = Resources.getImage("Stars.png");
@@ -59,7 +69,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         GridBagConstraints c = new GridBagConstraints();
 
         // Add Headline
-
         c.gridy = 1;
         c.gridx = 1;
         c.weighty = 1;
@@ -72,11 +81,10 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c = new GridBagConstraints();
         c.gridy = 0;
         c.ipady = 50;
-
         pnlUserName.add(lblUserName, c);
         pnlUserName.setOpaque(false);
 
-        // Add text Field
+        // Add textField
         c = new GridBagConstraints();
         c.gridy = 0;
         c.weightx = 1;
@@ -99,7 +107,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.HORIZONTAL;
         pnlHead.add(pnlUserName, c);
-        
+
         // Add ControlLabel
         c = new GridBagConstraints();
         c.gridx = 1;
@@ -115,8 +123,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(pnlKeyBinder, c);
 
-
-        //Add lblScreenSettings
+        // Add lblScreenSettings
         c = new GridBagConstraints();
         c.gridy = 1;
         c.ipadx = 50;
@@ -125,23 +132,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
         lblScreenSettings.setOpaque(false);
         pnlScreen.add(screenSize, c);
 
-//        //Add btnScreen
-//        c = new GridBagConstraints();
-//        c.gridy = 1;
-//        c.gridx = 2;
-//        c.ipadx = 10;
-//        c.ipady = 10;
-//        pnlScreen.add(btnScreen, c);
-
-        //Add pnlScreen
-        // Add MusicPanel
+        // Add pnlScreen
         c = new GridBagConstraints();
         c.ipady = 30;
         c.gridy = 6;
         c.gridx = 1;
         pnlScreen.setOpaque(false);
         pnlHead.add(pnlScreen, c);
-
 
         // Add musicButton
         c = new GridBagConstraints();
@@ -152,19 +149,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlMusic.setOpaque(false);
         pnlMusic.add(btnMusic, c);
 
-        // Add musicLabel
-//        c = new GridBagConstraints();
-//        c.gridy = 1;
-//        c.gridx = 2;
-//        c.ipadx = 10;
-
-//        pnlMusic.add(lblMusic, c);
-
+        // Add spacing
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
         c.ipadx = 10;
-
         pnlMusic.add(lblSpacing2, c);
 
         // Add SFXButton
@@ -175,20 +164,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c.ipady = 10;
         pnlMusic.add(btnSFX, c);
 
+        // Add back button
         c = new GridBagConstraints();
         c.gridy = 1;
         c.gridx = 3;
         c.ipadx = 10;
         c.ipady = 10;
         pnlMusic.add(btnBack, c);
-
-        // Add SFXLabel
-//        c = new GridBagConstraints();
-//        c.gridy = 1;
-//        c.gridx = 5;
-//        c.ipadx = 10;
-//
-//        pnlMusic.add(lblSFX, c);
 
         // Add MusicPanel
         c = new GridBagConstraints();
@@ -198,7 +180,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         pnlHead.add(pnlMusic, c);
 
         // Add spacing
-
         c.gridy = 8;
         c.gridx = 1;
         c.weighty = 1;
@@ -252,7 +233,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
         return "Player";
 
-
     }
 
     public void addListeners() {
@@ -267,17 +247,17 @@ public class SettingsScreen extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnMusic) {
             MusicManager.stop();
-            if (lblMusic.getText() == "ON") {
+            if (music) {
                 btnMusic.setText("MUSIC: OFF");
-                lblMusic.setText("OFF");}
-            else {
-                lblMusic.setText("ON");
+                music = false;
+            } else {
                 btnMusic.setText("MUSIC: ON  ");
                 MusicManager.getInstance().menuTrack();
+                music = true;
             }
 
         }
-    
+
         if (e.getSource() == screenSize) {
             if (screenSize.getSelectedItem().equals("MAXIMIZED")) {
                 userInterface.setWindowMode(Window.Mode.Maximized);
@@ -293,26 +273,28 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnSFX) {
-            if (lblSFX.getText() == "ON") {
+            if (sfx) {
                 Audio.sfxOff();
-                lblSFX.setText("OFF");
                 btnSFX.setText("SFX: OFF");
+                sfx = false;
             } else {
-                lblSFX.setText("ON");
                 Audio.sfxOff();
                 btnSFX.setText("SFX: ON  ");
-
+                sfx = true;
             }
         }
 
         if (e.getSource() == btnChange) {
-            lblUserName.setText("USER: " + tfUserName.getText());
-            writeToFile(tfUserName.getText());
-            user = tfUserName.getText();
-            tfUserName.setText("");
-
+            if (tfUserName.getText().equals("")) {
+                lblUserName.setText("USER: PLAYER");
+                writeToFile("PLAYER");
+            } else {
+                lblUserName.setText("USER: " + tfUserName.getText());
+                writeToFile(tfUserName.getText());
+                user = tfUserName.getText();
+                tfUserName.setText("");
+            }
         }
-
         if (e.getSource() == btnBack) {
             userInterface.changeToPreviousScreen();
         }
