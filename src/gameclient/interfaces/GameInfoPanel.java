@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class GameInfoPanel extends JTextPane {
     private StyledDocument document;
     private MutableAttributeSet style;
-    private GridBagConstraints gridBagConstraints = new GridBagConstraints();
     private ArrayList<Integer> textItems;
     private int lines;
     private Color defaultColor = Color.CYAN;
@@ -19,13 +18,8 @@ public class GameInfoPanel extends JTextPane {
 
     public GameInfoPanel(int lines) {
         this.lines = lines;
-        textItems = new ArrayList<Integer>(lines);
-        setLayout(new GridBagLayout());
 
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.ipady = 3;
-        gridBagConstraints.anchor = GridBagConstraints.WEST;
-
+        textItems = new ArrayList<>(lines);
         document = getStyledDocument();
 
         style = new SimpleAttributeSet();
@@ -41,8 +35,7 @@ public class GameInfoPanel extends JTextPane {
     public void add(String text, Color color) {
         try {
             StyleConstants.setForeground(style, color);
-            text += "\n";
-            document.insertString(document.getLength(), text, style);
+            document.insertString(document.getLength(), text + "\n", style);
             textItems.add(text.length());
             if (textItems.size() > lines) {
                 int charsToRemove = textItems.get(0);
@@ -52,15 +45,5 @@ public class GameInfoPanel extends JTextPane {
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
-        /*
-        JLabel textLabel = new JLabel(text.toUpperCase());
-        textLabel.setForeground(color);
-        textLabel.setFont(Resources.getInstance().getDefaultFont().deriveFont(Font.BOLD, 10));
-        add(textLabel, gridBagConstraints);
-        textItems.add(textLabel);
-        if (textItems.size() > lines) remove(textItems.removeFirst());
-        revalidate();
-        repaint();
-        */
     }
 }

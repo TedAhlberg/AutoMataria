@@ -1,5 +1,7 @@
 package gameserver;
 
+import common.messages.MessageListener;
+import common.messages.ScoreUpdateMessage;
 import gameobjects.Player;
 
 import java.util.Collection;
@@ -12,12 +14,16 @@ import java.util.HashMap;
  */
 public class GameScore {
     private int deadPlayers = 0;
-    private HashMap<Player, Integer> roundScores = new HashMap<>();
-    private HashMap<Player, Integer> accumulatedScores = new HashMap<>();
+    private HashMap<Player, Integer> scores = new HashMap<>();
     private Collection<Player> players;
     private int roundLimit, scoreLimit;
     private int roundsPlayed, highestScore;
-    private boolean gameComplete, roundComplete;
+    private boolean gameOver, roundComplete;
+    private MessageListener listener;
+
+    public GameScore(MessageListener listener) {
+        this.listener = listener;
+    }
 
     /**
      * @param players    The collection of players that will be checked for deaths each call to calculateScores
@@ -29,11 +35,10 @@ public class GameScore {
         this.scoreLimit = scoreLimit;
         this.players = players;
 
-        gameComplete = roundComplete = false;
+        gameOver = roundComplete = false;
         deadPlayers = highestScore = roundsPlayed = 0;
 
-        roundScores.clear();
-        accumulatedScores.clear();
+        scores.clear();
     }
 
     /**
@@ -41,14 +46,11 @@ public class GameScore {
      * If game is completed newGame() method has to be called to start a new game
      */
     synchronized public void startRound() {
-        if (gameComplete) return;
+        if (gameOver) return;
         deadPlayers = 0;
         roundComplete = false;
-        roundScores.clear();
-        players.forEach(player -> {
-            roundScores.put(player, 0);
-            accumulatedScores.putIfAbsent(player, 0);
-        });
+        players.forEach(player -> scores.putIfAbsent(player, 0));
+        sendScoreUpdate();
     }
 
     /**
@@ -56,22 +58,23 @@ public class GameScore {
      * If game is completed newGame() method has to be called to start a new game
      */
     private void endRound() {
-        if (gameComplete) return;
+        if (gameOver) return;
         roundsPlayed += 1;
         roundComplete = true;
         if (roundLimit > 0 && roundLimit <= roundsPlayed) {
-            gameComplete = true;
+            gameOver = true;
         }
         if (scoreLimit > 0 && scoreLimit <= highestScore) {
-            gameComplete = true;
+            gameOver = true;
         }
+        sendScoreUpdate();
     }
 
     /**
      * Checks if players have died - if so then updates the sccores for everyone thet is alive
      */
     synchronized public void calculateScores() {
-        if (gameComplete) return;
+        if (gameOver) return;
         int currentDeadPlayers = (int) players.stream().filter(Player::isDead).count();
         if (currentDeadPlayers == this.deadPlayers) return; // no change in dead players
 
@@ -82,34 +85,37 @@ public class GameScore {
         for (Player player : players) {
             if (!player.isDead()) {
                 alivePlayers += 1;
-                int newScore = deadPlayersSinceLastTime;
 
-                newScore += roundScores.getOrDefault(player, 0);
-                roundScores.put(player, newScore);
-
-                newScore += accumulatedScores.getOrDefault(player, 0);
-                accumulatedScores.put(player, newScore);
+                int previousScore = scores.getOrDefault(player, 0);
+                int newScore = deadPlayersSinceLastTime + previousScore;
+                scores.put(player, newScore);
 
                 if (newScore > highestScore) {
                     highestScore = newScore;
                 }
             }
         }
+
+        sendScoreUpdate();
+
         if (alivePlayers <= 1) {
             endRound();
         }
     }
 
-    synchronized public HashMap<Player, Integer> getRoundScores() {
-        return roundScores;
+    /**
+     * Sends score to all clients through the MessageListener
+     */
+    private void sendScoreUpdate() {
+        listener.newMessage(new ScoreUpdateMessage(scores, scoreLimit, roundLimit, roundsPlayed, highestScore, gameOver));
     }
 
-    synchronized public HashMap<Player, Integer> getAccumulatedScores() {
-        return accumulatedScores;
+    synchronized public HashMap<Player, Integer> getScores() {
+        return scores;
     }
 
-    synchronized public boolean isGameComplete() {
-        return gameComplete;
+    synchronized public boolean isGameOver() {
+        return gameOver;
     }
 
     synchronized public boolean isRoundComplete() {

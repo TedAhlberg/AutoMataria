@@ -22,6 +22,7 @@ public class HostServerScreen extends JPanel {
     private GameServer server;
     private UserInterface userInterface;
     private JSlider roundLimitSlider, scoreLimitSlider, portSlider;
+    private MapPoolPanel mapPoolPanel;
 
     public HostServerScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -152,7 +153,7 @@ public class HostServerScreen extends JPanel {
         serverNameTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 
-        panel.add(new JLabel("MAP POOL"), getFieldConstraints(0, 2));
+        panel.add(new JLabel("MAP"), getFieldConstraints(0, 2));
         mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
         panel.add(mapsComboBox, getFieldConstraints(1, 2));
 
@@ -188,30 +189,38 @@ public class HostServerScreen extends JPanel {
         GridBagConstraints c;
         JPanel panel = new JPanel(new GridBagLayout());
 
+        JLabel mapPoolLabel = new JLabel("MAP POOL");
+        c = getFieldConstraints(0, 0);
+        c.gridwidth = 2;
+        panel.add(mapPoolLabel, c);
+        mapPoolPanel = new MapPoolPanel();
+        c = getFieldConstraints(0, 1);
+        c.gridwidth = 2;
+        c.fill = GridBagConstraints.BOTH;
+        panel.add(mapPoolPanel, c);
+
         JLabel serverProfileLabel = new JLabel("ADVANCED SETTINGS");
         serverProfileLabel.setForeground(Color.LIGHT_GRAY);
-        c = getFieldConstraints(0, 0);
+        c = getFieldConstraints(0, 2);
         c.gridwidth = 2;
         panel.add(serverProfileLabel, c);
 
-        panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 1));
+        panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 3));
         profileComboBox = new JComboBox<>(new String[]{
                 "CUSTOM", "LOW PERFORMANCE", "NORMAL (DEFAULT)", "HIGH PERFORMANCE", "EXTREME PERFORMANCE"});
-        panel.add(profileComboBox, getFieldConstraints(1, 1));
+        panel.add(profileComboBox, getFieldConstraints(1, 3));
 
-        panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 2));
+        panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 4));
         tickRateSlider = new JSlider(10, 200, 100);
-        panel.add(createCustomSlider(tickRateSlider), getFieldConstraints(1, 2));
+        panel.add(createCustomSlider(tickRateSlider), getFieldConstraints(1, 4));
 
-
-        panel.add(new JLabel("TICKS / UPDATE"), getFieldConstraints(0, 3));
+        panel.add(new JLabel("TICKS / UPDATE"), getFieldConstraints(0, 5));
         ticksPerUpdateSlider = new JSlider(1, 10, 2);
-        panel.add(createCustomSlider(ticksPerUpdateSlider), getFieldConstraints(1, 3));
+        panel.add(createCustomSlider(ticksPerUpdateSlider), getFieldConstraints(1, 5));
 
-
-        panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 4));
+        panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 6));
         playerSpeedSlider = new JSlider(Game.GRID_PIXEL_SIZE / 4, Game.GRID_PIXEL_SIZE * 2, Game.GRID_PIXEL_SIZE / 4);
-        panel.add(createCustomSlider(playerSpeedSlider), getFieldConstraints(1, 4));
+        panel.add(createCustomSlider(playerSpeedSlider), getFieldConstraints(1, 6));
 
         return panel;
     }
@@ -233,24 +242,24 @@ public class HostServerScreen extends JPanel {
 
             switch (profile) {
                 case "LOW PERFORMANCE":
-                    playerSpeedSlider.setValue(100);
-                    tickRateSlider.setValue(150);
+                    playerSpeedSlider.setValue(50);
+                    tickRateSlider.setValue(66);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "HIGH PERFORMANCE":
-                    playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(50);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
                     ticksPerUpdateSlider.setValue(2);
                     break;
                 case "EXTREME PERFORMANCE":
-                    playerSpeedSlider.setValue(20);
-                    tickRateSlider.setValue(25);
-                    ticksPerUpdateSlider.setValue(2);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
+                    ticksPerUpdateSlider.setValue(1);
                     break;
                 default:
-                    playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(75);
-                    ticksPerUpdateSlider.setValue(2);
+                    playerSpeedSlider.setValue(25);
+                    tickRateSlider.setValue(33);
+                    ticksPerUpdateSlider.setValue(3);
             }
         });
 
@@ -269,23 +278,26 @@ public class HostServerScreen extends JPanel {
                 settings.tickRate = tickRateSlider.getValue();
                 settings.amountOfTickBetweenUpdates = ticksPerUpdateSlider.getValue();
                 settings.playerSpeed = playerSpeedSlider.getValue();
-                settings.mapPool = new String[]{(String) mapsComboBox.getSelectedItem()};
+                settings.mapPool = mapPoolPanel.getSelectedMaps();
                 settings.roundLimit = roundLimitSlider.getValue();
                 settings.scoreLimit = scoreLimitSlider.getValue();
 
                 server = new GameServer(settings);
                 server.start();
+                server.changeMap(Maps.getInstance().get((String) mapsComboBox.getSelectedItem()));
                 serverStatusLabel.setText("ONLINE");
                 serverStatusLabel.setForeground(Color.GREEN);
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
                 joinGameButton.setVisible(true);
+                setAllEnabled(false);
             } catch (Exception error) {
                 serverStatusLabel.setText("OFFLINE");
                 serverStatusLabel.setForeground(Color.RED);
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 joinGameButton.setVisible(false);
+                setAllEnabled(true);
             }
         });
 
@@ -298,6 +310,7 @@ public class HostServerScreen extends JPanel {
             startButton.setEnabled(true);
             stopButton.setEnabled(false);
             joinGameButton.setVisible(false);
+            setAllEnabled(true);
         });
 
         backButton.addActionListener(e -> {
@@ -309,5 +322,21 @@ public class HostServerScreen extends JPanel {
                 userInterface.startGame("127.0.0.1", portSlider.getValue());
             }
         });
+    }
+
+    private void setAllEnabled(boolean enabled) {
+        serverNameTextField.setEnabled(enabled);
+        roundLimitSlider.setEnabled(enabled);
+        scoreLimitSlider.setEnabled(enabled);
+        portSlider.setEnabled(enabled);
+        mapPoolPanel.setEnabled(enabled);
+
+        profileComboBox.setEnabled(enabled);
+        tickRateSlider.setEnabled(enabled);
+        ticksPerUpdateSlider.setEnabled(enabled);
+        playerSpeedSlider.setEnabled(enabled);
+        if (enabled) {
+            profileComboBox.setSelectedIndex(profileComboBox.getSelectedIndex());
+        }
     }
 }

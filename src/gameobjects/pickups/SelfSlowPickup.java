@@ -50,6 +50,8 @@ public class SelfSlowPickup extends Pickup {
         this.player = player;
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
+
+        player.setImage("SlowPickupTransparent.png");
     }
 
     /**
@@ -59,6 +61,7 @@ public class SelfSlowPickup extends Pickup {
     public void done() {
         setState(PickupState.Used);
         player.setSpeed(player.getSpeed() * 2);
+        player.setImage(null);
         player.setPickUp(null);
         gameObjects.remove(this);
     }

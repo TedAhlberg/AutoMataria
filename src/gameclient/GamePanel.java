@@ -78,8 +78,6 @@ public class GamePanel extends JComponent {
 
     /**
      * Changes the grid that is displayed above the background
-     * Also note that this method will resize the panel in some cases
-     * to display the grid evenly
      *
      * @param gridSize Amount of vertical and horizontal grid lines to draw
      */
@@ -178,9 +176,21 @@ public class GamePanel extends JComponent {
             player.render(g2);
         }
 
-        if (showDebugInfo) gamePanelText.drawDebugInfo(g2, gameState, fps);
-        if (gameState == GameState.Countdown) gamePanelText.drawNewGameCountdown(g2);
-        else if (gameState == GameState.GameOver) gamePanelText.drawGameOverInfo(g2);
+        switch (gameState) {
+            case Countdown:
+                gamePanelText.drawText(g2, "GAME IS ABOUT TO BEGIN\n\nGET READY", GamePanelText.FontSize.Large, GamePanelText.Location.Center);
+                break;
+            case GameOver:
+                gamePanelText.drawText(g2, "GAME OVER", GamePanelText.FontSize.Large, GamePanelText.Location.Center);
+                break;
+            case RoundOver:
+                gamePanelText.drawText(g2, "ROUND OVER", GamePanelText.FontSize.Large, GamePanelText.Location.Center);
+                break;
+            case Warmup:
+                gamePanelText.drawText(g2, "WARMUP ROUND\n\nWAITING FOR PLAYERS TO READY UP", GamePanelText.FontSize.Small, GamePanelText.Location.Center);
+                if (showDebugInfo) gamePanelText.drawTopLeftText(g2, fps + " FPS");
+                break;
+        }
 
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();

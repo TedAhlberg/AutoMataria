@@ -19,9 +19,12 @@ import java.lang.reflect.Method;
  * But also panels on the sides to display information about the game.
  */
 public class GameScreen extends JPanel implements GameServerListener {
-    private final int framesPerSecond = 30;
+    private final int framesPerSecond = 60;
+    private final JPanel leftPanel, rightPanel;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
+    private ScorePanel scorePanel;
+    private ReadyPlayersPanel readyPlayersPanel;
     private GameServerConnection client;
     private Player player;
     private UserInterface userInterface;
@@ -31,49 +34,100 @@ public class GameScreen extends JPanel implements GameServerListener {
         this.userInterface = userInterface;
         setLayout(new GridBagLayout());
 
-        gameInfoPanel = new GameInfoPanel(10);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.ipadx = 20;
-        gbc.ipady = 20;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        add(gameInfoPanel, gbc);
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        leftPanel = createLeftPanel();
+        add(leftPanel, gbc);
 
         gamePanel = new GamePanel();
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        gbc.weightx = 10;
+        gbc.weightx = 1;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         add(gamePanel, gbc);
 
         gbc = new GridBagConstraints();
         gbc.gridy = 0;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        rightPanel = createRightPanel();
+        add(rightPanel, gbc);
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Dimension sidePanelSize = new Dimension((getWidth() - gamePanel.getHeight()) / 2, gamePanel.getHeight());
+        leftPanel.setPreferredSize(sidePanelSize);
+        rightPanel.setPreferredSize(sidePanelSize);
+    }
+
+    private JPanel createLeftPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        gameInfoPanel = new GameInfoPanel(10);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
         gbc.weightx = 1;
-        add(createRightPanel(), gbc);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        panel.add(gameInfoPanel, gbc);
+
+        return panel;
     }
 
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
 
-        AMButton backButton = new AMButton("DISCONNECT");
-        backButton.addActionListener(e -> {
+        AMButton disconnectButton = new AMButton("DISCONNECT");
+        disconnectButton.addActionListener(e -> {
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
             userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
-        c.ipadx = 20;
-        c.ipady = 20;
-        c.anchor = GridBagConstraints.NORTHEAST;
-        panel.add(backButton, c);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.NORTHEAST;
+        panel.add(disconnectButton, gbc);
+
+        AMButton settingsButton = new AMButton("SETTINGS");
+        settingsButton.addActionListener(e -> userInterface.changeScreen("SettingsScreen"));
+        gbc = new GridBagConstraints();
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.NORTHEAST;
+        panel.add(settingsButton, gbc);
+
+        readyPlayersPanel = new ReadyPlayersPanel();
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(readyPlayersPanel, gbc);
+
+        scorePanel = new ScorePanel();
+        gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(scorePanel, gbc);
 
         return panel;
     }
 
     public void connect(String ip, int port, String username) {
+        if (client != null && client.isConnected()) return;
         this.username = username;
         client = new GameServerConnection(this);
         client.connect(ip, port);
@@ -82,14 +136,12 @@ public class GameScreen extends JPanel implements GameServerListener {
 
     public void onKeyPress(Action action) {
         if (action == Action.InterfaceBack) {
-            if (client != null) {
-                client.disconnect();
-            }
             userInterface.changeToPreviousScreen();
         } else if (action == Action.ToggleInterpolation) {
             gamePanel.toggleInterpolation();
         } else if (action == Action.ToggleDebugText) {
             gamePanel.toggleDebugInfo();
+            gameInfoPanel.setVisible(!gameInfoPanel.isVisible());
         } else {
             client.send(action);
         }
@@ -137,6 +189,8 @@ public class GameScreen extends JPanel implements GameServerListener {
             handleRoundOverMessage((RoundOverMessage) data);
         } else if (data instanceof GameOverMessage) {
             handleGameOverMessage((GameOverMessage) data);
+        } else if (data instanceof ScoreUpdateMessage) {
+            handleScoreUpdateMessage((ScoreUpdateMessage) data);
         } else if (data instanceof GameMap) {
             handleMapChange((GameMap) data);
         } else if (data instanceof ReadyPlayersMessage) {
@@ -144,8 +198,16 @@ public class GameScreen extends JPanel implements GameServerListener {
         }
     }
 
+    private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
+        readyPlayersPanel.setVisible(false);
+        scorePanel.setVisible(true);
+        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getHighestScore(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
+    }
+
     private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
-        gameInfoPanel.add(message.getReadyPlayerCount() + "/" + message.getPlayerCount() + " ready players");
+        scorePanel.setVisible(false);
+        readyPlayersPanel.setVisible(true);
+        readyPlayersPanel.update(message.getPlayers(), message.getScoreLimit(), message.getRoundLimit(), message.getReadyPlayerCount(), message.getPlayerCount());
     }
 
     private void handleNewGameMessage(NewGameMessage message) {
@@ -159,26 +221,10 @@ public class GameScreen extends JPanel implements GameServerListener {
     }
 
     private void handleRoundOverMessage(RoundOverMessage message) {
-        gameInfoPanel.add(":: Round Ended :: Round Scores");
-        message.getRoundScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
-        gameInfoPanel.add(":: Round Ended :: Total Scores");
-        message.getAccumulatedScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
         gameInfoPanel.add(":: Next round starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
     }
 
     private void handleGameOverMessage(GameOverMessage message) {
-        gameInfoPanel.add(":: Game Over :: Round Scores");
-        message.getRoundScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
-        gameInfoPanel.add(":: Game Over :: Total Scores");
-        message.getAccumulatedScores().forEach((player, score) -> {
-            gameInfoPanel.add(player.getName() + " :: " + score, player.getColor());
-        });
         gameInfoPanel.add(":: Next map starts in " + message.getTimeUntilNextGame() / 1000.0 + " seconds");
     }
 
@@ -224,10 +270,10 @@ public class GameScreen extends JPanel implements GameServerListener {
         Color playerColor = message.getPlayer().getColor();
         switch (message.getEvent()) {
             case Connected:
-                gameInfoPanel.add(playerName + " has connected", playerColor);
+                gameInfoPanel.add(playerName + " has connected to the server", playerColor);
                 break;
             case Disconnected:
-                gameInfoPanel.add(playerName + " has disconnected", playerColor);
+                gameInfoPanel.add(playerName + " has disconnected from the server", playerColor);
                 break;
             case Ready:
                 gameInfoPanel.add(playerName + " is ready", playerColor);
