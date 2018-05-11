@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class SettingsScreen extends JPanel implements ActionListener {
     /**
@@ -30,10 +33,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private BufferedImage backgroundImage;
     private boolean music = true;
     private boolean sfx = true;
+    private Path directory;
 
     private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
     private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
-    private String user = "Player";
+    private String user = "PLAYER";
     private String screen[] = { "WINDOWED", "MAXIMIZED", "FULLSCREEN" };
 
     private JComboBox<String> screenSize = new JComboBox<String>(screen);
@@ -201,6 +205,14 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     public void writeToFile(String username) {
         try {
+            directory =FileSystems.getDefault().getPath("resources", "settings");
+            if (!Files.exists(directory)) {
+                try {
+                    Files.createDirectories(directory);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             FileOutputStream fos = new FileOutputStream("resources/settings/username.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(username);
@@ -285,13 +297,13 @@ public class SettingsScreen extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == btnChange) {
-            if (tfUserName.getText().equals("")) {
+            user=tfUserName.getText().trim();
+            if (user.equals("")) {
                 lblUserName.setText("USER: PLAYER");
                 writeToFile("PLAYER");
             } else {
-                lblUserName.setText("USER: " + tfUserName.getText());
-                writeToFile(tfUserName.getText());
-                user = tfUserName.getText();
+                lblUserName.setText("USER: " + user);
+                writeToFile(user);
                 tfUserName.setText("");
             }
         }
