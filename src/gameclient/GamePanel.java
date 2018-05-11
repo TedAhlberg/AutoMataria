@@ -123,9 +123,7 @@ public class GamePanel extends JComponent {
             }
 
             // Render the game to the panel
-            synchronized (lock) {
-                paintImmediately(new Rectangle(getSize()));
-            }
+            paintImmediately(new Rectangle(getSize()));
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
@@ -161,19 +159,21 @@ public class GamePanel extends JComponent {
         g2.scale(scale, scale);
 
         // Extract players so we can render them on top
-        ArrayList<Player> players = new ArrayList<>();
-        for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Player) {
-                players.add((Player) gameObject);
-            } else {
-                gameObject.render(g2);
+        synchronized (lock) {
+            ArrayList<Player> players = new ArrayList<>();
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject instanceof Player) {
+                    players.add((Player) gameObject);
+                } else {
+                    gameObject.render(g2);
+                }
             }
-        }
-        for (Player player : players) {
-            if (interpolateMovement) {
-                interpolation.interpolate(player);
+            for (Player player : players) {
+                if (interpolateMovement) {
+                    interpolation.interpolate(player);
+                }
+                player.render(g2);
             }
-            player.render(g2);
         }
 
         switch (gameState) {
