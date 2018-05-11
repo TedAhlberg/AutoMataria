@@ -114,11 +114,13 @@ public class Player extends GameObject {
             move(canMoveIn);
             previousDirection = direction;
             direction = inputQueue.remove();
+
         } else if (canMoveIn == 0 || direction == Direction.Static) {
             // Moves player forward in the new direction
             previousDirection = direction;
             direction = inputQueue.remove();
             move(speed);
+            listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
         } else {
             // No direction change so just continue moving
             move(speed);
@@ -226,7 +228,7 @@ public class Player extends GameObject {
             direction = Utility.getOppositeDirection(direction);
         }
         inputQueue.add(direction);
-        listener.newMessage(new PlayerMessage(PlayerMessage.Event.Moved, this));
+      
     }
 
     public Direction getPreviousDirection() {
