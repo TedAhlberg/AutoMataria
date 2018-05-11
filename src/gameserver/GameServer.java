@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameServer implements ConnectionListener, MessageListener {
     private final ConcurrentLinkedQueue<GameObject> gameObjects = new ConcurrentLinkedQueue<>();
     private final ConcurrentHashMap<Client, Player> connectedClients = new ConcurrentHashMap<>();
-    private final LinkedList<Player> players = new LinkedList<>();
     private final StartingPositions startingPositions = new StartingPositions();
     private final GameColors colors = new GameColors();
 
@@ -27,10 +26,11 @@ public class GameServer implements ConnectionListener, MessageListener {
     private final ServerInformationSender serverInformationSender;
     private final GameScore gameScore;
     private final GameServerSettings settings;
-    private int currentPlayerSpeed, currentCountdown, currentMapPoolIndex;
+    private int currentCountdown, currentMapPoolIndex;
     private boolean running;
     private GameState state;
     private GameMap currentMap;
+    private final PlayerManager playerManager;
 
     /**
      * A Controller that connects together the serverConnection part of Auto-Mataria.
@@ -40,7 +40,9 @@ public class GameServer implements ConnectionListener, MessageListener {
      */
     public GameServer(GameServerSettings settings) {
         this.settings = settings;
-
+        
+        playerManager = new PlayerManager(gameObjects);
+        playerManager.addListener(this);
         serverConnection = new ServerConnection(settings.port);
         serverConnection.addListener(this);
         serverInformationSender = new ServerInformationSender(this);
@@ -74,8 +76,9 @@ public class GameServer implements ConnectionListener, MessageListener {
         if (map == null) return;
 
         currentMap = map;
-        currentPlayerSpeed = (int) Math.round(settings.playerSpeed * map.getPlayerSpeedMultiplier());
-        gameScore.startGame(players, settings.roundLimit, settings.scoreLimit);
+        playerManager.setCurrentPlayerSpeed((int) Math.round(settings.playerSpeed * map.getPlayerSpeedMultiplier()));
+        playerManager.setCurrentMap(map);
+        gameScore.startGame(playerManager.getPlayers(), settings.roundLimit, settings.scoreLimit);
         gameObjectSpawner.changeMap(map);
 
         connectedClients.forEach((client, player) -> {
@@ -161,7 +164,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                 }
                 break;
             case Warmup:
-                respawnDeadPlayers();
+                playerManager.respawnDeadPlayers();
                 break;
             case RoundOver:
                 if (currentCountdown <= 0) setState(GameState.Countdown);
@@ -182,79 +185,35 @@ public class GameServer implements ConnectionListener, MessageListener {
         gameObjectSpawner.tick();
     }
 
-    private void resetGame() {
-        gameObjects.clear();
+    
 
-        if (currentMap.getStartingPositions() != null) {
-            startingPositions.set(currentMap.getStartingPositions());
-        } else {
-            startingPositions.generate(currentMap.getGrid(), currentMap.getPlayers());
-        }
-
-        connectedClients.forEach((client, player) -> {
-            if (state != GameState.Warmup) {
-                player.setReady(false);
-            }
-            player.reset();
-            player.setSpeed(currentPlayerSpeed);
-            player.setPoint(Utility.convertFromGrid(startingPositions.getNext()));
-            gameObjects.add(player);
-            gameObjects.add(player.getTrail());
-        });
-    }
-
-    private Player newPlayer(String name) {
-        if (connectedClients.size() > currentMap.getPlayers()) return null;
-        Player player = new Player(name, gameObjects, currentMap);
-        player.setListener(this);
-        player.setId(ID.getNext());
-        player.setSpeed(currentPlayerSpeed);
-        if (state == GameState.Warmup) {
-            player.reset();
-            player.setSpeed(currentPlayerSpeed);
-            player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
-            gameObjects.add(player);
-            gameObjects.add(player.getTrail());
-        }
-        return player;
-    }
-
-    private void respawnDeadPlayers() {
-        for (Player player : connectedClients.values()) {
-            if (player.isDead()) {
-                player.reset();
-                player.setSpeed(currentPlayerSpeed);
-                player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
-            }
-        }
-    }
+    
 
     private void setState(GameState newState) {
+        playerManager.setState(newState);
         if (this.state == newState) return;
         switch (newState) {
             case Warmup:
-                resetGame();
+                playerManager.resetGame();
                 updateReadyPlayers();
                 break;
             case Running:
                 gameScore.startRound();
                 break;
             case RoundOver:
-                for (Player player : players) {
+                for (Player player : playerManager.getPlayers()) {
                     player.setNextDirection(Direction.Static);
                 }
                 currentCountdown = settings.roundOverCountdown < 1000 ? 1000 : settings.roundOverCountdown;
                 break;
             case GameOver:
-                for (Player player : players) {
+                for (Player player : playerManager.getPlayers()) {
                     player.setNextDirection(Direction.Static);
                 }
                 currentCountdown = settings.gameOverCountdown < 1000 ? 1000 : settings.gameOverCountdown;
                 break;
             case Countdown:
-                resetGame();
-                players.clear();
-                players.addAll(connectedClients.values());
+                playerManager.resetGame();
                 currentCountdown = settings.newGameCountdown < 1000 ? 1000 : settings.newGameCountdown;
                 newMessage(new NewGameMessage(currentCountdown));
                 break;
@@ -280,41 +239,18 @@ public class GameServer implements ConnectionListener, MessageListener {
      * @param value
      */
     public void onDataFromClient(Client client, Object value) {
-        if (value instanceof Direction && connectedClients.containsKey(client)) {
-            if (state == GameState.Running || state == GameState.Warmup) {
-                Direction direction = (Direction) value;
-                Player player = connectedClients.get(client);
-                player.setNextDirection(direction);
-            }
-        } else if (value instanceof Action) {
-            Player player = connectedClients.get(client);
-            if (value == Action.UsePickup) {
-                player.usePickup();
-            } else if (state == GameState.Warmup) {
-                if (value == Action.TogglePlayerColor) {
-                    player.setColor(colors.exchangeColor(player.getColor()));
-                    newMessage(new PlayerMessage(PlayerMessage.Event.ColorChange, player));
-                    updateReadyPlayers();
-                } else if (value == Action.ToggleReady) {
-                    boolean ready = !player.isReady();
-                    player.setReady(ready);
-                    newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
-                    updateReadyPlayers();
+        if (connectedClients.containsKey(client)) {
+            playerManager.controlPlayer(connectedClients.get(client), value);
+        } else {
+                Player player = playerManager.login((String) value); 
+                if(player != null) {
+                    connectedClients.put(client, player);
+                    client.send(new ConnectionMessage(currentMap, settings.tickRate, settings.tickRate * settings.amountOfTickBetweenUpdates, player));
+                } else {
+                    client.send(new ConnectionMessage());
                 }
             }
-        } else if (value instanceof String && !connectedClients.containsKey(client)) {
-            Player player = newPlayer((String) value);
-            if (player != null) {
-                player.setColor(colors.takeColor());
-                connectedClients.put(client, player);
-                client.send(new ConnectionMessage(currentMap, settings.tickRate, settings.tickRate * settings.amountOfTickBetweenUpdates, player));
-                newMessage(new PlayerMessage(PlayerMessage.Event.Connected, player));
-                updateReadyPlayers();
-            } else {
-                client.send(new ConnectionMessage());
-                System.out.println(value + " tried to connect but no slots are available.");
-            }
-        }
+      
     }
 
     private void updateReadyPlayers() {
@@ -354,5 +290,10 @@ public class GameServer implements ConnectionListener, MessageListener {
      */
     public void newMessage(Message message) {
         connectedClients.forEachKey(1, client -> client.send(message));
+        if(message instanceof ReadyPlayersMessage) {
+         ReadyPlayersMessage readyMessage = (ReadyPlayersMessage) message;
+            if (readyMessage.getReadyPlayerCount() < 2) return;
+            if (readyMessage.getReadyPlayerCount() == readyMessage.getPlayerCount()) setState(GameState.Countdown);
+        }
     }
 }
