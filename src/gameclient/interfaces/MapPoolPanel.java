@@ -17,7 +17,11 @@ public class MapPoolPanel extends JPanel {
     public MapPoolPanel() {
         setLayout(new GridBagLayout());
         setOpaque(false);
+        loadMaps();
+    }
 
+    public void loadMaps() {
+        removeAll();
         String[] mapList = Maps.getInstance().getMapList();
         for (String map : mapList) {
             addMap(map);

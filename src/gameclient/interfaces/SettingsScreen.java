@@ -1,6 +1,6 @@
 package gameclient.interfaces;
 
-import gameclient.*;
+import gameclient.Resources;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
 import gameclient.sound.Audio;
@@ -12,11 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
-public class SettingsScreen extends JPanel implements ActionListener {
+public class SettingsScreen extends JPanel implements ActionListener, UserInterfaceScreen {
     /**
      * The settingsScreen handles all personal settings for the user such as
      * keybinding, name change, screensize and sound managing. The panel is added to
@@ -313,4 +311,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     }
 
+    public void onScreenActive() {
+
+    }
+
+    public void onScreenInactive() {
+
+    }
 }

@@ -1,19 +1,13 @@
 package gameclient.interfaces;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.HashMap;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.MatteBorder;
-
 import gameclient.Resources;
 import mainserver.HighScore;
 
-public class HighScoreScreen extends JPanel {
+import javax.swing.*;
+import javax.swing.border.MatteBorder;
+import java.awt.*;
+
+public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     private UserInterface userInterface;
     private JPanel panel;
 	
@@ -134,5 +128,13 @@ public class HighScoreScreen extends JPanel {
         c.gridy = gridy;
         c.insets = new Insets(10, 10, 10, 10);
         return c;
+    }
+
+    public void onScreenActive() {
+
+    }
+
+    public void onScreenInactive() {
+
     }
 }

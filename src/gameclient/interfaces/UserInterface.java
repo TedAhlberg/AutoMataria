@@ -7,6 +7,7 @@ import test.MapEditorUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class UserInterface extends JPanel {
@@ -18,6 +19,7 @@ public class UserInterface extends JPanel {
     private GameScreen gameScreen;
     private SettingsScreen settingsScreen;
     private LinkedList<String> screenHistory = new LinkedList<>();
+    HashMap<String, UserInterfaceScreen> screens = new HashMap<>();
 
     public UserInterface() {
         this(null);
@@ -30,17 +32,21 @@ public class UserInterface extends JPanel {
         window.setContentPane(this);
         window.setMode(Window.Mode.Windowed);
 
-        add(new StartScreen(this), "StartScreen");
         settingsScreen = new SettingsScreen(this);
-        add(new SettingsScreen(this), "SettingsScreen");
-        add(new HostServerScreen(this), "HostServerScreen");
-        add(new MapEditorUI(this).container, "MapEditorScreen");
-        add(new BrowseServersScreen(this), "BrowseScreen");
-        add(new HighScoreScreen(this), "HighScoreScreen");
-        add(new ConnectScreen(this), "ConnectScreen");
         gameScreen = new GameScreen(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(gameScreen));
-        add(gameScreen, "GameScreen");
+
+        screens.put("StartScreen", new StartScreen(this));
+        screens.put("BrowseScreen", new BrowseServersScreen(this));
+        screens.put("SettingsScreen", settingsScreen);
+        screens.put("HostServerScreen", new HostServerScreen(this));
+        screens.put("HighScoreScreen", new HighScoreScreen(this));
+        screens.put("ConnectScreen", new ConnectScreen(this));
+        screens.put("GameScreen", gameScreen);
+
+        screens.forEach((cardName, screenComponent) -> add((Component) screenComponent, cardName));
+
+        add(new MapEditorUI(this).container, "MapEditorScreen");
 
         // Show startscreen on startup
         changeScreen("StartScreen");
@@ -57,17 +63,27 @@ public class UserInterface extends JPanel {
     }
 
     public void changeScreen(String screen) {
+        String previousScreen = screenHistory.isEmpty() ? "StartScreen" : screenHistory.getLast();
+
         if (screen.equals("StartScreen")) {
             screenHistory.clear();
         }
         screenHistory.add(screen);
         cardLayout.show(this, screen);
+
+        screens.get(previousScreen).onScreenInactive();
+        screens.get(screen).onScreenActive();
     }
 
     public void changeToPreviousScreen() {
-        if (screenHistory.size() == 1) return;
-        screenHistory.removeLast();
-        cardLayout.show(this, screenHistory.getLast());
+        if (screenHistory.size() <= 1) return;
+        String previousScreen = screenHistory.removeLast();
+        String screen = screenHistory.getLast();
+
+        cardLayout.show(this, screen);
+
+        screens.get(previousScreen).onScreenInactive();
+        screens.get(screen).onScreenActive();
     }
 
     public void startGame(String ip, int port) {
@@ -81,5 +97,9 @@ public class UserInterface extends JPanel {
 
     public SettingsScreen getSettingsScreen() {
         return settingsScreen;
+    }
+
+    public GameScreen getGameScreen() {
+        return gameScreen;
     }
 }

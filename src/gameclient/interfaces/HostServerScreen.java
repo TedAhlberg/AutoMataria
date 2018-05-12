@@ -12,7 +12,7 @@ import java.awt.*;
 /**
  * @author Johannes Blüml
  */
-public class HostServerScreen extends JPanel {
+public class HostServerScreen extends JPanel implements UserInterfaceScreen {
     private AMButton startButton, stopButton, backButton, joinGameButton;
     private JComboBox<String> profileComboBox;
     private JSlider playerSpeedSlider, tickRateSlider, ticksPerUpdateSlider;
@@ -338,5 +338,16 @@ public class HostServerScreen extends JPanel {
         if (enabled) {
             profileComboBox.setSelectedIndex(profileComboBox.getSelectedIndex());
         }
+    }
+
+    public void onScreenActive() {
+        mapsComboBox.removeAllItems();
+        for (String map : Maps.getInstance().getMapList()) {
+            mapsComboBox.addItem(map);
+        }
+        mapPoolPanel.loadMaps();
+    }
+
+    public void onScreenInactive() {
     }
 }

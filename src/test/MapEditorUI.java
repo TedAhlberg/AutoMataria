@@ -39,7 +39,6 @@ public class MapEditorUI {
     private JSlider pickupActiveTimeSlider;
     private JLabel pickupActiveTimeLabel;
 
-    private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
     private ArrayList<SpecialGameObject> specialGameObjectsToSave = new ArrayList<>();
     private HashSet<Point> startingPositionsToSave = new HashSet<>();
@@ -216,7 +215,8 @@ public class MapEditorUI {
 
     private void loadMap() {
         String name = (String) mapsComboBox.getSelectedItem();
-        GameMap map = maps.get(name);
+        if (name == null) return;
+        GameMap map = Maps.getInstance().get(name);
         if (map == null) return;
         currentMap = map;
 
@@ -239,7 +239,7 @@ public class MapEditorUI {
             }
         }
         try {
-            maps.save(currentMap);
+            Maps.getInstance().save(currentMap);
             reloadMapList();
             mapsComboBox.setSelectedItem(currentMap.getName());
         } catch (Exception error) {
@@ -250,7 +250,7 @@ public class MapEditorUI {
     private void deleteMap() {
         int result = JOptionPane.showConfirmDialog(container, "Are you sure you want to delete the map " + currentMap.getName() + "?");
         if (result == 0) {
-            maps.remove(currentMap.getName());
+            Maps.getInstance().remove(currentMap.getName());
             reloadMapList();
             mapsComboBox.setSelectedItem(0);
         }
@@ -319,7 +319,7 @@ public class MapEditorUI {
 
     private void reloadMapList() {
         mapsComboBox.removeAllItems();
-        for (String name : maps.getMapList()) {
+        for (String name : Maps.getInstance().getMapList()) {
             mapsComboBox.addItem(name);
         }
     }
@@ -327,8 +327,7 @@ public class MapEditorUI {
     private void createUIComponents() {
         specialGameObjectComboBox = new JComboBox<>();
 
-        maps = Maps.getInstance();
-        mapsComboBox = new JComboBox<>(maps.getMapList());
+        mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
 
         backgroundImageComboBox = new JComboBox<>(Resources.getImageList());
         musicTrackComboBox = new JComboBox<>(Resources.getMusicList());

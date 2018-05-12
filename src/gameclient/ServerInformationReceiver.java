@@ -5,7 +5,8 @@ import common.ServerInformation;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Denna klassen ska ta emot UDP packet ifrån lokala nätverket
@@ -17,32 +18,54 @@ public class ServerInformationReceiver extends Thread {
     private boolean running = false;
     private HashSet<ServerInformation> serverList = new HashSet<>();
     private HashSet<ServerInformationListener> listeners = new HashSet<>();
+    private DatagramSocket socket;
+
+    public void addListener(ServerInformationListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Stops listening for server information
+     */
+    public void close() {
+        running = false;
+        if (socket != null) socket.close();
+    }
 
     public void run() {
         running = true;
         runTimeThread();
 
-        try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
+        while (running) {
+            try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
+                this.socket = socket;
 
-            while (running) {
-                byte[] data = new byte[128];
-                DatagramPacket packet = new DatagramPacket(data, data.length);
-                socket.receive(packet);
-                String ip = packet.getAddress().getHostName();
-                updateServerInfo(ip, new String(packet.getData()));
+                while (running) {
+                    byte[] data = new byte[128];
+                    DatagramPacket packet = new DatagramPacket(data, data.length);
+                    socket.receive(packet);
+                    String ip = packet.getAddress().getHostName();
+                    updateServerInfo(ip, new String(packet.getData()));
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                this.socket = null;
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     /**
      * Adds new or updates existing server in the serverList with the provided data
      *
-     * @param ip IP address or hostname of the server
+     * @param ip   IP address or hostname of the server
      * @param data String with serverinformation data sent from ServerInformationSender on any gameserver
-     *
      * @see gameserver.ServerInformationSender
      */
     private synchronized void updateServerInfo(String ip, String data) {
@@ -66,6 +89,7 @@ public class ServerInformationReceiver extends Thread {
 
     /**
      * Starts a thread that checks for offline servers every 3 seconds
+     *
      * @see ServerInformationReceiver#cleanServerList()
      */
     private void runTimeThread() {
@@ -99,9 +123,5 @@ public class ServerInformationReceiver extends Thread {
                 }
             }
         }
-    }
-
-    public void addListener(ServerInformationListener listener) {
-        listeners.add(listener);
     }
 }

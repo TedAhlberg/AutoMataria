@@ -58,11 +58,11 @@ public class Window extends JFrame {
             if (value instanceof FontUIResource) {
                 UIManager.put(key, defaultFontResource);
             }
-
+            /*
             if (key.toString().startsWith("Slider")) {
                 System.out.println(key + " " + value);
             }
-
+            */
         }
     }
 

@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * It has a GamePanel with the actual game.
  * But also panels on the sides to display information about the game.
  */
-public class GameScreen extends JPanel implements GameServerListener {
+public class GameScreen extends JPanel implements GameServerListener, UserInterfaceScreen {
     private final int framesPerSecond = 60;
     private final JPanel leftPanel, rightPanel;
     private GameInfoPanel gameInfoPanel;
@@ -28,6 +28,7 @@ public class GameScreen extends JPanel implements GameServerListener {
     private GameServerConnection client;
     private Player player;
     private UserInterface userInterface;
+    private boolean connected;
 
     public GameScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -82,6 +83,7 @@ public class GameScreen extends JPanel implements GameServerListener {
 
         AMButton disconnectButton = new AMButton("DISCONNECT");
         disconnectButton.addActionListener(e -> {
+            connected = false;
             MusicManager.changeTrack();
             client.disconnect();
             gamePanel.stop();
@@ -157,6 +159,7 @@ public class GameScreen extends JPanel implements GameServerListener {
         String username = userInterface.getSettingsScreen().getUsername();
         client.send(username);
         gameInfoPanel.add("# Trying to connect with username: " + username);
+        connected = true;
     }
 
     /**
@@ -165,6 +168,7 @@ public class GameScreen extends JPanel implements GameServerListener {
     public void onDisconnect() {
         gamePanel.stop();
         gameInfoPanel.add("# Connection closed", Color.RED);
+        connected = false;
     }
 
     /**
@@ -294,5 +298,17 @@ public class GameScreen extends JPanel implements GameServerListener {
                 gameInfoPanel.add(playerName + " has changed color", playerColor);
                 break;
         }
+    }
+
+    public boolean isConnectedToServer() {
+        return connected;
+    }
+
+    public void onScreenActive() {
+
+    }
+
+    public void onScreenInactive() {
+
     }
 }

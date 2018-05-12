@@ -8,8 +8,8 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.Collection;
 
-public class BrowseServersScreen extends JPanel implements ServerInformationListener {
-    private ServerInformationReceiver sir = new ServerInformationReceiver();
+public class BrowseServersScreen extends JPanel implements ServerInformationListener, UserInterfaceScreen {
+    private ServerInformationReceiver serverInformationReceiver;
     private JPanel panel;
     private UserInterface userInterface;
 
@@ -17,9 +17,6 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         this.userInterface = userInterface;
 
         createLayout();
-
-        sir.start();
-        sir.addListener(this);
     }
 
     private void createLayout() {
@@ -157,5 +154,20 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         c.gridy = gridy;
         c.insets = new Insets(10, 10, 10, 10);
         return c;
+    }
+
+    public void onScreenActive() {
+        serverInformationReceiver = new ServerInformationReceiver();
+        serverInformationReceiver.addListener(this);
+        serverInformationReceiver.start();
+        System.out.println("Started Server Information Receiver");
+    }
+
+    public void onScreenInactive() {
+        if (serverInformationReceiver == null) return;
+        serverInformationReceiver.close();
+        serverInformationReceiver = null;
+        panel.removeAll();
+        System.out.println("Stopped Server Information Receiver");
     }
 }
