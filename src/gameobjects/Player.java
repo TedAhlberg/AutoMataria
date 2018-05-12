@@ -98,10 +98,14 @@ public class Player extends GameObject {
             return;
         }
 
-        while (inputQueue.peek() == direction || (!invincible && inputQueue.peek() == Utility.getOppositeDirection(direction)) || inputQueue.size() > 2) {
-            // Remove unnessesary double keypress in same direction
-            // Remove keypress in the opposite direction (you would die instantly if you are not invincible)
+        while (inputQueue.peek() == direction || inputQueue.size() > 2) {
+            // Remove unnessesary multiple keypress in same direction
             // Remove all keypress but the last 2 to avoid excessive input delay
+            inputQueue.remove();
+        }
+
+        while (!invincible && inputQueue.peek() == Utility.getOppositeDirection(direction)) {
+            // Remove keypress in the opposite direction (you would die instantly if you are not invincible)
             inputQueue.remove();
         }
 
@@ -112,10 +116,12 @@ public class Player extends GameObject {
 
         int canMoveIn = Utility.canChangeDirection(direction, getPoint(), speed);
         if (canMoveIn > 0) {
-            // Moves player forward to closest grid boundary
+            // First moves player to closest grid bounary
             move(canMoveIn);
             previousDirection = direction;
             direction = inputQueue.remove();
+            // Then moves in the new direction
+            move(speed - canMoveIn);
 
         } else if (canMoveIn == 0 || direction == Direction.Static) {
             // Moves player forward in the new direction
