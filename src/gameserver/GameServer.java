@@ -153,6 +153,8 @@ public class GameServer implements ConnectionListener, MessageListener {
 
         switch (state) {
             case Running:
+                if (currentCountdown <= 0) playerManager.moveStaticPlayers();
+                else currentCountdown -= settings.tickRate;
                 gameScore.calculateScores();
                 if (gameScore.isGameOver()) {
                     setState(GameState.GameOver);
@@ -189,6 +191,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         switch (newState) {
             case Running:
                 gameScore.startRound();
+                currentCountdown = settings.forceMovePlayerCountdown;
                 break;
             case RoundOver:
                 currentCountdown = settings.roundOverCountdown < 1000 ? 1000 : settings.roundOverCountdown;

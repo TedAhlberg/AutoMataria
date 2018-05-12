@@ -5,8 +5,7 @@ import common.messages.*;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Dante Håkansson
@@ -19,6 +18,7 @@ public class PlayerManager implements MessageListener {
     private final StartingPositions startingPositions = new StartingPositions();
     private final GameColors colors = new GameColors();
     private final Collection<GameObject> gameObjects;
+    private final Random random = new Random();
     private GameMap currentMap;
     private GameState state;
     private int currentPlayerSpeed;
@@ -138,6 +138,7 @@ public class PlayerManager implements MessageListener {
                 break;
             case Countdown:
                 resetGame();
+            case RoundOver:
             case GameOver:
                 players.forEach(player -> player.setNextDirection(Direction.Static));
                 break;
@@ -155,6 +156,15 @@ public class PlayerManager implements MessageListener {
             playersToRemoveAfterMatch.add(player);
         }
         newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
+    }
+
+    public void moveStaticPlayers() {
+        Direction[] directions = {Direction.Down, Direction.Right, Direction.Left, Direction.Up};
+        players.forEach(player -> {
+            if (player.getDirection() == Direction.Static) {
+                player.setNextDirection(directions[random.nextInt(directions.length)]);
+            }
+        });
     }
 
     public void addListener(MessageListener messageListener) {

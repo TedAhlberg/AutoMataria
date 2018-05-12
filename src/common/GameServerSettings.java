@@ -14,9 +14,10 @@ public class GameServerSettings implements Serializable {
     public int tickRate = 75;
     public int amountOfTickBetweenUpdates = 2;
     public int playerSpeed = 50;
-    public int newGameCountdown = 5000;
-    public int roundOverCountdown = 5000;
+    public int newGameCountdown = 3000;
+    public int roundOverCountdown = 2000;
     public int gameOverCountdown = 10000;
+    public int forceMovePlayerCountdown = 1000;
     public int scoreLimit = 2;
     public int roundLimit = 3;
 }
