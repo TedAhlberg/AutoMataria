@@ -11,13 +11,15 @@ public class ConnectionMessage extends Message {
 
     public boolean success;
     public GameMap currentMap;
-    public int tickRate, updateRate;
+    public int tickRate, updateRate, roundLimit, scoreLimit;
     public Player player;
 
-    public ConnectionMessage(GameMap currentMap, int tickRate, int updateRate, Player player) {
+    public ConnectionMessage(GameMap currentMap, int tickRate, int updateRate, int roundLimit, int scoreLimit, Player player) {
         this.currentMap = currentMap;
         this.tickRate = tickRate;
         this.updateRate = updateRate;
+        this.roundLimit = roundLimit;
+        this.scoreLimit = scoreLimit;
         this.player = player;
         this.success = true;
     }

@@ -9,16 +9,12 @@ import java.util.HashMap;
  */
 public class ScoreUpdateMessage extends Message {
     private final HashMap<Player, Integer> scores;
-    private final int scoreLimit;
-    private final int roundLimit;
     private final int playedRounds;
-    private int highestScore;
-    private boolean gameOver;
+    private final int highestScore;
+    private final boolean gameOver;
 
-    public ScoreUpdateMessage(HashMap<Player, Integer> scores, int scoreLimit, int roundLimit, int playedRounds, int highestScore, boolean gameOver) {
+    public ScoreUpdateMessage(HashMap<Player, Integer> scores, int playedRounds, int highestScore, boolean gameOver) {
         this.scores = scores;
-        this.scoreLimit = scoreLimit;
-        this.roundLimit = roundLimit;
         this.playedRounds = playedRounds;
         this.highestScore = highestScore;
         this.gameOver = gameOver;
@@ -30,14 +26,6 @@ public class ScoreUpdateMessage extends Message {
 
     public HashMap<Player, Integer> getScores() {
         return scores;
-    }
-
-    public int getScoreLimit() {
-        return scoreLimit;
-    }
-
-    public int getRoundLimit() {
-        return roundLimit;
     }
 
     public int getPlayedRounds() {
