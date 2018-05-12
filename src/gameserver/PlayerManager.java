@@ -31,7 +31,7 @@ public class PlayerManager implements MessageListener {
     public Player login(String username) {
         if (players.size() > currentMap.getPlayers()) return null;
 
-        if (!isNameAvailable(username)) {
+        if (isUsernameUsed(username)) {
             username = getUniqueUsername(username);
         }
 
@@ -162,16 +162,16 @@ public class PlayerManager implements MessageListener {
         newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
     }
 
-    private boolean isNameAvailable(String name) {
+    private boolean isUsernameUsed(String name) {
         for (Player player : players) {
-            if (player.getName().equals(name)) return false;
+            if (player.getName().equals(name)) return true;
         }
-        return true;
+        return false;
     }
 
     private String getUniqueUsername(String username) {
         int index = 2;
-        while (!isNameAvailable(username + " [" + index + "]")) {
+        while (isUsernameUsed(username + " [" + index + "]")) {
             index += 1;
         }
         return username + " [" + index + "]";
