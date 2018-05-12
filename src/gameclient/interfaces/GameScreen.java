@@ -28,7 +28,6 @@ public class GameScreen extends JPanel implements GameServerListener {
     private GameServerConnection client;
     private Player player;
     private UserInterface userInterface;
-    private String username;
 
     public GameScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -126,9 +125,8 @@ public class GameScreen extends JPanel implements GameServerListener {
         return panel;
     }
 
-    public void connect(String ip, int port, String username) {
+    public void connect(String ip, int port) {
         if (client != null && client.isConnected()) return;
-        this.username = username;
         client = new GameServerConnection(this);
         client.connect(ip, port);
         gamePanel.requestFocus();
@@ -156,6 +154,7 @@ public class GameScreen extends JPanel implements GameServerListener {
      * So we send the username to login to the GameServer
      */
     public void onConnect() {
+        String username = userInterface.getSettingsScreen().getUsername();
         client.send(username);
         gameInfoPanel.add("# Trying to connect with username: " + username);
     }

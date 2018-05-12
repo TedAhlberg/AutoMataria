@@ -149,7 +149,7 @@ public class HostServerScreen extends JPanel {
         panel.add(serverStatusLabel, getFieldConstraints(1, 0));
 
         panel.add(new JLabel("SERVER NAME"), getFieldConstraints(0, 1));
-        serverNameTextField = new JTextField("Auto-Mataria Server");
+        serverNameTextField = new JTextField(userInterface.getSettingsScreen().getUsername() + " SERVER");
         serverNameTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 

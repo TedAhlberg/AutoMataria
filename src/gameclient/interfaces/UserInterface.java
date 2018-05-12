@@ -71,11 +71,15 @@ public class UserInterface extends JPanel {
     }
 
     public void startGame(String ip, int port) {
-        gameScreen.connect(ip, port, settingsScreen.getUsername());
+        gameScreen.connect(ip, port);
         changeScreen("GameScreen");
     }
 
     public void setWindowMode(Window.Mode windowMode) {
         window.setMode(windowMode);
+    }
+
+    public SettingsScreen getSettingsScreen() {
+        return settingsScreen;
     }
 }
