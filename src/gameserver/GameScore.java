@@ -107,7 +107,7 @@ public class GameScore {
      * Sends score to all clients through the MessageListener
      */
     private void sendScoreUpdate() {
-        listener.newMessage(new ScoreUpdateMessage(scores, scoreLimit, roundLimit, roundsPlayed, highestScore, gameOver));
+        listener.newMessage(new ScoreUpdateMessage(scores, roundsPlayed, highestScore, gameOver));
     }
 
     synchronized public HashMap<Player, Integer> getScores() {

@@ -11,16 +11,26 @@ import java.util.HashMap;
  * @author Johannes Blüml
  */
 public class ScorePanel extends JPanel {
+    private int scoreLimit;
+    private int roundLimit;
+
     public ScorePanel() {
         setLayout(new GridBagLayout());
     }
 
-    public void update(HashMap<Player, Integer> scores, int scoreLimit, int highestScore, int roundLimit, int playedRounds, boolean gameOver) {
+    public void setLimits(int roundLimit, int scoreLimit) {
+        this.scoreLimit = scoreLimit;
+        this.roundLimit = roundLimit;
+    }
+
+    public void update(HashMap<Player, Integer> scores, int highestScore, int playedRounds, boolean gameOver) {
         removeAll();
 
         int row = 0, currentRound = playedRounds + 1;
-        addTableRow(row++, "SCORE LIMIT", scoreLimit < 1 ? "UNLIMITED" : highestScore + " / " + scoreLimit);
-        addTableRow(row++, "ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
+        if (scoreLimit > 0) addTableRow(row++, "SCORE LIMIT", highestScore + " / " + scoreLimit);
+        if (!gameOver)
+            addTableRow(row++, "ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
+        else addTableRow(row++, "GAME OVER", "");
 
         addRowSpacer(row++, 10);
 

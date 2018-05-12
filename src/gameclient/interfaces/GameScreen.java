@@ -201,13 +201,13 @@ public class GameScreen extends JPanel implements GameServerListener {
     private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
         readyPlayersPanel.setVisible(false);
         scorePanel.setVisible(true);
-        scorePanel.update(message.getScores(), message.getScoreLimit(), message.getHighestScore(), message.getRoundLimit(), message.getPlayedRounds(), message.isGameOver());
+        scorePanel.update(message.getScores(), message.getHighestScore(), message.getPlayedRounds(), message.isGameOver());
     }
 
     private void handleReadyPlayersMessage(ReadyPlayersMessage message) {
         scorePanel.setVisible(false);
         readyPlayersPanel.setVisible(true);
-        readyPlayersPanel.update(message.getPlayers(), message.getScoreLimit(), message.getRoundLimit(), message.getReadyPlayerCount(), message.getPlayerCount());
+        readyPlayersPanel.update(message.getPlayers(), message.getReadyPlayerCount(), message.getPlayerCount());
     }
 
     private void handleNewGameMessage(NewGameMessage message) {
@@ -237,6 +237,8 @@ public class GameScreen extends JPanel implements GameServerListener {
             MusicManager.changeTrack();
             MusicManager.getInstance().gameTrack1();
             gameInfoPanel.add("# Connected to server successfully", Color.GREEN);
+            readyPlayersPanel.setLimits(message.roundLimit, message.scoreLimit);
+            scorePanel.setLimits(message.roundLimit, message.scoreLimit);
         } else {
             gamePanel.stop();
             gameInfoPanel.add("# Failed to connect to server", Color.RED);

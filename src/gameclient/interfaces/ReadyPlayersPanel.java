@@ -11,16 +11,25 @@ import java.util.Collection;
  * @author Johannes Blüml
  */
 public class ReadyPlayersPanel extends JPanel {
+    private int scoreLimit;
+    private int roundLimit;
+
     public ReadyPlayersPanel() {
         setLayout(new GridBagLayout());
     }
 
-    public void update(Collection<Player> players, int scoreLimit, int roundLimit, int ready, int amountPlayers) {
+    public void setLimits(int roundLimit, int scoreLimit) {
+        this.scoreLimit = scoreLimit;
+        this.roundLimit = roundLimit;
+    }
+
+    public void update(Collection<Player> players, int ready, int amountPlayers) {
         removeAll();
 
         int row = 0;
-        addTableRow(row++, "SCORE LIMIT", scoreLimit < 1 ? "UNLIMITED" : Integer.toString(scoreLimit));
-        addTableRow(row++, "ROUND LIMIT", roundLimit < 1 ? "UNLIMITED" : Integer.toString(roundLimit));
+        if (scoreLimit > 0) addTableRow(row++, "SCORE LIMIT", Integer.toString(scoreLimit));
+        if (roundLimit > 0) addTableRow(row++, "ROUND LIMIT", Integer.toString(roundLimit));
+        if (scoreLimit == 0 && roundLimit == 0) addTableRow(row++, "NEVER ENDING GAME");
         addRowSpacer(row++, 10);
         addTableRow(row++, "READY", ready + " / " + amountPlayers);
         addRowSpacer(row++, 10);
@@ -56,6 +65,13 @@ public class ReadyPlayersPanel extends JPanel {
         GridBagConstraints gbc = getTableConstraints(0, row);
         gbc.gridwidth = 2;
         add(Box.createVerticalStrut(size), gbc);
+    }
+
+    private void addTableRow(int row, String column) {
+        JLabel label = new JLabel(column);
+        GridBagConstraints gbc = getTableConstraints(0, row);
+        gbc.gridwidth = 2;
+        add(label, gbc);
     }
 
     private void addTableRow(int row, String column1, String column2) {
