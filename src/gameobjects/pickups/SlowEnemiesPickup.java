@@ -54,7 +54,7 @@ public class SlowEnemiesPickup extends InstantPickup {
                 if (!gameObject.equals(player)) {
                     int speed = gameObject.getSpeed();
                     gameObject.setSpeed((int) (speed * 0.5));
-                    ((Player) gameObject).setImage("SlowPickupTransparent.png");
+                    ((Player) gameObject).setImage("TransparentSelfSlowPickup.png");
                 }
             }
         }

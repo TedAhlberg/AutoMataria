@@ -51,7 +51,7 @@ public class SelfSlowPickup extends Pickup {
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
 
-        player.setImage("SlowPickupTransparent.png");
+        player.setImage("TransparentSelfSlowPickup.png");
     }
 
     /**

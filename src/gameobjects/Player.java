@@ -54,7 +54,12 @@ public class Player extends GameObject {
         // Draw reverse icon when reversed
         if(reversed) image = "TransparentReversePickup.png";
         // Draw rectangle around player when invincible
+        if(invincible) image = "TransparentInvinciblePickup.png";
         if (invincible) g.drawRect(x - 40, y - 40, width + 80, height + 80);
+            
+        
+        
+        
         if (image != null) g.drawImage(Resources.getImage(image), x - 10, y - 10, width + 20, height + 20, null);
 
         // Display Player name
