@@ -31,6 +31,10 @@ public class PlayerManager implements MessageListener {
     public Player login(String username) {
         if (players.size() > currentMap.getPlayers()) return null;
 
+        if (!isNameAvailable(username)) {
+            username = getUniqueUsername(username);
+        }
+
         Player player = new Player(username, gameObjects, currentMap);
         player.setListener(this);
         player.setId(ID.getNext());
@@ -156,6 +160,21 @@ public class PlayerManager implements MessageListener {
             playersToRemoveAfterMatch.add(player);
         }
         newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
+    }
+
+    private boolean isNameAvailable(String name) {
+        for (Player player : players) {
+            if (player.getName().equals(name)) return false;
+        }
+        return true;
+    }
+
+    private String getUniqueUsername(String username) {
+        int index = 2;
+        while (!isNameAvailable(username + " [" + index + "]")) {
+            index += 1;
+        }
+        return username + " [" + index + "]";
     }
 
     public void moveStaticPlayers() {
