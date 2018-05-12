@@ -19,11 +19,11 @@ public class Player extends GameObject {
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
     transient private final Trail trail;
+    private final String name;
     transient private Pickup pickupSlot;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
-    private final String name;
     private String image;
     private Color color;
     private boolean dead, ready, invincible, reversed;
@@ -52,15 +52,14 @@ public class Player extends GameObject {
         // Draw skull when dead
         if (dead) image = "DeadSkull.png";
         // Draw reverse icon when reversed
-        if(reversed) image = "TransparentReversePickup.png";
-        // Draw rectangle around player when invincible
-        if(invincible) image = "TransparentInvinciblePickup.png";
-        if (invincible) g.drawRect(x - 40, y - 40, width + 80, height + 80);
-            
-        
-        
-        
-        if (image != null) g.drawImage(Resources.getImage(image), x - 10, y - 10, width + 20, height + 20, null);
+        if (reversed) image = "TransparentReversePickup.png";
+        if (invincible) {
+            image = "TransparentInvinciblePickup.png";
+            // Draw rectangle around player when invincible
+            g.drawRect(x - 40, y - 40, width + 80, height + 80);
+        }
+
+        if (image != null) g.drawImage(Resources.getImage(image), x, y, width, height, null);
 
         // Display Player name
         g.setColor(color.darker());
@@ -241,15 +240,11 @@ public class Player extends GameObject {
             direction = Utility.getOppositeDirection(direction);
         }
         inputQueue.add(direction);
-      
+
     }
 
     public Direction getPreviousDirection() {
         return previousDirection;
-    }
-
-    public void setReversed(boolean reversed) {
-        this.reversed = reversed;
     }
 
     public boolean isDead() {
@@ -268,6 +263,10 @@ public class Player extends GameObject {
 
     public boolean isReversed() {
         return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public boolean isReady() {

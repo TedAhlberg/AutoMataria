@@ -62,7 +62,7 @@ public class GameObjectSpawner {
             boolean isSpawned = spawnedObjects.containsKey(specialObject);
             boolean hasSpawnLimit = specialObject.getSpawnLimit() > 0;
 
-            if (hasSpawnLimit) {
+            if (!isSpawned && hasSpawnLimit) {
                 int spawnsLeft = specialObject.getSpawnLimit() - specialObject.getTimesSpawned();
                 if (spawnsLeft <= 0) continue;
             }
