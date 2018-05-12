@@ -14,7 +14,8 @@ import java.util.HashSet;
  */
 public class PlayerManager implements MessageListener {
     private final HashSet<Player> players = new HashSet<>();
-    private final HashSet<Player> playersToRemove = new HashSet<>();
+    private final HashSet<Player> playersToAddAfterMatch = new HashSet<>();
+    private final HashSet<Player> playersToRemoveAfterMatch = new HashSet<>();
     private final StartingPositions startingPositions = new StartingPositions();
     private final GameColors colors = new GameColors();
     private final Collection<GameObject> gameObjects;
@@ -41,9 +42,11 @@ public class PlayerManager implements MessageListener {
             player.setPoint(Utility.getRandomUniquePosition(currentMap.getGrid(), gameObjects));
             gameObjects.add(player);
             gameObjects.add(player.getTrail());
+            players.add(player);
+        } else {
+            playersToAddAfterMatch.add(player);
         }
 
-        players.add(player);
         newMessage(new PlayerMessage(PlayerMessage.Event.Connected, player));
 
         return player;
@@ -76,8 +79,7 @@ public class PlayerManager implements MessageListener {
 
                     boolean ready = !player.isReady();
                     player.setReady(ready);
-                    newMessage(new PlayerMessage(
-                            (ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
+                    newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
                     updateReadyPlayers();
                 }
             }
@@ -123,36 +125,23 @@ public class PlayerManager implements MessageListener {
         }
     }
 
-    public void setCurrentMap(GameMap currentMap) {
-        this.currentMap = currentMap;
-    }
-
     public void setState(GameState state) {
         this.state = state;
-
-        if (state == GameState.Warmup) {
-            players.removeAll(playersToRemove);
-            playersToRemove.clear();
+        switch (state) {
+            case Warmup:
+                players.removeAll(playersToRemoveAfterMatch);
+                playersToRemoveAfterMatch.clear();
+                players.addAll(playersToAddAfterMatch);
+                playersToAddAfterMatch.clear();
+                resetGame();
+                updateReadyPlayers();
+                break;
+            case Countdown:
+                resetGame();
+            case GameOver:
+                players.forEach(player -> player.setNextDirection(Direction.Static));
+                break;
         }
-    }
-
-    public void setCurrentPlayerSpeed(int currentPlayerSpeed) {
-        this.currentPlayerSpeed = currentPlayerSpeed;
-    }
-
-    public void addListener(MessageListener messageListener) {
-        this.messageListener = messageListener;
-    }
-
-    /**
-     * @param message Message to be sent to all connected clients
-     */
-    public void newMessage(Message message) {
-        messageListener.newMessage(message);
-    }
-
-    public Collection<Player> getPlayers() {
-        return players;
     }
 
     public void removePlayer(Player player) {
@@ -163,8 +152,31 @@ public class PlayerManager implements MessageListener {
             gameObjects.remove(player);
             updateReadyPlayers();
         } else {
-            playersToRemove.add(player);
+            playersToRemoveAfterMatch.add(player);
         }
         newMessage(new PlayerMessage(PlayerMessage.Event.Disconnected, player));
+    }
+
+    public void addListener(MessageListener messageListener) {
+        this.messageListener = messageListener;
+    }
+
+    public void setCurrentPlayerSpeed(int currentPlayerSpeed) {
+        this.currentPlayerSpeed = currentPlayerSpeed;
+    }
+
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
+    }
+
+    public Collection<Player> getPlayers() {
+        return players;
+    }
+
+    /**
+     * @param message Message to be sent to all connected clients
+     */
+    public void newMessage(Message message) {
+        messageListener.newMessage(message);
     }
 }

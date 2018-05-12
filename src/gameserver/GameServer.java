@@ -184,30 +184,19 @@ public class GameServer implements ConnectionListener, MessageListener {
 
 
     private void setState(GameState newState) {
-        playerManager.setState(newState);
         if (this.state == newState) return;
+        playerManager.setState(newState);
         switch (newState) {
-            case Warmup:
-                playerManager.resetGame();
-                playerManager.updateReadyPlayers();
-                break;
             case Running:
                 gameScore.startRound();
                 break;
             case RoundOver:
-                for (Player player : playerManager.getPlayers()) {
-                    player.setNextDirection(Direction.Static);
-                }
                 currentCountdown = settings.roundOverCountdown < 1000 ? 1000 : settings.roundOverCountdown;
                 break;
             case GameOver:
-                for (Player player : playerManager.getPlayers()) {
-                    player.setNextDirection(Direction.Static);
-                }
                 currentCountdown = settings.gameOverCountdown < 1000 ? 1000 : settings.gameOverCountdown;
                 break;
             case Countdown:
-                playerManager.resetGame();
                 currentCountdown = settings.newGameCountdown < 1000 ? 1000 : settings.newGameCountdown;
                 newMessage(new NewGameMessage(currentCountdown));
                 break;
