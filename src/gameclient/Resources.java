@@ -39,6 +39,8 @@ public class Resources {
             System.out.println("Failed to load font.");
             e.printStackTrace();
         }
+        loadImages(imagePath);
+        loadImages(buttonPath);
     }
 
     public static Resources getInstance() {
@@ -49,10 +51,10 @@ public class Resources {
     }
 
     public static BufferedImage getImage(Path path, String name) {
-
         if (images.containsKey(name)) {
             return images.get(name);
         }
+        System.out.println("LOADING IMAGE FROM DISK: " + name);
         Path filePath = path.resolve(name);
         try {
             BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(filePath.toFile()));
@@ -61,6 +63,19 @@ public class Resources {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private void loadImages(Path directory) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path path : stream) {
+                if (!Files.isDirectory(path)) {
+                    BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(path.toFile()));
+                    images.put(path.getFileName().toString(), image);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -60,6 +60,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        gamePanel.setPreferredSize(new Dimension(getHeight(), getHeight()));
         Dimension sidePanelSize = new Dimension((getWidth() - gamePanel.getHeight()) / 2, gamePanel.getHeight());
         leftPanel.setPreferredSize(sidePanelSize);
         rightPanel.setPreferredSize(sidePanelSize);

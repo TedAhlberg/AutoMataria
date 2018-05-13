@@ -44,8 +44,8 @@ public class GamePanel extends JComponent {
         timeBetweenRenders = (1000 / maxFPS) * 1000000;
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop());
+        gameLoopThread.setPriority(Thread.MAX_PRIORITY - 1);
         gameLoopThread.start();
-        gameLoopThread.setPriority(Thread.MAX_PRIORITY);
     }
 
     /**
@@ -123,7 +123,7 @@ public class GamePanel extends JComponent {
             }
 
             // Render the game to the panel
-            paintImmediately(new Rectangle(getSize()));
+            repaint();
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
@@ -146,10 +146,8 @@ public class GamePanel extends JComponent {
     }
 
     /**
-     * Renders the game to the component
+     * Renders the game to this component
      * This method is called in the gameLoop() method with paintImmediately()
-     *
-     * @param g Graphics object of the panel
      */
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;

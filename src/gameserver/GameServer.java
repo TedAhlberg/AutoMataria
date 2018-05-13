@@ -52,9 +52,16 @@ public class GameServer implements ConnectionListener, MessageListener {
     public void start() {
         if (running) return;
         running = true;
-        new Thread(serverConnection).start();
-        new Thread(serverInformationSender).start();
-        new Thread(this::gameLoop).start();
+        Thread t1 = new Thread(serverConnection);
+        t1.setPriority(Thread.MAX_PRIORITY);
+        Thread t2 = new Thread(this::gameLoop);
+        t2.setPriority(Thread.MAX_PRIORITY);
+        Thread t3 = new Thread(serverInformationSender);
+        t3.setPriority(Thread.MIN_PRIORITY);
+
+        t1.start();
+        t2.start();
+        t3.start();
     }
 
     public void stop() {

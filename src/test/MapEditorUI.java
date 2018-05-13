@@ -227,6 +227,7 @@ public class MapEditorUI {
         specialGameObjectsToSave.addAll(Arrays.asList(map.getGameMapObjects()));
 
         updateUIFields();
+        gamePanel.start(1);
         updateGamePanel();
     }
 
@@ -356,7 +357,6 @@ public class MapEditorUI {
         gamePanel = new GamePanel();
         gamePanelContainer.add(gamePanel);
         gamePanel.toggleDebugInfo();
-        gamePanel.start(1);
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 
