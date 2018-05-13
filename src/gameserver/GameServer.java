@@ -209,6 +209,7 @@ public class GameServer implements ConnectionListener, MessageListener {
             case Countdown:
                 currentCountdown = settings.newGameCountdown < 1000 ? 1000 : settings.newGameCountdown;
                 newMessage(new NewGameMessage(currentCountdown));
+                gameObjectSpawner.reset();
                 break;
         }
         this.state = newState;

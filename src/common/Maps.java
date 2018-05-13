@@ -42,6 +42,7 @@ public class Maps {
     }
 
     synchronized public GameMap get(String name) {
+        if (name == null) return null;
         Path filePath = directory.resolve(name);
         try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(filePath))) {
             return (GameMap) inputStream.readObject();
