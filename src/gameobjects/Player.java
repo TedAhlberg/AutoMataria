@@ -45,18 +45,19 @@ public class Player extends GameObject {
     }
 
     public void render(Graphics2D g) {
-        // Paint player rectangle
         g.setColor(color);
         g.fillRect(x - 10, y - 10, width + 20, height + 20);
+        g.setColor(color.brighter());
+        g.drawRect(x - 10, y - 10, width + 20, height + 20);
 
-        // Draw skull when dead
-        if (dead) image = "DeadSkull.png";
-        // Draw reverse icon when reversed
-        if (reversed) image = "TransparentReversePickup.png";
-        if (invincible) {
-            image = "TransparentInvinciblePickup.png";
-            // Draw rectangle around player when invincible
-            g.drawRect(x - 40, y - 40, width + 80, height + 80);
+        if (dead) {
+            image = "DeadSkull.png";
+        } else {
+            if (invincible) {
+                image = "TransparentInvinciblePickup.png";
+                g.drawRect(x - 40, y - 40, width + 80, height + 80);
+            }
+            if (reversed) image = "TransparentReversePickup.png";
         }
 
         if (image != null) g.drawImage(Resources.getImage(image), x, y, width, height, null);
