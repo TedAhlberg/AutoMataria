@@ -61,7 +61,6 @@ public class Resources {
             images.put(name, image);
             return image;
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -95,7 +94,6 @@ public class Resources {
             images.put(name, image);
             return image;
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
