@@ -109,7 +109,7 @@ public class Audio implements Runnable {
         }
         if (!started && on) {
             setLoop(times);
-            new Thread(this).start();
+            new Thread(this, "ClientAudio").start();
             started = true;
         }
     }
@@ -122,7 +122,7 @@ public class Audio implements Runnable {
             setLoop(1);
             if (soundThread == null) {
                 started = true;
-                soundThread = new Thread(this);
+                soundThread = new Thread(this, "ClientAudio");
                 soundThread.start();
             } else {
                 resume();

@@ -13,9 +13,14 @@ import java.util.Collection;
 public class ReadyPlayersPanel extends JPanel {
     private int scoreLimit;
     private int roundLimit;
+    private String serverName;
 
     public ReadyPlayersPanel() {
         setLayout(new GridBagLayout());
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
     public void setLimits(int roundLimit, int scoreLimit) {
@@ -27,12 +32,22 @@ public class ReadyPlayersPanel extends JPanel {
         removeAll();
 
         int row = 0;
+        if (serverName != null) {
+            JLabel label = new JLabel(serverName);
+            label.setForeground(new Color(0xFBBDFF));
+            GridBagConstraints gbc = getTableConstraints(0, row++);
+            gbc.ipady = 0;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            add(label, gbc);
+            addRowSpacer(row++, 12);
+        }
         if (scoreLimit > 0) addTableRow(row++, "SCORE LIMIT", Integer.toString(scoreLimit));
         if (roundLimit > 0) addTableRow(row++, "ROUND LIMIT", Integer.toString(roundLimit));
         if (scoreLimit == 0 && roundLimit == 0) addTableRow(row++, "NEVER ENDING GAME");
-        addRowSpacer(row++, 10);
+        addRowSpacer(row++, 2);
         addTableRow(row++, "READY", ready + " / " + amountPlayers);
-        addRowSpacer(row++, 10);
+        addRowSpacer(row++, 8);
 
         JLabel titleLabel1 = new JLabel("PLAYERS");
         titleLabel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.MAGENTA));
@@ -62,13 +77,16 @@ public class ReadyPlayersPanel extends JPanel {
     }
 
     private void addRowSpacer(int row, int size) {
-        GridBagConstraints gbc = getTableConstraints(0, row);
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = row;
         add(Box.createVerticalStrut(size), gbc);
     }
 
     private void addTableRow(int row, String column) {
         JLabel label = new JLabel(column);
+        label.setForeground(Color.LIGHT_GRAY);
         GridBagConstraints gbc = getTableConstraints(0, row);
         gbc.gridwidth = 2;
         add(label, gbc);
@@ -76,9 +94,11 @@ public class ReadyPlayersPanel extends JPanel {
 
     private void addTableRow(int row, String column1, String column2) {
         JLabel label1 = new JLabel(column1);
+        label1.setForeground(Color.LIGHT_GRAY);
         add(label1, getTableConstraints(0, row));
 
         JLabel label2 = new JLabel(column2);
+        label2.setForeground(Color.LIGHT_GRAY);
         label2.setHorizontalAlignment(SwingConstants.RIGHT);
         add(label2, getTableConstraints(1, row));
     }

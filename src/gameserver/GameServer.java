@@ -52,11 +52,11 @@ public class GameServer implements ConnectionListener, MessageListener {
     public void start() {
         if (running) return;
         running = true;
-        Thread t1 = new Thread(serverConnection);
+        Thread t1 = new Thread(serverConnection, "ServerConnection");
         t1.setPriority(Thread.MAX_PRIORITY);
-        Thread t2 = new Thread(this::gameLoop);
+        Thread t2 = new Thread(this::gameLoop, "ServerGameLoop");
         t2.setPriority(Thread.MAX_PRIORITY);
-        Thread t3 = new Thread(serverInformationSender);
+        Thread t3 = new Thread(serverInformationSender, "ServerInformationSender");
         t3.setPriority(Thread.MIN_PRIORITY);
 
         t1.start();
@@ -240,6 +240,7 @@ public class GameServer implements ConnectionListener, MessageListener {
             if (player != null) {
                 connectedClients.put(client, player);
                 client.send(new ConnectionMessage(
+                        settings.name,
                         currentMap,
                         settings.tickRate,
                         settings.tickRate * settings.amountOfTickBetweenUpdates,

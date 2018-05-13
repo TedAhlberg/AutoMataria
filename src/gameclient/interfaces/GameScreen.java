@@ -71,9 +71,11 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
 
         gameInfoPanel = new GameInfoPanel(10);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
+        gbc.gridx = 0;
         gbc.weightx = 1;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.weighty = 1;
+        gbc.insets = new Insets(20, 20, 20, 20);
+        gbc.fill = GridBagConstraints.BOTH;
         panel.add(gameInfoPanel, gbc);
 
         return panel;
@@ -81,6 +83,16 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
 
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
+
+        AMButton settingsButton = new AMButton("SETTINGS");
+        settingsButton.addActionListener(e -> userInterface.changeScreen("SettingsScreen"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.ipadx = 10;
+        gbc.ipady = 10;
+        gbc.insets = new Insets(20, 20, 20, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(settingsButton, gbc);
 
         AMButton disconnectButton = new AMButton("DISCONNECT");
         disconnectButton.addActionListener(e -> {
@@ -91,39 +103,32 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             userInterface.changeToPreviousScreen();
             MusicManager.getInstance().menuTrack();
         });
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 0;
-        gbc.weightx = 1;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
         gbc.ipadx = 10;
         gbc.ipady = 10;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.NORTHEAST;
+        gbc.insets = new Insets(20, 10, 20, 20);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(disconnectButton, gbc);
 
-        AMButton settingsButton = new AMButton("SETTINGS");
-        settingsButton.addActionListener(e -> userInterface.changeScreen("SettingsScreen"));
-        gbc = new GridBagConstraints();
-        gbc.gridy = 1;
-        gbc.weightx = 1;
-        gbc.ipadx = 10;
-        gbc.ipady = 10;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.NORTHEAST;
-        panel.add(settingsButton, gbc);
-
         readyPlayersPanel = new ReadyPlayersPanel();
-        gbc.gridy = 2;
-        gbc.weightx = 1;
-        gbc.anchor = GridBagConstraints.NORTH;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
         panel.add(readyPlayersPanel, gbc);
 
         scorePanel = new ScorePanel();
-        gbc.gridy = 2;
-        gbc.weightx = 1;
-        gbc.anchor = GridBagConstraints.NORTH;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
         panel.add(scorePanel, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weighty = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JPanel(), gbc);
 
         return panel;
     }
@@ -242,7 +247,9 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             MusicManager.getInstance().gameTrack1();
             gameInfoPanel.add("# Connected to server successfully", Color.GREEN);
             readyPlayersPanel.setLimits(message.roundLimit, message.scoreLimit);
+            readyPlayersPanel.setServerName(message.serverName);
             scorePanel.setLimits(message.roundLimit, message.scoreLimit);
+            scorePanel.setServerName(message.serverName);
         } else {
             gamePanel.stop();
             gameInfoPanel.add("# Failed to connect to server", Color.RED);
@@ -306,7 +313,6 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     }
 
     public void onScreenActive() {
-
     }
 
     public void onScreenInactive() {

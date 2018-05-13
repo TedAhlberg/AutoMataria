@@ -20,6 +20,10 @@ public class ServerInformationReceiver extends Thread {
     private HashSet<ServerInformationListener> listeners = new HashSet<>();
     private DatagramSocket socket;
 
+    public ServerInformationReceiver() {
+        setName("ServerInformationReceiver");
+    }
+
     public void addListener(ServerInformationListener listener) {
         listeners.add(listener);
     }

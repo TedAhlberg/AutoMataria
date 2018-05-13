@@ -19,7 +19,7 @@ public class GameServerConnection {
     public void connect(String serverIP, int serverPort) {
         if (thread != null) disconnect();
 
-        thread = new Thread(() -> startConnection(serverIP, serverPort));
+        thread = new Thread(() -> startConnection(serverIP, serverPort), "ClientConnection");
         thread.start();
     }
 

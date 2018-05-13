@@ -15,9 +15,10 @@ public class GameInfoPanel extends JTextPane {
     private int lines;
     private Color defaultColor = Color.CYAN;
 
-
     public GameInfoPanel(int lines) {
         this.lines = lines;
+
+        setEditable(false);
 
         textItems = new ArrayList<>(lines);
         document = getStyledDocument();
@@ -36,7 +37,7 @@ public class GameInfoPanel extends JTextPane {
         try {
             StyleConstants.setForeground(style, color);
             document.insertString(document.getLength(), text + "\n", style);
-            textItems.add(text.length());
+            textItems.add(text.length() + 1);
             if (textItems.size() > lines) {
                 int charsToRemove = textItems.get(0);
                 document.remove(0, charsToRemove);

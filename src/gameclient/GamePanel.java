@@ -43,7 +43,7 @@ public class GamePanel extends JComponent {
     public void start(int maxFPS) {
         timeBetweenRenders = (1000 / maxFPS) * 1000000;
         gameLoopRunning = true;
-        gameLoopThread = new Thread(() -> gameLoop());
+        gameLoopThread = new Thread(() -> gameLoop(), "ClientGameLoop");
         gameLoopThread.setPriority(Thread.MAX_PRIORITY - 1);
         gameLoopThread.start();
     }
