@@ -169,6 +169,12 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             case OpenChatPrompt:
                 openChat();
                 break;
+            case InterfaceBack:
+                userInterface.changeToPreviousScreen();
+                break;
+            case ToggleNames:
+            case SendChatMessage:
+                break;
             default:
                 client.send(action);
         }

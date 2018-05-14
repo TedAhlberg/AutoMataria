@@ -69,7 +69,6 @@ public class KeyBindingsPanel extends JPanel {
 
         for (int i = 0; i < keyMap.size(); i++) {
             Action action = actions[i];
-            System.out.println(action);
             int keyCode = keyMap.get(action);
 
             actionPanels[i] = new JPanel();

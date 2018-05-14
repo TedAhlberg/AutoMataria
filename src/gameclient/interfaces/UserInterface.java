@@ -89,7 +89,6 @@ public class UserInterface extends JPanel {
         if (screenHistory.size() <= 1) return;
         String previousScreen = screenHistory.removeLast();
         String screen = screenHistory.getLast();
-        System.out.println("FROM=" + previousScreen + "; TO=" + screen);
         cardLayout.show(this, screen);
 
         screens.get(previousScreen).onScreenInactive();
