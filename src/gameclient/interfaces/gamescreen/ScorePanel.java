@@ -11,18 +11,18 @@ import java.util.HashMap;
 /**
  * @author Johannes Blüml
  */
-public class ScorePanel extends JPanel {
+public class ScorePanel extends TablePanel {
     private int scoreLimit;
     private int roundLimit;
     private String serverName;
 
     public ScorePanel() {
         setLayout(new GridBagLayout());
-        setBackground(Color.BLACK);
     }
 
     public static void main(String[] args) {
         ScorePanel scorePanel = new ScorePanel();
+        scorePanel.setBackground(Color.BLACK);
 
         gameclient.interfaces.Window frame = new Window("", new Dimension(300, 600));
         frame.setContentPane(scorePanel);
@@ -81,54 +81,5 @@ public class ScorePanel extends JPanel {
 
         revalidate();
         repaint();
-    }
-
-    private void addYFiller() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = 2;
-        gbc.gridx = 0;
-        gbc.weighty = 1;
-        add(Box.createVerticalStrut(0), gbc);
-    }
-
-    private void addRowSpacer(int size) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = 2;
-        gbc.gridx = 0;
-        add(Box.createVerticalStrut(size), gbc);
-    }
-
-    private void addTableRow(String column) {
-        JLabel label = new JLabel(column);
-        label.setForeground(Color.LIGHT_GRAY);
-        GridBagConstraints gbc = getTableConstraints(0);
-        gbc.gridwidth = 2;
-        add(label, gbc);
-    }
-
-    private void addTableRow(String column1, String column2) {
-        JLabel label1 = new JLabel(column1);
-        label1.setForeground(Color.LIGHT_GRAY);
-        add(label1, getTableConstraints(0));
-
-        JLabel label2 = new JLabel(column2);
-        label2.setForeground(Color.LIGHT_GRAY);
-        label2.setHorizontalAlignment(SwingConstants.RIGHT);
-        add(label2, getTableConstraints(1));
-    }
-
-    private GridBagConstraints getTableConstraints(int gridx) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = gridx;
-        gbc.ipady = 10;
-        if (gridx == 0) {
-            gbc.weightx = 1;
-            gbc.anchor = GridBagConstraints.WEST;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-        } else {
-            gbc.anchor = GridBagConstraints.EAST;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-        }
-        return gbc;
     }
 }

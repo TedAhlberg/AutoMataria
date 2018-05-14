@@ -47,4 +47,13 @@ public class GameInfoPanel extends JTextPane {
             e.printStackTrace();
         }
     }
+
+    public void clear() {
+        textItems.clear();
+        try {
+            document.remove(0, document.getLength());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
 }

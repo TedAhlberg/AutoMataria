@@ -95,14 +95,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         panel.add(settingsButton, gbc);
 
         AMButton disconnectButton = new AMButton("DISCONNECT");
-        disconnectButton.addActionListener(e -> {
-            connected = false;
-            MusicManager.changeTrack();
-            client.disconnect();
-            gamePanel.stop();
-            userInterface.changeToPreviousScreen();
-            MusicManager.getInstance().menuTrack();
-        });
+        disconnectButton.addActionListener(e -> client.disconnect());
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.ipadx = 10;
@@ -174,9 +167,17 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
      * When we are disconnected from the GameServer this method is called
      */
     public void onDisconnect() {
-        gamePanel.stop();
-        gameInfoPanel.add("# Connection closed", Color.RED);
         connected = false;
+
+        gamePanel.stop();
+        gameInfoPanel.clear();
+        scorePanel.removeAll();
+        readyPlayersPanel.removeAll();
+
+        MusicManager.changeTrack();
+        MusicManager.getInstance().menuTrack();
+
+        userInterface.changeToPreviousScreen();
     }
 
     /**
