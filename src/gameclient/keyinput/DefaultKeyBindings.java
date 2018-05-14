@@ -1,9 +1,9 @@
 package gameclient.keyinput;
 
+import common.Action;
+
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
-
-import common.Action;
 
 /**
  * @author Ted Ahlberg
@@ -18,6 +18,9 @@ public class DefaultKeyBindings {
 		bindings.put(Action.ToggleDebugText, KeyEvent.VK_F1);
 		bindings.put(Action.ToggleReady, KeyEvent.VK_R);
 		bindings.put(Action.TogglePlayerColor, KeyEvent.VK_C);
+		bindings.put(Action.SendChatMessage, KeyEvent.VK_ENTER);
+		bindings.put(Action.OpenChatPrompt, KeyEvent.VK_Y);
+		bindings.put(Action.UsePickup, KeyEvent.VK_SPACE);
 
 		bindings.put(Action.GoLeft, KeyEvent.VK_LEFT);
 		bindings.put(Action.GoRight, KeyEvent.VK_RIGHT);

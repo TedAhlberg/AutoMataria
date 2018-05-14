@@ -9,7 +9,6 @@ import gameserver.GameServer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * @author Johannes Blüml
@@ -343,10 +342,8 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
     }
 
     public void onScreenActive() {
-        String[] maps = Maps.getInstance().getMapList();
-        System.out.println(Arrays.toString(maps));
         mapsComboBox.removeAllItems();
-        for (String map : maps) {
+        for (String map : Maps.getInstance().getMapList()) {
             mapsComboBox.addItem(map);
         }
         mapPoolPanel.loadMaps();

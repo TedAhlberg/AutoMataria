@@ -116,6 +116,7 @@ public class UserInterface extends JPanel {
     public void onKeyPress(Action action) {
         if (getCurrentScreen().equals("GameScreen") && gameScreen.isConnectedToServer()) {
             gameScreen.onKeyPress(action);
+            return;
         }
         switch (action) {
             case InterfaceBack:

@@ -32,25 +32,20 @@ public class KeyInput implements KeyEventDispatcher {
             userInterface.onKeyPress(Action.GoDown);
         } else if (key == KeyEvent.VK_SPACE) {
             userInterface.onKeyPress(Action.UsePickup);
-        }
-
-        // InterfaceBack
-        else if (key == KeyEvent.VK_ESCAPE) {
-            userInterface.onKeyPress(Action.InterfaceBack);
-        }
-
-        // ToggleInterpolation
-        else if (key == KeyEvent.VK_F2) {
-            userInterface.onKeyPress(Action.ToggleInterpolation);
-        }
-
-        // Toggle Player Color
-        else if (key == KeyEvent.VK_C) {
+        } else if (key == KeyEvent.VK_C) {
             userInterface.onKeyPress(Action.TogglePlayerColor);
         } else if (key == KeyEvent.VK_R) {
             userInterface.onKeyPress(Action.ToggleReady);
+        } else if (key == KeyEvent.VK_F2) {
+            userInterface.onKeyPress(Action.ToggleInterpolation);
         } else if (key == KeyEvent.VK_F1) {
             userInterface.onKeyPress(Action.ToggleDebugText);
+        } else if (key == KeyEvent.VK_Y) {
+            userInterface.onKeyPress(Action.OpenChatPrompt);
+        } else if (key == KeyEvent.VK_ENTER) {
+            userInterface.onKeyPress(Action.SendChatMessage);
+        } else if (key == KeyEvent.VK_ESCAPE) {
+            userInterface.onKeyPress(Action.InterfaceBack);
         }
 
         return false;

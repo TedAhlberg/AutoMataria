@@ -233,7 +233,9 @@ public class GameServer implements ConnectionListener, MessageListener {
      * @param value
      */
     public void onDataFromClient(Client client, Object value) {
-        if (connectedClients.containsKey(client)) {
+        if (value instanceof ChatMessage) {
+            connectedClients.forEachKey(2, otherClient -> otherClient.send(value));
+        } else if (connectedClients.containsKey(client)) {
             playerManager.controlPlayer(connectedClients.get(client), value);
         } else {
             Player player = playerManager.login((String) value);

@@ -29,6 +29,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     private Player player;
     private UserInterface userInterface;
     private boolean connected;
+    private JTextField chatTextField;
 
     public GameScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -69,7 +70,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
 
-        gameInfoPanel = new GameInfoPanel(10);
+        gameInfoPanel = new GameInfoPanel(20);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.weightx = 1;
@@ -77,6 +78,16 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         gbc.insets = new Insets(20, 20, 20, 20);
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(gameInfoPanel, gbc);
+
+        chatTextField = new JTextField();
+        chatTextField.setVisible(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.insets = new Insets(20, 20, 20, 20);
+        panel.add(chatTextField, gbc);
 
         return panel;
     }
@@ -136,6 +147,17 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     }
 
     public void onKeyPress(Action action) {
+        if (chatTextField.isVisible()) {
+            switch (action) {
+                case InterfaceBack:
+                    closeChat();
+                    break;
+                case SendChatMessage:
+                    sendChatMessage();
+                    break;
+            }
+            return;
+        }
         switch (action) {
             case ToggleDebugText:
                 gamePanel.toggleDebugInfo();
@@ -143,6 +165,9 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
                 break;
             case ToggleInterpolation:
                 gamePanel.toggleInterpolation();
+                break;
+            case OpenChatPrompt:
+                openChat();
                 break;
             default:
                 client.send(action);
@@ -204,7 +229,37 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             handleMapChange((GameMap) data);
         } else if (data instanceof ReadyPlayersMessage) {
             handleReadyPlayersMessage((ReadyPlayersMessage) data);
+        } else if (data instanceof ChatMessage) {
+            handleChatMessage((ChatMessage) data);
         }
+    }
+
+    private void openChat() {
+        if (chatTextField.isVisible()) return;
+        chatTextField.setVisible(true);
+        leftPanel.revalidate();
+        chatTextField.requestFocus();
+    }
+
+    private void closeChat() {
+        if (!chatTextField.isVisible()) return;
+        chatTextField.setVisible(false);
+        chatTextField.setText("");
+        leftPanel.revalidate();
+    }
+
+    private void sendChatMessage() {
+        if (!chatTextField.isVisible()) return;
+        String message = chatTextField.getText().trim();
+        if (!message.equals("")) {
+            client.send(new ChatMessage(message, player));
+        }
+        chatTextField.setText("");
+        chatTextField.setVisible(false);
+    }
+
+    private void handleChatMessage(ChatMessage message) {
+        gameInfoPanel.add(message.player.getName() + ": " + message.message, message.player.getColor());
     }
 
     private void handleScoreUpdateMessage(ScoreUpdateMessage message) {
