@@ -1,6 +1,7 @@
-package gameclient;
+package gameclient.interfaces.serverbrowserscreen;
 
 import common.ServerInformation;
+import gameclient.Game;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

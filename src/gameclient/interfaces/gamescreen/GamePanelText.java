@@ -1,4 +1,7 @@
-package gameclient;
+package gameclient.interfaces.gamescreen;
+
+import gameclient.Game;
+import gameclient.Resources;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

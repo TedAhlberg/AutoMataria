@@ -1,4 +1,4 @@
-package gameclient.interfaces;
+package gameclient.interfaces.gamescreen;
 
 import javax.swing.*;
 import javax.swing.text.*;

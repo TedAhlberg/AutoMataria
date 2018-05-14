@@ -1,5 +1,6 @@
-package gameclient.interfaces;
+package gameclient.interfaces.gamescreen;
 
+import gameclient.interfaces.Window;
 import gameobjects.Player;
 
 import javax.swing.*;
@@ -17,6 +18,18 @@ public class ScorePanel extends JPanel {
 
     public ScorePanel() {
         setLayout(new GridBagLayout());
+        setBackground(Color.BLACK);
+    }
+
+    public static void main(String[] args) {
+        ScorePanel scorePanel = new ScorePanel();
+
+        gameclient.interfaces.Window frame = new Window("", new Dimension(300, 600));
+        frame.setContentPane(scorePanel);
+        frame.pack();
+        frame.setVisible(true);
+
+        scorePanel.update(new HashMap<>(), 66, 7, false);
     }
 
     public void setServerName(String serverName) {
@@ -31,30 +44,27 @@ public class ScorePanel extends JPanel {
     public void update(HashMap<Player, Integer> scores, int highestScore, int playedRounds, boolean gameOver) {
         removeAll();
 
-        int row = 0;
         if (serverName != null) {
             JLabel label = new JLabel(serverName);
             label.setForeground(new Color(0xFBBDFF));
-            GridBagConstraints gbc = getTableConstraints(0, row++);
+            GridBagConstraints gbc = getTableConstraints(0);
             gbc.ipady = 0;
             gbc.gridwidth = 2;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
             add(label, gbc);
-            addRowSpacer(row++, 12);
+            addRowSpacer(12);
         }
-        if (scoreLimit > 0) addTableRow(row++, "SCORE LIMIT", highestScore + " / " + scoreLimit);
+        if (scoreLimit > 0) addTableRow("SCORE LIMIT", highestScore + " / " + scoreLimit);
         int currentRound = (!gameOver) ? playedRounds + 1 : playedRounds;
-        addTableRow(row++, "ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
+        addTableRow("ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
 
-        addRowSpacer(row++, 8);
+        addRowSpacer(8);
 
         JLabel titleLabel1 = new JLabel("PLAYER SCORES");
         titleLabel1.setBorder(new MatteBorder(0, 0, 1, 0, Color.MAGENTA));
-        GridBagConstraints gbc = getTableConstraints(0, row);
+        GridBagConstraints gbc = getTableConstraints(0);
         gbc.insets = new Insets(0, 0, 5, 0);
         gbc.gridwidth = 2;
         add(titleLabel1, gbc);
-        row += 1;
 
         for (Player player : scores.keySet()) {
             JLabel nameLabel = new JLabel(player.getName());
@@ -64,55 +74,61 @@ public class ScorePanel extends JPanel {
             scoreLabel.setHorizontalAlignment(SwingConstants.RIGHT);
             scoreLabel.setForeground(player.getColor());
 
-            add(nameLabel, getTableConstraints(0, row));
-            add(scoreLabel, getTableConstraints(1, row));
-
-            row += 1;
+            add(nameLabel, getTableConstraints(0));
+            add(scoreLabel, getTableConstraints(1));
         }
+        addYFiller();
 
         revalidate();
         repaint();
     }
 
-    private void addRowSpacer(int row, int size) {
+    private void addYFiller() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = 2;
         gbc.gridx = 0;
-        gbc.gridy = row;
+        gbc.weighty = 1;
+        add(Box.createVerticalStrut(0), gbc);
+    }
+
+    private void addRowSpacer(int size) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
         add(Box.createVerticalStrut(size), gbc);
     }
 
-    private void addTableRow(int row, String column) {
+    private void addTableRow(String column) {
         JLabel label = new JLabel(column);
         label.setForeground(Color.LIGHT_GRAY);
-        GridBagConstraints gbc = getTableConstraints(0, row);
+        GridBagConstraints gbc = getTableConstraints(0);
         gbc.gridwidth = 2;
         add(label, gbc);
     }
 
-    private void addTableRow(int row, String column1, String column2) {
+    private void addTableRow(String column1, String column2) {
         JLabel label1 = new JLabel(column1);
         label1.setForeground(Color.LIGHT_GRAY);
-        add(label1, getTableConstraints(0, row));
+        add(label1, getTableConstraints(0));
 
         JLabel label2 = new JLabel(column2);
         label2.setForeground(Color.LIGHT_GRAY);
         label2.setHorizontalAlignment(SwingConstants.RIGHT);
-        add(label2, getTableConstraints(1, row));
+        add(label2, getTableConstraints(1));
     }
 
-    private GridBagConstraints getTableConstraints(int gridx, int gridy) {
+    private GridBagConstraints getTableConstraints(int gridx) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = gridx;
-        gbc.gridy = gridy;
-        gbc.ipadx = 20;
         gbc.ipady = 10;
         if (gridx == 0) {
+            gbc.weightx = 1;
             gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
         } else {
             gbc.anchor = GridBagConstraints.EAST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
         }
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         return gbc;
     }
 }

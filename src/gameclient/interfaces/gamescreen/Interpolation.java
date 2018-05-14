@@ -1,4 +1,4 @@
-package gameclient;
+package gameclient.interfaces.gamescreen;
 
 import common.Direction;
 import gameobjects.GameObject;

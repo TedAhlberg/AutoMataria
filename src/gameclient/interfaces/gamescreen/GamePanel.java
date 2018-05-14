@@ -1,7 +1,9 @@
-package gameclient;
+package gameclient.interfaces.gamescreen;
 
 import common.GameState;
 import common.Utility;
+import gameclient.Game;
+import gameclient.Resources;
 import gameobjects.GameObject;
 import gameobjects.Player;
 

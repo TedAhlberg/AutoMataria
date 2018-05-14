@@ -2,6 +2,9 @@ package gameclient.interfaces;
 
 import gameclient.Game;
 import gameclient.Resources;
+import gameclient.interfaces.gamescreen.GameScreen;
+import gameclient.interfaces.hostserverscreen.HostServerScreen;
+import gameclient.interfaces.serverbrowserscreen.BrowseServersScreen;
 import gameclient.keyinput.KeyInput;
 import test.MapEditorUI;
 

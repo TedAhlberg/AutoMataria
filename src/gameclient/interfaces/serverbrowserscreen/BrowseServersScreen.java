@@ -1,7 +1,8 @@
-package gameclient.interfaces;
+package gameclient.interfaces.serverbrowserscreen;
 
 import common.ServerInformation;
-import gameclient.*;
+import gameclient.Resources;
+import gameclient.interfaces.*;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;

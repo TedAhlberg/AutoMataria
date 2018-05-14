@@ -1,9 +1,9 @@
-package gameclient.interfaces;
+package gameclient.interfaces.gamescreen;
 
 import common.Action;
 import common.*;
 import common.messages.*;
-import gameclient.*;
+import gameclient.interfaces.*;
 import gameclient.sound.MusicManager;
 import gameclient.sound.SoundFx;
 import gameobjects.Player;
@@ -113,14 +113,16 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
 
         readyPlayersPanel = new ReadyPlayersPanel();
         gbc = new GridBagConstraints();
-        gbc.gridx = 0;
         gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.insets = new Insets(0, 20, 20, 20);
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
         panel.add(readyPlayersPanel, gbc);
 
         scorePanel = new ScorePanel();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
         panel.add(scorePanel, gbc);
 
         gbc = new GridBagConstraints();
@@ -299,8 +301,8 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
                 SoundFx.getInstance().crash();
                 break;
             case Moved:
-                if(message.getPlayer().equals(player))
-                SoundFx.getInstance().movement();
+                if (message.getPlayer().equals(player))
+                    SoundFx.getInstance().movement();
                 break;
             case ColorChange:
                 gameInfoPanel.add(playerName + " has changed color", playerColor);

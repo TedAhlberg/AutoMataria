@@ -1,9 +1,10 @@
-package gameclient.interfaces;
+package gameclient.interfaces.hostserverscreen;
 
 import common.GameServerSettings;
 import common.Maps;
 import gameclient.Game;
 import gameclient.Resources;
+import gameclient.interfaces.*;
 import gameserver.GameServer;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
     }
 
     public static void main(String[] args) {
-        Window window = new Window("HostServerScreen", new Dimension(1440, 800));
+        gameclient.interfaces.Window window = new gameclient.interfaces.Window("HostServerScreen", new Dimension(1440, 800));
         window.setContentPane(new HostServerScreen(null));
         window.pack();
     }

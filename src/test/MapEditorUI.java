@@ -1,8 +1,10 @@
 package test;
 
 import common.*;
-import gameclient.*;
+import gameclient.Game;
+import gameclient.Resources;
 import gameclient.interfaces.UserInterface;
+import gameclient.interfaces.gamescreen.GamePanel;
 import gameobjects.*;
 import gameserver.StartingPositions;
 

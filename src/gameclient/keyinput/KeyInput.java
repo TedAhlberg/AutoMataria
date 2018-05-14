@@ -2,7 +2,7 @@ package gameclient.keyinput;
 
 import common.Action;
 import common.Direction;
-import gameclient.interfaces.GameScreen;
+import gameclient.interfaces.gamescreen.GameScreen;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

@@ -1,4 +1,4 @@
-package gameclient;
+package gameclient.interfaces.serverbrowserscreen;
 
 import common.ServerInformation;
 

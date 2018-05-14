@@ -1,4 +1,4 @@
-package gameclient;
+package gameclient.interfaces.gamescreen;
 
 import java.io.*;
 import java.net.Socket;

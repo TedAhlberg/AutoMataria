@@ -1,4 +1,4 @@
-package gameclient.interfaces;
+package gameclient.interfaces.hostserverscreen;
 
 import common.Maps;
 
