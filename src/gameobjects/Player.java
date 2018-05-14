@@ -210,8 +210,13 @@ public class Player extends GameObject {
         direction = previousDirection = Direction.Static;
         dead = invincible = reversed = false;
 
-        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
-            pickupSlot.done();
+        if (pickupSlot != null) {
+            if (pickupSlot.getState() == PickupState.InUse) {
+                pickupSlot.done();
+            } else {
+                pickupSlot.setState(PickupState.Used);
+                pickupSlot = null;
+            }
         }
 
         trail.clear();
@@ -256,8 +261,9 @@ public class Player extends GameObject {
         if (invincible) {
             this.dead = false;
         } else {
-            direction = Direction.Static;
             this.dead = dead;
+            inputQueue.clear();
+            direction = Direction.Static;
             listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, this));
         }
     }
