@@ -342,11 +342,16 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
     }
 
     public void onScreenActive() {
-        mapsComboBox.removeAllItems();
-        for (String map : Maps.getInstance().getMapList()) {
-            mapsComboBox.addItem(map);
+        if (server == null) {
+            mapsComboBox.removeAllItems();
+            for (String map : Maps.getInstance().getMapList()) {
+                mapsComboBox.addItem(map);
+            }
+            mapPoolPanel.loadMaps();
+        } else {
+            String currentMap = server.getServerInformation().getMapName();
+            mapsComboBox.setSelectedItem(currentMap);
         }
-        mapPoolPanel.loadMaps();
     }
 
     public void onScreenInactive() {

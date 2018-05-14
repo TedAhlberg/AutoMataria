@@ -45,8 +45,14 @@ public class GameServer implements ConnectionListener, MessageListener {
         serverInformationSender = new ServerInformationSender(this);
         gameObjectSpawner = new GameObjectSpawner(gameObjects, currentMap, settings.tickRate);
         gameScore = new GameScore(this);
-        changeMap(Maps.getInstance().get(settings.mapPool[0]));
-        setState(GameState.Warmup);
+
+        state = GameState.Warmup;
+
+        GameMap map = Maps.getInstance().get(settings.mapPool[0]);
+        if (map == null) map = Maps.getInstance().get(Maps.getInstance().getMapList()[0]);
+        changeMap(map);
+
+        playerManager.setState(state);
     }
 
     public void start() {
@@ -77,7 +83,7 @@ public class GameServer implements ConnectionListener, MessageListener {
      * @param map The GameMap to change to
      */
     public void changeMap(GameMap map) {
-        if (map == null) return;
+        if (map == null || state != GameState.Warmup) return;
 
         currentMap = map;
         playerManager.setCurrentPlayerSpeed((int) Math.round(settings.playerSpeed * map.getPlayerSpeedMultiplier()));
@@ -178,8 +184,8 @@ public class GameServer implements ConnectionListener, MessageListener {
                 break;
             case GameOver:
                 if (currentCountdown <= 0) {
-                    changeToNextMap();
                     setState(GameState.Warmup);
+                    changeToNextMap();
                 } else currentCountdown -= settings.tickRate;
                 break;
             case Countdown:
