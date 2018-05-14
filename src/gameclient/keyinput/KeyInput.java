@@ -1,8 +1,7 @@
 package gameclient.keyinput;
 
 import common.Action;
-import common.Direction;
-import gameclient.interfaces.gamescreen.GameScreen;
+import gameclient.interfaces.UserInterface;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,50 +11,46 @@ import java.awt.event.KeyEvent;
  * @author Ted Ahlberg
  */
 public class KeyInput implements KeyEventDispatcher {
-    private GameScreen gameScreen;
+    private UserInterface userInterface;
     private KeyBindings bindings;
 
-    public KeyInput(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
+    public KeyInput(UserInterface userInterface) {
+        this.userInterface = userInterface;
     }
 
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getID() != KeyEvent.KEY_PRESSED) return false;
         int key = e.getKeyCode();
 
-        // GoLeft
         if (key == KeyEvent.VK_LEFT) {
-            gameScreen.onKeyPress(Direction.Left);
-            // GoRight
+            userInterface.onKeyPress(Action.GoLeft);
         } else if (key == KeyEvent.VK_RIGHT) {
-            gameScreen.onKeyPress(Direction.Right);
-            // GoUp
+            userInterface.onKeyPress(Action.GoRight);
         } else if (key == KeyEvent.VK_UP) {
-            gameScreen.onKeyPress(Direction.Up);
-            // GoDown
+            userInterface.onKeyPress(Action.GoUp);
         } else if (key == KeyEvent.VK_DOWN) {
-            gameScreen.onKeyPress(Direction.Down);
+            userInterface.onKeyPress(Action.GoDown);
         } else if (key == KeyEvent.VK_SPACE) {
-            gameScreen.onKeyPress(Action.UsePickup);
+            userInterface.onKeyPress(Action.UsePickup);
         }
 
         // InterfaceBack
         else if (key == KeyEvent.VK_ESCAPE) {
-            gameScreen.onKeyPress(Action.InterfaceBack);
+            userInterface.onKeyPress(Action.InterfaceBack);
         }
 
         // ToggleInterpolation
         else if (key == KeyEvent.VK_F2) {
-            gameScreen.onKeyPress(Action.ToggleInterpolation);
+            userInterface.onKeyPress(Action.ToggleInterpolation);
         }
 
         // Toggle Player Color
         else if (key == KeyEvent.VK_C) {
-            gameScreen.onKeyPress(Action.TogglePlayerColor);
+            userInterface.onKeyPress(Action.TogglePlayerColor);
         } else if (key == KeyEvent.VK_R) {
-            gameScreen.onKeyPress(Action.ToggleReady);
+            userInterface.onKeyPress(Action.ToggleReady);
         } else if (key == KeyEvent.VK_F1) {
-            gameScreen.onKeyPress(Action.ToggleDebugText);
+            userInterface.onKeyPress(Action.ToggleDebugText);
         }
 
         return false;

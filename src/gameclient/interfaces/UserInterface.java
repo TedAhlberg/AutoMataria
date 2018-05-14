@@ -1,5 +1,6 @@
 package gameclient.interfaces;
 
+import common.Action;
 import gameclient.Game;
 import gameclient.Resources;
 import gameclient.interfaces.gamescreen.GameScreen;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class UserInterface extends JPanel {
+    HashMap<String, UserInterfaceScreen> screens = new HashMap<>();
     /**
      * @eriklundow
      */
@@ -22,7 +24,6 @@ public class UserInterface extends JPanel {
     private GameScreen gameScreen;
     private SettingsScreen settingsScreen;
     private LinkedList<String> screenHistory = new LinkedList<>();
-    HashMap<String, UserInterfaceScreen> screens = new HashMap<>();
 
     public UserInterface() {
         this(null);
@@ -37,7 +38,6 @@ public class UserInterface extends JPanel {
 
         settingsScreen = new SettingsScreen(this);
         gameScreen = new GameScreen(this);
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(gameScreen));
 
         screens.put("StartScreen", new StartScreen(this));
         screens.put("BrowseScreen", new BrowseServersScreen(this));
@@ -53,6 +53,9 @@ public class UserInterface extends JPanel {
 
         // Show startscreen on startup
         changeScreen("StartScreen");
+
+        // Listen to all keyboard buttons
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyInput(this));
     }
 
     public static void main(String[] args) {
@@ -63,6 +66,10 @@ public class UserInterface extends JPanel {
         super.paintComponent(g);
 
         g.drawImage(Resources.getImage("Stars.png"), 0, 0, getWidth(), getHeight(), null);
+    }
+
+    public String getCurrentScreen() {
+        return screenHistory.getLast();
     }
 
     public void changeScreen(String screen) {
@@ -82,7 +89,7 @@ public class UserInterface extends JPanel {
         if (screenHistory.size() <= 1) return;
         String previousScreen = screenHistory.removeLast();
         String screen = screenHistory.getLast();
-
+        System.out.println("FROM=" + previousScreen + "; TO=" + screen);
         cardLayout.show(this, screen);
 
         screens.get(previousScreen).onScreenInactive();
@@ -104,5 +111,16 @@ public class UserInterface extends JPanel {
 
     public GameScreen getGameScreen() {
         return gameScreen;
+    }
+
+    public void onKeyPress(Action action) {
+        if (getCurrentScreen().equals("GameScreen") && gameScreen.isConnectedToServer()) {
+            gameScreen.onKeyPress(action);
+        }
+        switch (action) {
+            case InterfaceBack:
+                changeToPreviousScreen();
+                break;
+        }
     }
 }

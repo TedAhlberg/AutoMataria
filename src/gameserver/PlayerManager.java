@@ -57,37 +57,43 @@ public class PlayerManager implements MessageListener {
     }
 
     public void controlPlayer(Player player, Object value) {
+        if (!(value instanceof Action)) return;
 
-        if (value instanceof Direction) {
+        switch ((Action) value) {
+            case GoUp:
+                player.setNextDirection(Direction.Up);
+                break;
 
-            if (state == GameState.Running || state == GameState.Warmup) {
-                Direction direction = (Direction) value;
-                player.setNextDirection(direction);
-            }
+            case GoDown:
+                player.setNextDirection(Direction.Down);
+                break;
 
-        } else if (value instanceof Action) {
+            case GoLeft:
+                player.setNextDirection(Direction.Left);
+                break;
 
-            if (value == Action.UsePickup) {
+            case GoRight:
+                player.setNextDirection(Direction.Right);
+                break;
 
+            case UsePickup:
                 player.usePickup();
+                break;
 
-            } else if (state == GameState.Warmup) {
+            case ToggleReady:
+                if (state != GameState.Warmup) break;
+                boolean ready = !player.isReady();
+                player.setReady(ready);
+                newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
+                updateReadyPlayers();
+                break;
 
-                if (value == Action.TogglePlayerColor) {
-
-                    player.setColor(colors.exchangeColor(player.getColor()));
-                    newMessage(new PlayerMessage(PlayerMessage.Event.ColorChange, player));
-                    updateReadyPlayers();
-
-                } else if (value == Action.ToggleReady) {
-
-                    boolean ready = !player.isReady();
-                    player.setReady(ready);
-                    newMessage(new PlayerMessage((ready) ? PlayerMessage.Event.Ready : PlayerMessage.Event.Unready, player));
-                    updateReadyPlayers();
-                }
-            }
-
+            case TogglePlayerColor:
+                if (state != GameState.Warmup) break;
+                player.setColor(colors.exchangeColor(player.getColor()));
+                newMessage(new PlayerMessage(PlayerMessage.Event.ColorChange, player));
+                updateReadyPlayers();
+                break;
         }
     }
 

@@ -102,6 +102,7 @@ public class StartScreen extends JPanel implements UserInterfaceScreen {
     public void onScreenActive() {
         removeAll();
         createLayout();
+        revalidate();
     }
 
     public void onScreenInactive() {

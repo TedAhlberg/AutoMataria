@@ -1,7 +1,7 @@
 package gameclient.interfaces.gamescreen;
 
 import common.Action;
-import common.*;
+import common.GameMap;
 import common.messages.*;
 import gameclient.interfaces.*;
 import gameclient.sound.MusicManager;
@@ -136,20 +136,17 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     }
 
     public void onKeyPress(Action action) {
-        if (action == Action.InterfaceBack) {
-            userInterface.changeToPreviousScreen();
-        } else if (action == Action.ToggleInterpolation) {
-            gamePanel.toggleInterpolation();
-        } else if (action == Action.ToggleDebugText) {
-            gamePanel.toggleDebugInfo();
-            gameInfoPanel.setVisible(!gameInfoPanel.isVisible());
-        } else {
-            client.send(action);
+        switch (action) {
+            case ToggleDebugText:
+                gamePanel.toggleDebugInfo();
+                gameInfoPanel.setVisible(!gameInfoPanel.isVisible());
+                break;
+            case ToggleInterpolation:
+                gamePanel.toggleInterpolation();
+                break;
+            default:
+                client.send(action);
         }
-    }
-
-    public void onKeyPress(Direction direction) {
-        client.send(direction);
     }
 
     /**
