@@ -34,7 +34,7 @@ public class GamePanel extends JComponent {
     private double scale = 1.0;
     private long timeBetweenRenders;
     private int fps, frameCounter;
-    private boolean interpolateMovement = true, showDebugInfo = true;
+    private boolean interpolateMovement = true, showFPS = false;
     private GamePanelText gamePanelText = new GamePanelText();
 
     /**
@@ -188,7 +188,7 @@ public class GamePanel extends JComponent {
                 break;
             case Warmup:
                 gamePanelText.drawText(g2, "WARMUP ROUND\n\nWAITING FOR PLAYERS TO READY UP", GamePanelText.FontSize.Small, GamePanelText.Location.Center);
-                if (showDebugInfo) gamePanelText.drawTopLeftText(g2, fps + " FPS");
+                if (showFPS) gamePanelText.drawTopLeftText(g2, fps + " FPS");
                 break;
         }
 
@@ -234,8 +234,8 @@ public class GamePanel extends JComponent {
         interpolateMovement = !interpolateMovement;
     }
 
-    public void toggleDebugInfo() {
-        showDebugInfo = !showDebugInfo;
+    public void toggleFPS() {
+        showFPS = !showFPS;
     }
 
     public void setServerTickRate(int tickRate) {

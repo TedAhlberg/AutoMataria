@@ -1,6 +1,5 @@
 package gameclient.interfaces;
 
-import gameclient.Resources;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
 import gameclient.sound.Audio;
@@ -10,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.*;
 
@@ -28,7 +26,6 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private JPanel pnlScreen = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
-    private BufferedImage backgroundImage;
     private boolean music = true;
     private boolean sfx = true;
     private Path directory;
@@ -63,7 +60,7 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
      */
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        backgroundImage = Resources.getImage("Stars.png");
+        setOpaque(false);
         pnlHead.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
 
@@ -118,8 +115,6 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
         c = new GridBagConstraints();
         c.gridy = 4;
         c.gridx = 1;
-        c.weightx = 11;
-        c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(pnlKeyBinder, c);
 
         // Add lblScreenSettings
@@ -188,14 +183,6 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
         add(pnlHead);
 
         addListeners();
-        repaint();
-
-    }
-
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-
     }
 
     public void writeToFile(String username) {

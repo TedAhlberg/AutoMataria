@@ -358,7 +358,7 @@ public class MapEditorUI {
         gamePanelContainer = new JPanel(new GridLayout(1, 1));
         gamePanel = new GamePanel();
         gamePanelContainer.add(gamePanel);
-        gamePanel.toggleDebugInfo();
+        gamePanel.toggleFPS();
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 

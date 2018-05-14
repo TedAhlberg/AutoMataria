@@ -14,7 +14,8 @@ public enum Action {
     SendChatMessage,
     ToggleInterpolation,
     ToggleNames,
-    ToggleDebugText,
+    ToggleChat,
+    ToggleFPS,
 
     //Server Actions
     GoLeft,

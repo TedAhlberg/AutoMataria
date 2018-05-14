@@ -36,10 +36,12 @@ public class KeyInput implements KeyEventDispatcher {
             userInterface.onKeyPress(Action.TogglePlayerColor);
         } else if (key == KeyEvent.VK_R) {
             userInterface.onKeyPress(Action.ToggleReady);
+        } else if (key == KeyEvent.VK_F3) {
+            userInterface.onKeyPress(Action.ToggleFPS);
         } else if (key == KeyEvent.VK_F2) {
             userInterface.onKeyPress(Action.ToggleInterpolation);
         } else if (key == KeyEvent.VK_F1) {
-            userInterface.onKeyPress(Action.ToggleDebugText);
+            userInterface.onKeyPress(Action.ToggleChat);
         } else if (key == KeyEvent.VK_Y) {
             userInterface.onKeyPress(Action.OpenChatPrompt);
         } else if (key == KeyEvent.VK_ENTER) {

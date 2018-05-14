@@ -12,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 
 public class GamePanelText {
     private Color textColor = new Color(255, 255, 255, 200);
+    private Color textColorTransparent = new Color(255, 255, 255, 100);
 
     public void drawText(Graphics2D g2, String text, FontSize fontSize, Location location) {
         int panelSize = g2.getClipBounds().height;
@@ -59,7 +60,7 @@ public class GamePanelText {
         int x = Game.GRID_PIXEL_SIZE * 2;
         int y = x + smallFont.getSize();
 
-        g2.setColor(textColor);
+        g2.setColor(textColorTransparent);
         g2.setFont(smallFont);
         g2.drawString(text, x, y);
     }

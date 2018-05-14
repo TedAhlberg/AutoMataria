@@ -159,8 +159,10 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             return;
         }
         switch (action) {
-            case ToggleDebugText:
-                gamePanel.toggleDebugInfo();
+            case ToggleFPS:
+                gamePanel.toggleFPS();
+                break;
+            case ToggleChat:
                 gameInfoPanel.setVisible(!gameInfoPanel.isVisible());
                 break;
             case ToggleInterpolation:
