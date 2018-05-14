@@ -1,10 +1,9 @@
 package gameobjects.pickups;
 
-import common.PickupState;
-import gameobjects.*;
+import gameobjects.Pickup;
+import gameobjects.Trail;
 
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * Pickup that turns the player black for a short duration when activated/used.
@@ -15,8 +14,6 @@ import java.util.Collection;
 public class SelfGhostPickup extends Pickup {
     private static final long serialVersionUID = 1;
 
-    transient private Collection<GameObject> gameObjects;
-    transient private long startTime;
     transient private Color playerColor, trailColor, trailBorderColor;
 
     public SelfGhostPickup() {
@@ -32,26 +29,10 @@ public class SelfGhostPickup extends Pickup {
         this(object.getX(), object.getY(), object.getActiveTime());
     }
 
-    public void tick() {
-        if (state != PickupState.InUse) return;
-
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= activeTime) {
-            done();
-        }
-    }
-
-    public void use(Player player, Collection<GameObject> gameObjects) {
-        if (state != PickupState.Taken) return;
-        this.gameObjects = gameObjects;
-        activate();
-    }
-
-    protected void activate() {
-        setState(PickupState.InUse);
-
-        startTime = System.currentTimeMillis();
-
+    /**
+     * Turns the player black and a bit transparent
+     */
+    public void start() {
         Trail trail = player.getTrail();
         playerColor = player.getColor();
         trailColor = trail.getColor();
@@ -67,12 +48,9 @@ public class SelfGhostPickup extends Pickup {
      * sets the pickupSlot to null
      * and removes the pickup from the collection of GameObjects.
      */
-    public void done() {
-        setState(PickupState.Used);
+    public void complete() {
         player.setColor(playerColor);
         player.getTrail().setColor(trailColor);
         player.getTrail().setBorderColor(trailBorderColor);
-        player.setPickUp(null);
-        gameObjects.remove(this);
     }
 }

@@ -14,16 +14,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Dante Håkansson
  */
 public class Player extends GameObject {
-    private static final long serialVersionUID = 3;
+    private static final long serialVersionUID = 4;
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
     transient private final Trail trail;
     private final String name;
-    transient private Pickup pickupSlot;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
+    private Pickup pickupSlot;
     private String image;
     private Color color;
     private boolean dead, ready, invincible, reversed;
@@ -67,7 +67,16 @@ public class Player extends GameObject {
         g.setFont(Resources.defaultFont.deriveFont(80f));
         FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
         int stringWidth = fontMetrics.stringWidth(name);
-        g.drawString(name.toUpperCase(), x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
+        int xName = x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2);
+        int yName = y - (height / 2);
+        g.drawString(name.toUpperCase(), xName, yName);
+
+        // Draw players pickup
+        if (pickupSlot != null && pickupSlot.getState() == PickupState.Taken) {
+            int xPickup = xName - (width + width / 4);
+            int yPickup = (Game.GRID_PIXEL_SIZE / 5) + yName - height;
+            g.drawImage(Resources.getImage(pickupSlot.getClass().getSimpleName() + ".png"), xPickup, yPickup, width, height, null);
+        }
     }
 
     public void tick() {
@@ -189,10 +198,10 @@ public class Player extends GameObject {
                         pickup.use(this, gameObjects);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickup));
                     } else {
-                        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
+                        if (pickupSlot != null) {
                             pickupSlot.done();
                         }
-                        pickup.take(this);
+                        pickup.take(this, gameObjects);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupTaken, this, pickup));
                     }
                 }
@@ -206,18 +215,13 @@ public class Player extends GameObject {
      * so nothing strange remains when the player spawns
      */
     public void reset() {
+        if (pickupSlot != null) {
+            pickupSlot.done();
+        }
+
         inputQueue.clear();
         direction = previousDirection = Direction.Static;
         dead = invincible = reversed = false;
-
-        if (pickupSlot != null) {
-            if (pickupSlot.getState() == PickupState.InUse) {
-                pickupSlot.done();
-            } else {
-                pickupSlot.setState(PickupState.Used);
-                pickupSlot = null;
-            }
-        }
 
         trail.clear();
     }

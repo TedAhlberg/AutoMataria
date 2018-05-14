@@ -1,9 +1,6 @@
 package gameobjects.pickups;
 
-import common.PickupState;
 import gameobjects.*;
-
-import java.util.Collection;
 
 /**
  * Pickup that erases all drawn trails.
@@ -25,19 +22,13 @@ public class EraserPickup extends InstantPickup {
         this(object.getX(), object.getY());
     }
 
-    public void use(Player player, Collection<GameObject> gameObjects) {
-        if (state != PickupState.NotTaken) return;
-        setState(PickupState.Used);
-
+    public void start() {
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Trail) {
                 ((Trail) gameObject).clear();
             }
         }
-
-        gameObjects.remove(this);
     }
 
-
-    public void done() {}
+    public void complete() {}
 }
