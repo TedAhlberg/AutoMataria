@@ -28,8 +28,7 @@ public class MainServer {
     private boolean running = false;
     private HighScoreServer thread = null;
     private Servers servers;
-    private FileStorage fileStorage = new FileStorage();
-    
+    private FileStorage fileStorage = new FileStorage();  
 
     public MainServer() {}
 
@@ -74,12 +73,13 @@ public class MainServer {
                     String messageType = inputStream.readUTF();
                     
                     if(messageType.equals("GET_HIGHSCORES")) {
-                        outputStream.writeObject(fileStorage.getHighScores());
+                        outputStream.writeObject(fileStorage.read());
                     }
                     else if(messageType.equals("SET_HIGHSCORE")) {
                         String userName = inputStream.readUTF();
                         int highScore = inputStream.readInt();
-                        fileStorage.saveToDisk(userName,highScore);
+                        HighScore2 highscore = new HighScore2(userName, highScore);
+                        fileStorage.save(highscore);
                     }
                     else if(messageType.equals("GET_GAMESERVERS")) {
                         outputStream.writeObject(servers);
@@ -98,10 +98,9 @@ public class MainServer {
                     else if(messageType.equals("CHANGE_USERNAME")) {
                        String oldUsername = inputStream.readUTF();
                        String newUsername = inputStream.readUTF();
-                       HighScore highScores = fileStorage.getHighScores();
-                        highScores.replace(oldUsername, newUsername);
+                       HighScoreList highScores = fileStorage.read();
+                        highScores.replaceName(oldUsername, newUsername);
                     }
-      
                      } catch(IOException e) {
                          e.getStackTrace();
                      }

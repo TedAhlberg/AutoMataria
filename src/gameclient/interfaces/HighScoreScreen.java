@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JLabel;
@@ -12,17 +13,29 @@ import javax.swing.border.MatteBorder;
 
 import gameclient.Resources;
 import mainserver.HighScore;
+import mainserver.HighScore2;
+import mainserver.HighScoreList;
+import mainserver.HighScoreListener;
 
-public class HighScoreScreen extends JPanel {
+public class HighScoreScreen extends JPanel implements HighScoreListener {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5526131503403635944L;
     private UserInterface userInterface;
     private JPanel panel;
+    private HighScoreList highscoreList = new HighScoreList();
 	
 	public HighScoreScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
         
 		createLayout();
-		update();
+		update(highscoreList);
 		
+	}
+	
+	public void setHighScoreList(HighScoreList highscoreList) {
+	    this.highscoreList = highscoreList;
 	}
 	
 	public void createLayout() {
@@ -71,15 +84,30 @@ public class HighScoreScreen extends JPanel {
         
 	}
 	
-	public void update() {
+	public void update(HighScoreList list) {
 //		panel.removeAll();
-		
-		HighScore highScore = new HighScore();
-		highScore.put("Henko", 100);
-		highScore.put("Erik", 200);
-		highScore.put("Ted", 300);
-		highScore.put("Dante", 400);
-		highScore.put("Johannes", 500);
+	    
+	    HighScore2 highScore = new HighScore2("Henko", 100);
+	    HighScore2 highscore2 = new HighScore2("Erik", 200);
+	    HighScore2 highscore3 = new HighScore2("Johannes", 300);
+	    HighScore2 highscore4 = new HighScore2("Ted", 400);
+	    HighScore2 highscore5 = new HighScore2("Dante", 500);
+	    
+	    list.addAndReplace(highScore);
+	    list.addAndReplace(highscore2);
+	    list.addAndReplace(highscore3);
+	    list.addAndReplace(highscore4);
+	    list.addAndReplace(highscore5);
+	    
+	    ArrayList<HighScore2> highscoreList = list.getSortedList();
+	    
+	    
+//		HighScore highScore = new HighScore();
+//		highScore.put("Henko", 100);
+//		highScore.put("Erik", 200);
+//		highScore.put("Ted", 300);
+//		highScore.put("Dante", 400);
+//		highScore.put("Johannes", 500);
 		
 		
         int column = 0, row = 0;
@@ -109,18 +137,19 @@ public class HighScoreScreen extends JPanel {
 
         row += 1;
         
-        column = 0;
-        JLabel[] labels = { 
-        					new JLabel("Henko" + " " + highScore.get("Henko")),
-        					new JLabel("Erik" + " " + highScore.get("Erik")),
-        					new JLabel("Ted" + " " + highScore.get("Ted")),
-        					new JLabel("Dante" + " " + highScore.get("Dante")),
-        					new JLabel("Johannes" + " " + highScore.get("Johannes"))
-        };
-
-        for (JLabel label : labels) {
-            panel.add(label, getTableConstraints(column, row));
-//            column += 1;
+        
+        for(int index = 0; index < highscoreList.size(); index++) {
+            column = 0;
+            
+            JLabel[] labels = {
+                    new JLabel(highscoreList.get(index).getPlayerName()),
+                    new JLabel(Integer.toString(highscoreList.get(index).getHighscore()))
+            };
+            
+            for (JLabel label : labels) {
+                panel.add(label, getTableConstraints(column, row));
+                column += 1;
+            }
             row += 1;
         }
 
@@ -135,4 +164,5 @@ public class HighScoreScreen extends JPanel {
         c.insets = new Insets(10, 10, 10, 10);
         return c;
     }
+
 }

@@ -2,17 +2,10 @@ package mainserver;
 
 import java.util.ArrayList;
 
-import gameobjects.Player;
-
 public class HighScoreList {
     private ArrayList<HighScore2> highscoreList = new ArrayList<HighScore2>();
-    private Player player;
     
-    public HighScoreList() {
-    }
-    
-    
-    public void addAndReplace(HighScore2 highScore) {
+    public synchronized void addAndReplace(HighScore2 highScore) {
         int currentHighscore;
         String name;
         
@@ -26,11 +19,30 @@ public class HighScoreList {
                    newHighscore = 0;
                    highscoreList.remove(index);
                    HighScore2 replaceHighScore = new HighScore2(name, newHighscore);
-                   highscoreList.add(replaceHighScore);
+                   highscoreList.add(index, replaceHighScore);
+               }
+               else if(newHighscore > 0) {
+                   HighScore2 replaceHighScore = new HighScore2(name, newHighscore);
+                   highscoreList.remove(index);
+                   highscoreList.add(index, replaceHighScore);
                }
                
             }
         }
+    }
+    
+    public void replaceName(String oldUsername, String newUsername) {
+        for(int index = 0; index < highscoreList.size(); index++) {
+            if(highscoreList.get(index).getPlayerName().equals(oldUsername)) {
+                highscoreList.get(index).setPlayerName(newUsername);
+            }
+        }
+    }
+    
+    
+    public synchronized ArrayList<HighScore2> getSortedList() {
+        highscoreList.sort(new HighScoreComparator());
+        return highscoreList;
     }
 
 }

@@ -8,41 +8,47 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * 
+ * @author Henrik Olofsson & Johannes Blüml
+ *
+ */
+
 public class FileStorage {
     String fileName = "HighScores/HighScore.ser";
-    private HighScore highScores;
-    private Object object;
+    private HighScoreList highscoreList;
+    
+    public FileStorage() {
+        highscoreList = read();
+    }
     
     
-    public synchronized void saveToDisk(String userName, int highScore) {
-        highScores = getHighScores();
-
-        if(highScore > highScores.get(userName)) {
+    public synchronized void save(HighScore2 highScore) {
             try (ObjectOutputStream writer = new ObjectOutputStream(
                     new BufferedOutputStream(
                             new FileOutputStream(fileName)))){
-                highScores.put(userName, highScore);
-                writer.writeObject(highScores);
+                highscoreList.addAndReplace(highScore);
+                writer.writeObject(highscoreList);
                 writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
         
-        public HighScore getHighScores() {
+        public synchronized HighScoreList read() {
             try (ObjectInputStream reader = new ObjectInputStream(
                     new BufferedInputStream(
                             new FileInputStream(fileName)))){
-                object = reader.readObject();
-                object = (HighScore) highScores; 
+                Object object = reader.readObject();
+                return (HighScoreList) object; 
             } catch (IOException e) {
                 e.getStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }
-
-            return highScores;
+            } 
+            return new HighScoreList();
         }
+        
     }
+
 
