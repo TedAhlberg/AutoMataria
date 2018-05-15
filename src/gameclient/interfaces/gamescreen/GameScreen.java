@@ -106,7 +106,10 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         panel.add(settingsButton, gbc);
 
         AMButton disconnectButton = new AMButton("DISCONNECT");
-        disconnectButton.addActionListener(e -> client.disconnect());
+        disconnectButton.addActionListener(e -> {
+            if (client.isConnected()) client.disconnect();
+            else userInterface.changeToPreviousScreen();
+        });
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.ipadx = 10;
