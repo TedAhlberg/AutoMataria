@@ -12,10 +12,9 @@ import java.nio.file.*;
  */
 public class Maps {
     public static Maps instance = new Maps();
-    private Path directory;
+    private Path directory = FileSystems.getDefault().getPath("resources", "maps");
 
     private Maps() {
-        directory = FileSystems.getDefault().getPath("resources", "maps");
         if (!Files.exists(directory)) {
             try {
                 Files.createDirectories(directory);
@@ -29,11 +28,11 @@ public class Maps {
         return instance;
     }
 
-    public String[] getMapList() {
+    synchronized public String[] getMapList() {
         return Resources.getFileList(directory);
     }
 
-    public void remove(String name) {
+    synchronized public void remove(String name) {
         Path filePath = directory.resolve(name);
         try {
             Files.delete(filePath);
@@ -42,7 +41,8 @@ public class Maps {
         }
     }
 
-    public GameMap get(String name) {
+    synchronized public GameMap get(String name) {
+        if (name == null) return null;
         Path filePath = directory.resolve(name);
         try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(filePath))) {
             return (GameMap) inputStream.readObject();
@@ -52,7 +52,7 @@ public class Maps {
         }
     }
 
-    public void save(GameMap map) {
+    synchronized public void save(GameMap map) {
         Path filePath = directory.resolve(map.getName());
         try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.newOutputStream(filePath))) {
             outputStream.writeObject(map);

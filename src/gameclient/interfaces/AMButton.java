@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
  * @author Henrik Olofsson & Erik Lundow
  */
 public class AMButton extends JButton implements MouseListener {
+    private SoundFx soundEffects = SoundFx.getInstance();
     private BufferedImage imagePressed;
     private BufferedImage imageUnpressed;
     private boolean isPressed = false;
@@ -44,7 +45,7 @@ public class AMButton extends JButton implements MouseListener {
     public void mouseExited(MouseEvent event) {}
 
     public void mousePressed(MouseEvent event) {
-        SoundFx.getInstance().menuSelect();
+        soundEffects.menuSelect();
         isPressed = true;
         repaint();
     }

@@ -1,6 +1,6 @@
 package gameclient.interfaces;
 
-import gameclient.*;
+import gameclient.Resources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,7 @@ import java.awt.*;
 /**
  * @author Johannes Blüml
  */
-public class ConnectScreen extends JPanel {
+public class ConnectScreen extends JPanel implements UserInterfaceScreen {
     private AMButton joinGameButton, backButton;
     private JTextField portTextField, serverIPTextField;
     private UserInterface userInterface;
@@ -110,5 +110,13 @@ public class ConnectScreen extends JPanel {
         backButton.addActionListener(e -> {
             userInterface.changeToPreviousScreen();
         });
+    }
+
+    public void onScreenActive() {
+
+    }
+
+    public void onScreenInactive() {
+
     }
 }

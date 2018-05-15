@@ -1,9 +1,6 @@
 package gameobjects.pickups;
 
-import common.PickupState;
-import gameobjects.*;
-
-import java.util.Collection;
+import gameobjects.InstantPickup;
 
 /**
  * Pickup that when acquired sets the players state to invincible. When
@@ -14,9 +11,6 @@ import java.util.Collection;
  */
 public class InvinciblePickup extends InstantPickup {
     private static final long serialVersionUID = 1;
-
-    transient private Collection<GameObject> gameObjects;
-    transient private long startTime;
 
     public InvinciblePickup() {
         this(0, 0, 4000);
@@ -31,30 +25,11 @@ public class InvinciblePickup extends InstantPickup {
         this(object.getX(), object.getY(), object.getActiveTime());
     }
 
-    public void tick() {
-        if (state != PickupState.InUse) return;
-
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= activeTime) {
-            done();
-        }
-    }
-
-    public void use(Player player, Collection<GameObject> gameObjects) {
-        if (state != PickupState.NotTaken) return;
-        setState(PickupState.InUse);
-
-        startTime = System.currentTimeMillis();
-
-        this.player = player;
-        this.gameObjects = gameObjects;
-
+    public void start() {
         player.setInvincible(true);
     }
 
-    public void done() {
-        setState(PickupState.Used);
+    public void complete() {
         player.setInvincible(false);
-        gameObjects.remove(this);
     }
 }

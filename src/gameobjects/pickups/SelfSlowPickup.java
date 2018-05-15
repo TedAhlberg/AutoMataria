@@ -1,9 +1,6 @@
 package gameobjects.pickups;
 
-import common.PickupState;
-import gameobjects.*;
-
-import java.util.Collection;
+import gameobjects.Pickup;
 
 /**
  * Pickup that when activated/used slows down the player for a short duration,
@@ -14,9 +11,6 @@ import java.util.Collection;
  */
 public class SelfSlowPickup extends Pickup {
     private static final long serialVersionUID = 1;
-
-    transient private Collection<GameObject> gameObjects;
-    transient private long startTime;
 
     public SelfSlowPickup() {
         this(0, 0, 4000);
@@ -31,38 +25,18 @@ public class SelfSlowPickup extends Pickup {
         setActiveTime(activeTime);
     }
 
-    public void tick() {
-        if (state != PickupState.InUse) return;
-
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= activeTime) {
-           done();
-        }
-    }
-
-    public void use(Player player, Collection<GameObject> gameObjects) {
-        if (state != PickupState.Taken) return;
-        setState(PickupState.InUse);
-
-        startTime = System.currentTimeMillis();
-
-        this.gameObjects = gameObjects;
-        this.player = player;
+    public void start() {
         int speed = player.getSpeed();
         player.setSpeed((int) (speed * 0.5));
-
-        player.setImage("SlowPickupTransparent.png");
+        player.setImage("TransparentSelfSlowPickup.png");
     }
 
     /**
      * Sets the player speed back to normal, sets the pickupSlot to null, sets the pickups state to used
      * and removes the pickup from the collection of GameObjects.
      */
-    public void done() {
-        setState(PickupState.Used);
+    public void complete() {
         player.setSpeed(player.getSpeed() * 2);
         player.setImage(null);
-        player.setPickUp(null);
-        gameObjects.remove(this);
     }
 }

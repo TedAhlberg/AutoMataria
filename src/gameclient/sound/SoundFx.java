@@ -1,19 +1,20 @@
 package gameclient.sound;
 
-import java.awt.event.ActionEvent;
+import gameclient.Resources;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.HashMap;
 
 /**
- *
  * @author eriklundow
- *
  */
 public class SoundFx {
+    private static SoundFx instance;
+    private HashMap<String, Audio> effects = new HashMap<>();
 
-    private Audio sfx;
-    private static SoundFx instance = null;
-
-    protected SoundFx() {
-
+    private SoundFx() {
+        loadSoundEffects();
     }
 
     public static SoundFx getInstance() {
@@ -23,73 +24,74 @@ public class SoundFx {
         return instance;
     }
 
-    public void play(Audio sfx) {
-        if (sfx != null) {
-            sfx.playSfx();
-            sfx = null;
+    public static void main(String[] args) {
+        SoundFx.getInstance().crash();
+        SoundFx.getInstance().movement();
+        SoundFx.getInstance().ReversePickup();
+    }
+
+    /**
+     * Loads all sound effects into a HashMap for quick access
+     */
+    private void loadSoundEffects() {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Resources.sfxPath)) {
+            for (Path path : stream) {
+                if (!Files.isDirectory(path)) {
+                    String filename = path.getFileName().toString();
+                    effects.put(filename, Audio.getSFX(filename));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void play(String sound) {
+        Audio audio = effects.get(sound);
+        if (audio != null) {
+            audio.playSfx();
         }
     }
 
     public void menuSelect() {
-        sfx = Audio.getSFX("Menu_Select.mp3");
-        play(sfx);
+        play("Menu_Select.mp3");
     }
 
     public void crash() {
-        sfx = Audio.getSFX("Crash.mp3");
-        play(sfx);
-
+        play("Crash.mp3");
     }
 
     public void SelfSpeedPickup() {
-        sfx = Audio.getSFX("SelfSpeedPickup.mp3");
-        play(sfx);
+        play("SelfSpeedPickup.mp3");
     }
 
     public void movement() {
-        sfx = Audio.getSFX("Movement.mp3");
-        play(sfx);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == this) {
-            crash();
-        }
-    }
-
-    public static void main(String[] args) {
-        SoundFx.getInstance().crash();
+        play("Movement.mp3");
     }
 
     public void SelfSlowPickup() {
-        sfx = Audio.getSFX("SelfSlowPickup.mp3");
-        play(sfx);
+        play("SelfSlowPickup.mp3");
 
     }
 
     public void EraserPickup() {
-        sfx = Audio.getSFX("Erase.mp3");
-        play(sfx);
+        play("Erase.mp3");
     }
 
     public void InvinciblePickup() {
-        sfx = Audio.getSFX("Invincible.mp3");
-        play(sfx);
+        play("Invincible.mp3");
 
     }
 
     public void SlowEnemiesPickup() {
-        sfx = Audio.getSFX("SlowEnemies.mp3");
-        play(sfx);
+        play("SlowEnemies.mp3");
     }
 
     public void ReversePickup() {
-        sfx = Audio.getSFX("Reverse.mp3");
-        play(sfx);
+        play("Reverse.mp3");
     }
 
     public void SpeedEnemiesPickup() {
-        sfx = Audio.getSFX("speedEnemies.mp3");
-        play(sfx);
+        play("speedEnemies.mp3");
     }
 }

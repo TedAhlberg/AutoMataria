@@ -201,6 +201,7 @@
                         <item value="gameobjects.pickups.SlowEnemiesPickup"/>
                         <item value="gameobjects.pickups.SpeedEnemiesPickup"/>
                         <item value="gameobjects.pickups.InvinciblePickup"/>
+                        <item value="gameobjects.pickups.SelfGhostPickup"/>
                       </model>
                     </properties>
                   </component>

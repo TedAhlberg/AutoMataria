@@ -72,4 +72,9 @@ public class SpecialGameObject implements Serializable {
     public String toString() {
         return gameObject.getClass().getName();
     }
+
+    public void reset() {
+        timesSpawned = 0;
+        timer = 0;
+    }
 }

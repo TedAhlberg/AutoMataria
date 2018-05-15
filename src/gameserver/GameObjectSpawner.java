@@ -7,8 +7,7 @@ import gameobjects.Pickup;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Spawns game objects from the map into the gameObjects collection.
@@ -36,12 +35,21 @@ public class GameObjectSpawner {
      */
     public void changeMap(GameMap map) {
         currentMap = map;
+        reset();
+    }
+
+    /**
+     * Resets the spawned objects (Usually at start of new round)
+     */
+    public void reset() {
         spawnedObjects.forEach((specialObject, gameObject) -> {
             if (gameObject instanceof Pickup && ((Pickup) gameObject).getState() == PickupState.InUse) {
                 ((Pickup) gameObject).done();
             }
             gameObjects.remove(gameObject);
         });
+        SpecialGameObject[] gameMapObjects = currentMap.getGameMapObjects();
+        Arrays.stream(gameMapObjects).forEach(SpecialGameObject::reset);
         spawnedObjects.clear();
     }
 
@@ -62,7 +70,7 @@ public class GameObjectSpawner {
             boolean isSpawned = spawnedObjects.containsKey(specialObject);
             boolean hasSpawnLimit = specialObject.getSpawnLimit() > 0;
 
-            if (hasSpawnLimit) {
+            if (!isSpawned && hasSpawnLimit) {
                 int spawnsLeft = specialObject.getSpawnLimit() - specialObject.getTimesSpawned();
                 if (spawnsLeft <= 0) continue;
             }

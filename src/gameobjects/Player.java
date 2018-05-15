@@ -14,16 +14,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Dante Håkansson
  */
 public class Player extends GameObject {
-    private static final long serialVersionUID = 3;
+    private static final long serialVersionUID = 4;
 
     transient private final Collection<GameObject> gameObjects;
     transient private final ConcurrentLinkedQueue<Direction> inputQueue = new ConcurrentLinkedQueue<>();
     transient private final Trail trail;
-    transient private Pickup pickupSlot;
+    private final String name;
     transient private GameMap currentMap;
     transient private Direction previousDirection;
     transient private MessageListener listener;
-    private final String name;
+    private Pickup pickupSlot;
     private String image;
     private Color color;
     private boolean dead, ready, invincible, reversed;
@@ -45,22 +45,38 @@ public class Player extends GameObject {
     }
 
     public void render(Graphics2D g) {
-        // Paint player rectangle
         g.setColor(color);
         g.fillRect(x - 10, y - 10, width + 20, height + 20);
+        g.setColor(color.brighter());
+        g.drawRect(x - 10, y - 10, width + 20, height + 20);
 
-        // Draw skull when dead
-        if (dead) image = "DeadSkull.png";
-        // Draw rectangle around player when invincible
-        if (invincible) g.drawRect(x - 40, y - 40, width + 80, height + 80);
-        if (image != null) g.drawImage(Resources.getImage(image), x - 10, y - 10, width + 20, height + 20, null);
+        if (dead) {
+            image = "DeadSkull.png";
+        } else {
+            if (invincible) {
+                image = "TransparentInvinciblePickup.png";
+                g.drawRect(x - 40, y - 40, width + 80, height + 80);
+            }
+            if (reversed) image = "TransparentReversePickup.png";
+        }
+
+        if (image != null) g.drawImage(Resources.getImage(image), x, y, width, height, null);
 
         // Display Player name
         g.setColor(color.darker());
         g.setFont(Resources.defaultFont.deriveFont(80f));
         FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
         int stringWidth = fontMetrics.stringWidth(name);
-        g.drawString(name.toUpperCase(), x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2), y - 50);
+        int xName = x + (Game.GRID_PIXEL_SIZE / 2) - (stringWidth / 2);
+        int yName = y - (height / 2);
+        g.drawString(name.toUpperCase(), xName, yName);
+
+        // Draw players pickup
+        if (pickupSlot != null && pickupSlot.getState() == PickupState.Taken) {
+            int xPickup = xName - (width + width / 4);
+            int yPickup = (Game.GRID_PIXEL_SIZE / 5) + yName - height;
+            g.drawImage(Resources.getImage(pickupSlot.getClass().getSimpleName() + ".png"), xPickup, yPickup, width, height, null);
+        }
     }
 
     public void tick() {
@@ -96,10 +112,14 @@ public class Player extends GameObject {
             return;
         }
 
-        while (inputQueue.peek() == direction || (!invincible && inputQueue.peek() == Utility.getOppositeDirection(direction)) || inputQueue.size() > 2) {
-            // Remove unnessesary double keypress in same direction
-            // Remove keypress in the opposite direction (you would die instantly if you are not invincible)
+        while (inputQueue.peek() == direction || inputQueue.size() > 2) {
+            // Remove unnessesary multiple keypress in same direction
             // Remove all keypress but the last 2 to avoid excessive input delay
+            inputQueue.remove();
+        }
+
+        while (!invincible && inputQueue.peek() == Utility.getOppositeDirection(direction)) {
+            // Remove keypress in the opposite direction (you would die instantly if you are not invincible)
             inputQueue.remove();
         }
 
@@ -110,10 +130,12 @@ public class Player extends GameObject {
 
         int canMoveIn = Utility.canChangeDirection(direction, getPoint(), speed);
         if (canMoveIn > 0) {
-            // Moves player forward to closest grid boundary
+            // First moves player to closest grid bounary
             move(canMoveIn);
             previousDirection = direction;
             direction = inputQueue.remove();
+            // Then moves in the new direction
+            move(speed - canMoveIn);
 
         } else if (canMoveIn == 0 || direction == Direction.Static) {
             // Moves player forward in the new direction
@@ -176,10 +198,10 @@ public class Player extends GameObject {
                         pickup.use(this, gameObjects);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupUsed, this, pickup));
                     } else {
-                        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
+                        if (pickupSlot != null) {
                             pickupSlot.done();
                         }
-                        pickup.take(this);
+                        pickup.take(this, gameObjects);
                         listener.newMessage(new PlayerPickupMessage(PlayerPickupMessage.Event.PickupTaken, this, pickup));
                     }
                 }
@@ -193,13 +215,13 @@ public class Player extends GameObject {
      * so nothing strange remains when the player spawns
      */
     public void reset() {
+        if (pickupSlot != null) {
+            pickupSlot.done();
+        }
+
         inputQueue.clear();
         direction = previousDirection = Direction.Static;
         dead = invincible = reversed = false;
-
-        if (pickupSlot != null && pickupSlot.getState() == PickupState.InUse) {
-            pickupSlot.done();
-        }
 
         trail.clear();
     }
@@ -228,15 +250,11 @@ public class Player extends GameObject {
             direction = Utility.getOppositeDirection(direction);
         }
         inputQueue.add(direction);
-      
+
     }
 
     public Direction getPreviousDirection() {
         return previousDirection;
-    }
-
-    public void setReversed(boolean reversed) {
-        this.reversed = reversed;
     }
 
     public boolean isDead() {
@@ -247,14 +265,19 @@ public class Player extends GameObject {
         if (invincible) {
             this.dead = false;
         } else {
-            direction = Direction.Static;
             this.dead = dead;
+            inputQueue.clear();
+            direction = Direction.Static;
             listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, this));
         }
     }
 
     public boolean isReversed() {
         return reversed;
+    }
+
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
     }
 
     public boolean isReady() {

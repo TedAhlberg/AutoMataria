@@ -16,18 +16,18 @@ public class GameColors {
         availableColors.add(new Color(0xD80211));
         availableColors.add(new Color(0xff148c));
         availableColors.add(new Color(0xAA88B4));
-        availableColors.add(new Color(0x8147ff));
-        availableColors.add(new Color(0x4147FF));
+        availableColors.add(new Color(0x9666FF));
+        availableColors.add(new Color(0x4B64FF));
         availableColors.add(new Color(0x1e96ff));
         availableColors.add(new Color(0x5DBFCC));
         availableColors.add(new Color(0xB4A76E));
         availableColors.add(new Color(0xD4D215));
         availableColors.add(new Color(0xc8ff32));
         availableColors.add(new Color(0x85CC81));
-        availableColors.add(new Color(0x1cb874));
-        availableColors.add(new Color(0x23D820));
-        availableColors.add(new Color(0xFFFFFF));
-        availableColors.add(new Color(0x9A9A9A));
+        availableColors.add(new Color(0x1DC17A));
+        availableColors.add(new Color(0x4BD840));
+        availableColors.add(new Color(0xFFF7F6));
+        availableColors.add(new Color(0x9A9394));
     }
 
     synchronized Color exchangeColor(Color color) {

@@ -7,16 +7,22 @@ package common;
  * @author Ted Ahlberg
  */
 public enum Action {
-    InterfaceBack,
-    ToggleInterpolation,
-    ToggleReady,
-    TogglePlayerColor,
-    ToggleNames,
-    ToggleDebugText,
 
+    // Client Actions
+    InterfaceBack,
+    OpenChatPrompt,
+    SendChatMessage,
+    ToggleInterpolation,
+    ToggleNames,
+    ToggleChat,
+    ToggleFPS,
+
+    //Server Actions
     GoLeft,
     GoRight,
     GoUp,
     GoDown,
-    UsePickup
+    UsePickup,
+    ToggleReady,
+    TogglePlayerColor
 }

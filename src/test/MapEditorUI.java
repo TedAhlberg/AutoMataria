@@ -1,8 +1,10 @@
 package test;
 
 import common.*;
-import gameclient.*;
+import gameclient.Game;
+import gameclient.Resources;
 import gameclient.interfaces.UserInterface;
+import gameclient.interfaces.gamescreen.GamePanel;
 import gameobjects.*;
 import gameserver.StartingPositions;
 
@@ -39,7 +41,6 @@ public class MapEditorUI {
     private JSlider pickupActiveTimeSlider;
     private JLabel pickupActiveTimeLabel;
 
-    private Maps maps;
     private StartingPositions startingPositions = new StartingPositions();
     private ArrayList<SpecialGameObject> specialGameObjectsToSave = new ArrayList<>();
     private HashSet<Point> startingPositionsToSave = new HashSet<>();
@@ -216,7 +217,8 @@ public class MapEditorUI {
 
     private void loadMap() {
         String name = (String) mapsComboBox.getSelectedItem();
-        GameMap map = maps.get(name);
+        if (name == null) return;
+        GameMap map = Maps.getInstance().get(name);
         if (map == null) return;
         currentMap = map;
 
@@ -227,6 +229,7 @@ public class MapEditorUI {
         specialGameObjectsToSave.addAll(Arrays.asList(map.getGameMapObjects()));
 
         updateUIFields();
+        gamePanel.start(1);
         updateGamePanel();
     }
 
@@ -239,7 +242,7 @@ public class MapEditorUI {
             }
         }
         try {
-            maps.save(currentMap);
+            Maps.getInstance().save(currentMap);
             reloadMapList();
             mapsComboBox.setSelectedItem(currentMap.getName());
         } catch (Exception error) {
@@ -250,7 +253,7 @@ public class MapEditorUI {
     private void deleteMap() {
         int result = JOptionPane.showConfirmDialog(container, "Are you sure you want to delete the map " + currentMap.getName() + "?");
         if (result == 0) {
-            maps.remove(currentMap.getName());
+            Maps.getInstance().remove(currentMap.getName());
             reloadMapList();
             mapsComboBox.setSelectedItem(0);
         }
@@ -319,7 +322,7 @@ public class MapEditorUI {
 
     private void reloadMapList() {
         mapsComboBox.removeAllItems();
-        for (String name : maps.getMapList()) {
+        for (String name : Maps.getInstance().getMapList()) {
             mapsComboBox.addItem(name);
         }
     }
@@ -327,8 +330,7 @@ public class MapEditorUI {
     private void createUIComponents() {
         specialGameObjectComboBox = new JComboBox<>();
 
-        maps = Maps.getInstance();
-        mapsComboBox = new JComboBox<>(maps.getMapList());
+        mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
 
         backgroundImageComboBox = new JComboBox<>(Resources.getImageList());
         musicTrackComboBox = new JComboBox<>(Resources.getMusicList());
@@ -356,8 +358,7 @@ public class MapEditorUI {
         gamePanelContainer = new JPanel(new GridLayout(1, 1));
         gamePanel = new GamePanel();
         gamePanelContainer.add(gamePanel);
-        gamePanel.toggleDebugInfo();
-        gamePanel.start(1);
+        gamePanel.toggleFPS();
         gamePanel.addMouseListener(new MouseAdapter() {
             private MouseEvent start;
 
@@ -609,6 +610,7 @@ public class MapEditorUI {
         defaultComboBoxModel1.addElement("gameobjects.pickups.SlowEnemiesPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.SpeedEnemiesPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.InvinciblePickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.SelfGhostPickup");
         gameObjectComboBox.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

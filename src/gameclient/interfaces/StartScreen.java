@@ -1,6 +1,6 @@
 package gameclient.interfaces;
 
-import gameclient.*;
+import gameclient.Resources;
 import gameclient.sound.MusicManager;
 
 import javax.swing.*;
@@ -11,10 +11,9 @@ import java.awt.event.ActionListener;
 /**
  * @author Henrik Olofsson & Erik Lundow
  */
-public class StartScreen extends JPanel {
-    private JPanel buttonsPanel = new JPanel(new GridBagLayout());
-    private Font buttonFont = Resources.getInstance().getDefaultFont().deriveFont(20f);
-    private String username;
+public class StartScreen extends JPanel implements UserInterfaceScreen {
+    private final Font buttonFont = Resources.getInstance().getDefaultFont().deriveFont(20f);
+    private JPanel buttonsPanel;
 
     private UserInterface userInterface;
 
@@ -23,15 +22,22 @@ public class StartScreen extends JPanel {
         MusicManager.getInstance().menuTrack();
         setLayout(new GridBagLayout());
         setOpaque(false);
+    }
 
+    private void createLayout() {
         // Top spacing
         GridBagConstraints c = new GridBagConstraints();
         c.gridy = 0;
         c.weighty = 6;
         add(new JComponent() {}, c);
 
+        buttonsPanel = new JPanel(new GridBagLayout());
+
+        if (userInterface.getGameScreen().isConnectedToServer()) {
+            addButton("BACK TO GAME", "GameScreen");
+        }
+
         addButton("PLAY", "BrowseScreen");
-        addButton("HOST A GAME", "HostServerScreen");
         addButton("MAP EDITOR", "MapEditorScreen");
         addButton("HIGHSCORES", "HighScoreScreen");
         addButton("SETTINGS", "SettingsScreen");
@@ -91,5 +97,14 @@ public class StartScreen extends JPanel {
         super.paintComponent(g);
 
         g.drawImage(Resources.getImage("Auto-Mataria.png"), 0, 0, getWidth(), getHeight(), null);
+    }
+
+    public void onScreenActive() {
+        removeAll();
+        createLayout();
+        revalidate();
+    }
+
+    public void onScreenInactive() {
     }
 }

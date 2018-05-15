@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class Client {
     private ObjectOutputStream outputStream;
     private boolean connected;
-    private LinkedList<ConnectionListener> listeners;
+    private final LinkedList<ConnectionListener> listeners;
 
     public Client(Socket socket, LinkedList<ConnectionListener> listeners) {
         this.listeners = listeners;

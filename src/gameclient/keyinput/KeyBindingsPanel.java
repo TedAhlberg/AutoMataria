@@ -40,6 +40,7 @@ public class KeyBindingsPanel extends JPanel {
         drawList();
         scrollPane = new JScrollPane(mainActionPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(500, 300));
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(btnsPanel, BorderLayout.SOUTH);
         btnsPanel.setLayout(new GridLayout(1, 2));

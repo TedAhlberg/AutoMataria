@@ -1,10 +1,10 @@
 package mainserver;
 
+import common.ServerInformation;
+import gameclient.interfaces.serverbrowserscreen.ServerInformationListener;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import common.ServerInformation;
-import gameclient.ServerInformationListener;
 /**
  * 
  * @author Henrik Olofsson

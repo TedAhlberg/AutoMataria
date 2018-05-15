@@ -13,7 +13,6 @@ public class ReadyPlayersMessage extends Message {
 
     private final Collection<Player> players = new ArrayList<>();
     private final int ready, totalPlayers;
-    private int roundLimit, scoreLimit;
 
     public ReadyPlayersMessage(Collection<Player> players) {
         this.players.addAll(players);
@@ -31,21 +30,5 @@ public class ReadyPlayersMessage extends Message {
 
     public Collection<Player> getPlayers() {
         return players;
-    }
-
-    public int getRoundLimit() {
-        return roundLimit;
-    }
-
-    public void setRoundLimit(int roundLimit) {
-        this.roundLimit = roundLimit;
-    }
-
-    public int getScoreLimit() {
-        return scoreLimit;
-    }
-
-    public void setScoreLimit(int scoreLimit) {
-        this.scoreLimit = scoreLimit;
     }
 }

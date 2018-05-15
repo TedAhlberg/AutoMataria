@@ -15,7 +15,7 @@ public class Trail extends Wall {
 
     Trail(Player player) {
         super(new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50),
-                new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 150));
+                new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 100));
         this.player = player;
         width = player.getWidth();
         height = player.getHeight();

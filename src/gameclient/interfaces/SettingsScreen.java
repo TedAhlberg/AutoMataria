@@ -1,6 +1,5 @@
 package gameclient.interfaces;
 
-import gameclient.*;
 import gameclient.keyinput.KeyBindings;
 import gameclient.keyinput.KeyBindingsPanel;
 import gameclient.sound.Audio;
@@ -10,13 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
-public class SettingsScreen extends JPanel implements ActionListener {
+public class SettingsScreen extends JPanel implements ActionListener, UserInterfaceScreen {
     /**
      * The settingsScreen handles all personal settings for the user such as
      * keybinding, name change, screensize and sound managing. The panel is added to
@@ -30,20 +26,16 @@ public class SettingsScreen extends JPanel implements ActionListener {
     private JPanel pnlMusic = new JPanel(new GridBagLayout());
     private JPanel pnlScreen = new JPanel(new GridBagLayout());
     private JTextField tfUserName = new JTextField();
-    private BufferedImage backgroundImage;
     private boolean music = true;
     private boolean sfx = true;
     private Path directory;
 
-    private String fileKeyBindPressed = "SetKeyBinding_Pressed.png";
-    private String fileKeyBindUnpressed = "SetKeyBinding_Unpressed.png";
     private String user = "PLAYER";
     private String screen[] = { "WINDOWED", "MAXIMIZED", "FULLSCREEN" };
 
     private JComboBox<String> screenSize = new JComboBox<String>(screen);
 
     private AMButton btnChange = new AMButton("CHANGE");
-    private AMButton btnKeyBinder = new AMButton(fileKeyBindPressed, fileKeyBindUnpressed);
     private AMButton btnMusic = new AMButton("MUSIC: ON  ");
     private AMButton btnBack = new AMButton("BACK");
     private AMButton btnSFX = new AMButton("SFX: ON  ");
@@ -68,7 +60,7 @@ public class SettingsScreen extends JPanel implements ActionListener {
      */
     public SettingsScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
-        backgroundImage = Resources.getImage("Stars.png");
+        setOpaque(false);
         pnlHead.setOpaque(false);
         GridBagConstraints c = new GridBagConstraints();
 
@@ -123,8 +115,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         c = new GridBagConstraints();
         c.gridy = 4;
         c.gridx = 1;
-        c.weightx = 11;
-        c.gridwidth = GridBagConstraints.REMAINDER;
         pnlHead.add(pnlKeyBinder, c);
 
         // Add lblScreenSettings
@@ -193,14 +183,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
         add(pnlHead);
 
         addListeners();
-        repaint();
-
-    }
-
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
-
     }
 
     public void writeToFile(String username) {
@@ -248,7 +230,6 @@ public class SettingsScreen extends JPanel implements ActionListener {
     }
 
     public void addListeners() {
-        btnKeyBinder.addActionListener(this);
         btnChange.addActionListener(this);
         btnMusic.addActionListener(this);
         btnSFX.addActionListener(this);
@@ -313,4 +294,11 @@ public class SettingsScreen extends JPanel implements ActionListener {
 
     }
 
+    public void onScreenActive() {
+
+    }
+
+    public void onScreenInactive() {
+
+    }
 }
