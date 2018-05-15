@@ -1,6 +1,6 @@
 package gameclient.interfaces.hostserverscreen;
 
-import common.Maps;
+import common.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,6 @@ import java.util.HashSet;
  * @author Johannes Blüml
  */
 public class MapPoolPanel extends JPanel {
-    private int gridY = 0;
     private HashSet<String> selectedMaps = new HashSet<>();
     private HashSet<JCheckBox> checkBoxes = new HashSet<>();
 
@@ -41,7 +40,8 @@ public class MapPoolPanel extends JPanel {
                 selectedMaps.remove(map);
             }
         });
-        checkBox.setText(map.toUpperCase());
+        GameMap gameMap = Maps.getInstance().get(map);
+        checkBox.setText(map.toUpperCase() + "  ::  " + Utility.getGridSizeName(gameMap.getGrid()) + " GRID  ::  " + gameMap.getPlayers() + " PLAYERS");
         checkBox.setHorizontalAlignment(SwingConstants.LEFT);
         checkBox.setSelected(true);
 

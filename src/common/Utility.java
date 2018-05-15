@@ -17,6 +17,14 @@ import java.util.Random;
 public class Utility {
     private static Random random = new Random();
 
+    public static String getGridSizeName(Dimension grid) {
+        if (grid.height != grid.width) return "Unknown";
+        if (grid.width == 50) return "Large";
+        if (grid.width == 75) return "Normal";
+        if (grid.width == 100) return "Small";
+        return "Unknown";
+    }
+
     /**
      * Finds a position on the map that doesn't collide with any existing GameObjects
      *
