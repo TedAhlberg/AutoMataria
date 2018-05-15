@@ -290,6 +290,8 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         gameInfoPanel.add(":: Map changed to: " + map.getName());
         gamePanel.setBackground(map.getBackground());
         gamePanel.setGrid(map.getGrid());
+        scorePanel.setMapName(map.getName());
+        readyPlayersPanel.setMapName(map.getName());
     }
 
     private void handleRoundOverMessage(RoundOverMessage message) {

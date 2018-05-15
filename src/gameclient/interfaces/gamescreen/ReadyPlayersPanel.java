@@ -14,6 +14,7 @@ public class ReadyPlayersPanel extends TablePanel {
     private int scoreLimit;
     private int roundLimit;
     private String serverName;
+    private String mapName;
 
     public ReadyPlayersPanel() {
         setLayout(new GridBagLayout());
@@ -21,6 +22,10 @@ public class ReadyPlayersPanel extends TablePanel {
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
     }
 
     public void setLimits(int roundLimit, int scoreLimit) {
@@ -40,6 +45,7 @@ public class ReadyPlayersPanel extends TablePanel {
             add(label, gbc);
             addRowSpacer(12);
         }
+        if (mapName != null) addTableRow("MAP", mapName);
         if (scoreLimit > 0) addTableRow("SCORE LIMIT", Integer.toString(scoreLimit));
         if (roundLimit > 0) addTableRow("ROUND LIMIT", Integer.toString(roundLimit));
         if (scoreLimit == 0 && roundLimit == 0) addTableRow("NEVER ENDING GAME");

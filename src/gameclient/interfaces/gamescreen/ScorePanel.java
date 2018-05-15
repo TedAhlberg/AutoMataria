@@ -15,6 +15,7 @@ public class ScorePanel extends TablePanel {
     private int scoreLimit;
     private int roundLimit;
     private String serverName;
+    private String mapName;
 
     public ScorePanel() {
         setLayout(new GridBagLayout());
@@ -36,6 +37,10 @@ public class ScorePanel extends TablePanel {
         this.serverName = serverName;
     }
 
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
     public void setLimits(int roundLimit, int scoreLimit) {
         this.scoreLimit = scoreLimit;
         this.roundLimit = roundLimit;
@@ -53,6 +58,7 @@ public class ScorePanel extends TablePanel {
             add(label, gbc);
             addRowSpacer(12);
         }
+        if (mapName != null) addTableRow("MAP", mapName);
         if (scoreLimit > 0) addTableRow("SCORE LIMIT", highestScore + " / " + scoreLimit);
         int currentRound = (!gameOver) ? playedRounds + 1 : playedRounds;
         addTableRow("ROUND", roundLimit < 1 ? Integer.toString(currentRound) : currentRound + " / " + roundLimit);
