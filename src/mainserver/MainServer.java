@@ -89,14 +89,10 @@ public class MainServer {
                     } else if (messageType.equals("GET_GAMESERVERS")) {
                         outputStream.writeObject(servers.getServers());
                     } else if (messageType.equals("SET_GAMESERVER")) {
-                        try {
-                            Object object = inputStream.readObject();
-                            if (object instanceof ServerInformation) {
-                                ServerInformation information = (ServerInformation) object;
-                                servers.addServer(information);
-                            }
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
+                        Object object = inputStream.readObject();
+                        if (object instanceof ServerInformation) {
+                            ServerInformation information = (ServerInformation) object;
+                            servers.addServer(information);
                         }
                     } else if (messageType.equals("CHANGE_USERNAME")) {
                         String oldUsername = inputStream.readUTF();
