@@ -2,15 +2,17 @@ package gameclient.interfaces.gamescreen;
 
 import common.GameState;
 import common.Utility;
+import common.messages.TrailState;
 import gameclient.Game;
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.Player;
+import gameobjects.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * GamePanel is a custom swing component that displays the game
@@ -24,7 +26,7 @@ import java.util.*;
  */
 public class GamePanel extends JComponent {
     private final Object lock = new Object();
-    private final LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private final CopyOnWriteArraySet<GameObject> gameObjects = new CopyOnWriteArraySet<>();
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
@@ -67,12 +69,31 @@ public class GamePanel extends JComponent {
      * @param updatedGameObjects Collection of updated GameObjects
      */
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
-        synchronized (lock) {
-            gameObjects.clear();
-            for (GameObject updated : updatedGameObjects) {
-                gameObjects.add(updated);
-                if (updated instanceof Player && interpolateMovement) {
-                    interpolation.addTarget((Player) updated);
+        for (GameObject updated : updatedGameObjects) {
+            gameObjects.remove(updated);
+            gameObjects.add(updated);
+            if (updated instanceof Player && interpolateMovement) {
+                interpolation.addTarget((Player) updated);
+            }
+        }
+    }
+
+    public void updateGameObjectStates(Collection<TrailState> trailStates) {
+        for (TrailState trailState : trailStates) {
+            if (trailState.trail != null) {
+                gameObjects.add(trailState.trail);
+            }
+        }
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Trail) {
+                Trail trail = (Trail) gameObject;
+                for (TrailState trailState : trailStates) {
+                    if (trailState.id == trail.getId()) {
+                        trail.setColor(trailState.color);
+                        trail.setBorderColor(trailState.borderColor);
+                        trail.addTrailPoints(trailState.trailPoints);
+                        System.out.println("TRAILPOINTS_SIZE=" + trailState.trailPoints.size());
+                    }
                 }
             }
         }

@@ -325,9 +325,10 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     }
 
     private void handleGameServerUpdate(GameServerUpdate message) {
-        gamePanel.updateGameObjects(message.gameObjects);
-        gamePanel.setGameState(message.state);
         player = message.player;
+        gamePanel.setGameState(message.state);
+        gamePanel.updateGameObjects(message.gameObjects);
+        gamePanel.updateGameObjectStates(message.trailStates);
     }
 
     private void handlePlayerPickupMessage(PlayerPickupMessage message) {
