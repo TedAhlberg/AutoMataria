@@ -4,6 +4,7 @@ import common.Action;
 import gameclient.Game;
 import gameclient.Resources;
 import gameclient.interfaces.gamescreen.GameScreen;
+import gameclient.interfaces.highscorescreen.HighScoreScreen;
 import gameclient.interfaces.hostserverscreen.HostServerScreen;
 import gameclient.interfaces.serverbrowserscreen.BrowseServersScreen;
 import gameclient.keyinput.KeyInput;

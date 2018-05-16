@@ -1,10 +1,12 @@
 package mainserver;
 
 import common.ServerInformation;
+import gameclient.Game;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 /**
  * @author Henrik Olofsson
@@ -15,19 +17,19 @@ import java.net.Socket;
 public class MainServer {
     private boolean running = false;
     private HighScoreServer thread = null;
-    private Servers servers;
-    private FileStorage fileStorage = new FileStorage();  
+    private GameServers servers;
+    private FileStorage fileStorage;
+    private HighScoreList highscoreList;
 
-    public MainServer() {}
-
-    public static void main(String[] args) {
-        MainServer hsh = new MainServer();
-        hsh.started();
+    public MainServer() {
+        fileStorage = new FileStorage();
+        highscoreList = fileStorage.read();
+        
     }
 
     public void started() {
         try {
-            thread = new HighScoreServer(10500);
+            thread = new HighScoreServer(Game.MAIN_SERVER.getPort());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +42,7 @@ public class MainServer {
         thread = null;
     }
 
-    public Servers getServers() {
+    public GameServers getServers() {
         return servers;
 
     }
@@ -56,26 +58,31 @@ public class MainServer {
             while (running) {
                 System.out.println("Server running: " + running);
                 try (Socket socket = serverSocket.accept();
-                     ObjectInputStream inputStream =
-                             new ObjectInputStream(socket.getInputStream());
-                     ObjectOutputStream outputStream =
-                             new ObjectOutputStream(socket.getOutputStream())) {
+                        ObjectInputStream inputStream =
+                                new ObjectInputStream(socket.getInputStream());
+                        ObjectOutputStream outputStream =
+                                new ObjectOutputStream(socket.getOutputStream())) {
 
                     System.out.println("Server running on port: " + socket.getPort());
 
-                    String messageType = inputStream.readUTF();
-                    
+                    String messageType = (String)inputStream.readObject();
+                    System.out.println(messageType);
+
                     if(messageType.equals("GET_HIGHSCORES")) {
-                        outputStream.writeObject(fileStorage.read());
+                        outputStream.writeObject(highscoreList.getSortedList());
                     }
-                    else if(messageType.equals("SET_HIGHSCORE")) {
-                        String userName = inputStream.readUTF();
-                        int highScore = inputStream.readInt();
-                        HighScore2 highscore = new HighScore2(userName, highScore);
-                        fileStorage.save(highscore);
+                    else if(messageType.equals("SET_HIGHSCORES")) {
+                        HashMap<String, Integer> highscores = (HashMap<String, Integer>) inputStream.readObject();
+
+                        highscores.forEach((userName, score) -> {
+                            HighScore2 highscore = new HighScore2(userName, score);
+                            highscoreList.addAndReplace(highscore);
+                         });
+                        
+                        fileStorage.save(highscoreList.getSortedList());
                     }
                     else if(messageType.equals("GET_GAMESERVERS")) {
-                        outputStream.writeObject(servers);
+                        outputStream.writeObject(servers.getServers());
                     } else if (messageType.equals("SET_GAMESERVER")) {
                         try {
                             Object object = inputStream.readObject();
@@ -88,15 +95,22 @@ public class MainServer {
                         }
                     }
                     else if(messageType.equals("CHANGE_USERNAME")) {
-                       String oldUsername = inputStream.readUTF();
-                       String newUsername = inputStream.readUTF();
-                       HighScoreList highScores = fileStorage.read();
+                        String oldUsername = inputStream.readUTF();
+                        String newUsername = inputStream.readUTF();
+                        HighScoreList highScores = fileStorage.read();
                         highScores.replaceName(oldUsername, newUsername);
                     }
-                     } catch(IOException e) {
-                         e.getStackTrace();
-                     }
+                } catch(IOException e) {
+                    e.getStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+    
+    public static void main(String[] args) {
+        MainServer hsh = new MainServer();
+        hsh.started();
     }
 }

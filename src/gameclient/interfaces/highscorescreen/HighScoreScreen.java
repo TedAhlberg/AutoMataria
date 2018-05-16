@@ -1,4 +1,4 @@
-package gameclient.interfaces;
+package gameclient.interfaces.highscorescreen;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -9,26 +9,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 import gameclient.Resources;
+import gameclient.interfaces.AMButton;
+import gameclient.interfaces.UserInterface;
+import gameclient.interfaces.UserInterfaceScreen;
 import mainserver.HighScore2;
 import mainserver.HighScoreList;
-
-
 
 public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     private UserInterface userInterface;
     private JPanel panel;
-    private HighScoreList highscoreList = new HighScoreList();
+    private ArrayList<HighScore2> highscoreList;
+    private MainServerClient mainServerClient = new MainServerClient();
 	
 	public HighScoreScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
         
 		createLayout();
-		update(highscoreList);
-		
-	}
-	
-	public void setHighScoreList(HighScoreList highscoreList) {
-	    this.highscoreList = highscoreList;
 	}
 	
 	public void createLayout() {
@@ -77,7 +73,7 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
         
 	}
 	
-	public void update(HighScoreList list) {
+	public void update(ArrayList<HighScore2> highscoreList) {
 //		panel.removeAll();
 	    
 	    HighScore2 highScore = new HighScore2("Henko", 100);
@@ -86,14 +82,11 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
 	    HighScore2 highscore4 = new HighScore2("Ted", 400);
 	    HighScore2 highscore5 = new HighScore2("Dante", 500);
 	    
-	    list.addAndReplace(highScore);
-	    list.addAndReplace(highscore2);
-	    list.addAndReplace(highscore3);
-	    list.addAndReplace(highscore4);
-	    list.addAndReplace(highscore5);
-	    
-	    ArrayList<HighScore2> highscoreList = list.getSortedList();
-	    
+	    highscoreList.add(highScore);
+	    highscoreList.add(highscore2);
+	    highscoreList.add(highscore3);
+	    highscoreList.add(highscore4);
+	    highscoreList.add(highscore5);
 	    
 //		HighScore highScore = new HighScore();
 //		highScore.put("Henko", 100);
@@ -159,10 +152,15 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     }
 
     public void onScreenActive() {
-
+        highscoreList = mainServerClient.getHighscores();
+        System.out.println(highscoreList);
+        if(highscoreList != null) {
+            update(highscoreList);
+        }
+        
     }
 
     public void onScreenInactive() {
-
+        
     }
 }

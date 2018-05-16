@@ -68,6 +68,9 @@ public class GameScore {
             gameOver = true;
         }
         sendScoreUpdate();
+        if (gameOver) {
+            new MainServerClient().sendGameScore(scores);
+        }
     }
 
     /**

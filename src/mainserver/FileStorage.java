@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 
@@ -16,19 +18,12 @@ import java.io.ObjectOutputStream;
 
 public class FileStorage {
     String fileName = "HighScores/HighScore.ser";
-    private HighScoreList highscoreList;
     
-    public FileStorage() {
-        highscoreList = read();
-    }
-    
-    
-    public synchronized void save(HighScore2 highScore) {
+    public synchronized void save(ArrayList<HighScore2> highscores) {
             try (ObjectOutputStream writer = new ObjectOutputStream(
                     new BufferedOutputStream(
                             new FileOutputStream(fileName)))){
-                highscoreList.addAndReplace(highScore);
-                writer.writeObject(highscoreList);
+                writer.writeObject(highscores);
                 writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
