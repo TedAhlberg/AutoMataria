@@ -6,7 +6,8 @@ import gameclient.Game;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author Henrik Olofsson
@@ -22,9 +23,14 @@ public class MainServer {
     private HighScoreList highscoreList;
 
     public MainServer() {
+        servers = new GameServers();
         fileStorage = new FileStorage();
-        highscoreList = fileStorage.read();
-        
+        highscoreList = new HighScoreList(fileStorage.read());
+    }
+
+    public static void main(String[] args) {
+        MainServer hsh = new MainServer();
+        hsh.started();
     }
 
     public void started() {
@@ -58,30 +64,29 @@ public class MainServer {
             while (running) {
                 System.out.println("Server running: " + running);
                 try (Socket socket = serverSocket.accept();
-                        ObjectInputStream inputStream =
-                                new ObjectInputStream(socket.getInputStream());
-                        ObjectOutputStream outputStream =
-                                new ObjectOutputStream(socket.getOutputStream())) {
+                     ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                     ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+                    socket.setSoTimeout(500);
 
                     System.out.println("Server running on port: " + socket.getPort());
 
-                    String messageType = (String)inputStream.readObject();
+                    String messageType = (String) inputStream.readObject();
                     System.out.println(messageType);
 
-                    if(messageType.equals("GET_HIGHSCORES")) {
-                        outputStream.writeObject(highscoreList.getSortedList());
-                    }
-                    else if(messageType.equals("SET_HIGHSCORES")) {
-                        HashMap<String, Integer> highscores = (HashMap<String, Integer>) inputStream.readObject();
+                    if (messageType.equals("GET_HIGHSCORES")) {
+                        ArrayList<HighScore2> data = highscoreList.getSortedList();
+                        outputStream.writeObject(data);
+                    } else if (messageType.equals("SET_HIGHSCORES")) {
+                        Object nextObject = inputStream.readObject();
+                        Map<String, Integer> highscores = (Map<String, Integer>) nextObject;
 
                         highscores.forEach((userName, score) -> {
                             HighScore2 highscore = new HighScore2(userName, score);
                             highscoreList.addAndReplace(highscore);
-                         });
-                        
+                        });
+
                         fileStorage.save(highscoreList.getSortedList());
-                    }
-                    else if(messageType.equals("GET_GAMESERVERS")) {
+                    } else if (messageType.equals("GET_GAMESERVERS")) {
                         outputStream.writeObject(servers.getServers());
                     } else if (messageType.equals("SET_GAMESERVER")) {
                         try {
@@ -93,24 +98,18 @@ public class MainServer {
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
-                    }
-                    else if(messageType.equals("CHANGE_USERNAME")) {
+                    } else if (messageType.equals("CHANGE_USERNAME")) {
                         String oldUsername = inputStream.readUTF();
                         String newUsername = inputStream.readUTF();
-                        HighScoreList highScores = fileStorage.read();
-                        highScores.replaceName(oldUsername, newUsername);
+                        highscoreList.replaceName(oldUsername, newUsername);
+                        fileStorage.save(highscoreList.getSortedList());
                     }
-                } catch(IOException e) {
+                } catch (IOException e) {
                     e.getStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        MainServer hsh = new MainServer();
-        hsh.started();
     }
 }
