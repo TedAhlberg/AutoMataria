@@ -1,38 +1,20 @@
 package gameclient.interfaces;
 
-<<<<<<< HEAD
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
-
-=======
->>>>>>> bd80789e45f5348767642570ea2f41ada7a4526f
 import gameclient.Resources;
-import mainserver.HighScore;
 import mainserver.HighScore2;
 import mainserver.HighScoreList;
-import mainserver.HighScoreListener;
 
-<<<<<<< HEAD
-public class HighScoreScreen extends JPanel implements HighScoreListener {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 5526131503403635944L;
-=======
-import javax.swing.*;
-import javax.swing.border.MatteBorder;
-import java.awt.*;
+
 
 public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
->>>>>>> bd80789e45f5348767642570ea2f41ada7a4526f
     private UserInterface userInterface;
     private JPanel panel;
     private HighScoreList highscoreList = new HighScoreList();
@@ -176,8 +158,6 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
         return c;
     }
 
-<<<<<<< HEAD
-=======
     public void onScreenActive() {
 
     }
@@ -185,5 +165,4 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     public void onScreenInactive() {
 
     }
->>>>>>> bd80789e45f5348767642570ea2f41ada7a4526f
 }

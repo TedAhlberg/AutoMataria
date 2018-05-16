@@ -1,6 +1,9 @@
 package gameserver;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import common.ServerInformation;
 
@@ -32,8 +35,11 @@ public class MainServerClient {
     //skicka gamescore
     
     public void sendServerInformation(ServerInformation serverInformation) {
-        ServerInformation serverInformation = gameServer.getServerInformation();
-        
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
+            
+        } catch(IOException e) {
+            e.getStackTrace();
+        }
     }
     
     
@@ -41,6 +47,13 @@ public class MainServerClient {
         
         public void run() {
             while(connected) {
+                try(Socket socket = new Socket(ip,port)) {
+                    
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 
             }
         }
