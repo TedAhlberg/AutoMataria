@@ -29,6 +29,7 @@ public class GameServerConnection {
              ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
             socket.setTcpNoDelay(true);
             socket.setKeepAlive(true);
+            socket.setSoTimeout(500);
             socket.setTrafficClass(0x18 | 0x08);
             this.outputStream = outputStream;
             connected = true;
