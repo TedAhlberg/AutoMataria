@@ -29,7 +29,7 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
     private boolean music = true;
     private boolean sfx = true;
     private Path directory;
-
+    private int maxChar = 15;
     private String user = "PLAYER";
     private String screen[] = { "WINDOWED", "MAXIMIZED", "FULLSCREEN" };
 
@@ -185,9 +185,17 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
         addListeners();
     }
 
+    /**
+     * Saves the users username
+     * 
+     * @param username
+     *            UserName to save.
+     * 
+     */
     public void writeToFile(String username) {
+
         try {
-            directory =FileSystems.getDefault().getPath("resources", "settings");
+            directory = FileSystems.getDefault().getPath("resources", "settings");
             if (!Files.exists(directory)) {
                 try {
                     Files.createDirectories(directory);
@@ -210,6 +218,9 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
         return readSettings();
     }
 
+    /**
+     * Reads saved settings
+     */
     public String readSettings() {
         try {
             FileInputStream fis = new FileInputStream("resources/settings/username.ser");
@@ -238,6 +249,7 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
     }
 
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == btnMusic) {
             MusicManager.stop();
             if (music) {
@@ -245,7 +257,12 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
                 music = false;
             } else {
                 btnMusic.setText("MUSIC: ON  ");
-                MusicManager.getInstance().menuTrack();
+
+                if (MusicManager.getStatus() == MusicManager.Status.InGame)
+                    MusicManager.getInstance().gameTrack1();
+
+                else if (MusicManager.getStatus() == MusicManager.Status.InMenu)
+                    MusicManager.getInstance().menuTrack();
                 music = true;
             }
 
@@ -277,8 +294,15 @@ public class SettingsScreen extends JPanel implements ActionListener, UserInterf
             }
         }
 
+        /**
+         * Trims any blank spaces from the <code>username</code> A <code>username</code>
+         * cant contain more then 15 characters.
+         */
         if (e.getSource() == btnChange) {
-            user=tfUserName.getText().trim();
+            user = tfUserName.getText().trim();
+            int maxLength = (user.length() < maxChar) ? user.length() : maxChar;
+            user = user.substring(0, maxLength);
+
             if (user.equals("")) {
                 lblUserName.setText("USER: PLAYER");
                 writeToFile("PLAYER");

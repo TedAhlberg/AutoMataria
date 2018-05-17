@@ -13,6 +13,8 @@ public class MusicManager {
 
     private static MusicManager instance = null;
 
+    private static Status status;
+
     protected MusicManager() {
     }
 
@@ -59,4 +61,15 @@ public class MusicManager {
         music.setVolume(1);
     }
 
+    public static Status getStatus() {
+        return status;
+    }
+
+    public static void setStatus(Status s) {
+        status = s;
+    }
+
+    public static enum Status {
+        InGame, InMenu;
+    }
 }
