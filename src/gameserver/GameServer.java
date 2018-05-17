@@ -154,19 +154,6 @@ public class GameServer implements ConnectionListener, MessageListener {
             update.player = connectedClients.get(client);
             client.send(update);
         }
-/*
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-
-            oos.writeObject(update);
-            oos.flush();
-            byte[] data = baos.toByteArray();
-
-            System.out.println("PACKET_SIZE=" + data.length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
     }
 
     /**
