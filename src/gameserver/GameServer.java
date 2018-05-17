@@ -148,7 +148,7 @@ public class GameServer implements ConnectionListener, MessageListener {
      * Sends all game objects to all connected clients so they can update their view of the game.
      */
     private void update() {
-        GameServerUpdate update = new GameServerUpdate(state, gameObjects, updateManager.getTrailStates());
+        GameServerUpdate update = new GameServerUpdate(state, updateManager.getGameObjectStates(), updateManager.getTrailStates());
 
         for (Client client : connectedClients.keySet()) {
             update.player = connectedClients.get(client);

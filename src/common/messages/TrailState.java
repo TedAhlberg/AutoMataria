@@ -1,7 +1,5 @@
 package common.messages;
 
-import gameobjects.Trail;
-
 import java.awt.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -13,17 +11,6 @@ public class TrailState implements Serializable {
     private static final long serialVersionUID = 1;
     public int id;
     public Color color, borderColor;
-    public HashSet<Point> trailPoints = new HashSet<>();
-    public Trail trail;
-
-    @Override
-    public String toString() {
-        return "TrailState{" +
-                "id=" + id +
-                ", color=" + color +
-                ", borderColor=" + borderColor +
-                ", trailPoints=" + trailPoints +
-                ", trail=" + trail +
-                '}';
-    }
+    public HashSet<Point> addedPoints = new HashSet<>();
+    public HashSet<Point> removedPoints = new HashSet<>();
 }

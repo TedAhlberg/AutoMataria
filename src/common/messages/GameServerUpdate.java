@@ -1,9 +1,8 @@
 package common.messages;
 
 import common.GameState;
-import gameobjects.*;
+import gameobjects.Player;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -15,18 +14,13 @@ public class GameServerUpdate extends Message {
     private static final long serialVersionUID = 1L;
 
     public GameState state;
-    public Collection<GameObject> gameObjects;
+    public GameObjectState gameObjectState;
     public Player player;
     public Collection<TrailState> trailStates;
 
-    public GameServerUpdate(GameState state, Collection<GameObject> gameObjects, Collection<TrailState> trailStates) {
+    public GameServerUpdate(GameState state, GameObjectState gameObjectState, Collection<TrailState> trailStates) {
         this.state = state;
-        this.gameObjects = new ArrayList<>();
-        for (GameObject gameObject : gameObjects) {
-            if (!(gameObject instanceof Trail)) {
-                this.gameObjects.add(gameObject);
-            }
-        }
+        this.gameObjectState = gameObjectState;
         this.trailStates = trailStates;
     }
 }

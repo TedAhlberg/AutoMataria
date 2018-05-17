@@ -80,4 +80,8 @@ public class Trail extends GameObject {
     public void addTrailPoints(Collection<Point> trailPoints) {
         this.trailPoints.addAll(trailPoints);
     }
+
+    public void removeTrailPoints(Collection<Point> removedPoints) {
+        this.trailPoints.removeAll(removedPoints);
+    }
 }
