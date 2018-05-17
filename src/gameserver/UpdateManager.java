@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class UpdateManager {
     private Collection<GameObject> gameObjects;
-    private HashMap<Integer, Collection<Point>> updatedTrailPoints = new HashMap<>();
+    private HashMap<Integer, Collection<Point>> updatedWallPoints = new HashMap<>();
     private HashSet<Integer> updatedGameObjects = new HashSet<>();
 
     public UpdateManager(Collection<GameObject> gameObjects) {
@@ -24,7 +24,7 @@ public class UpdateManager {
 
     public GameObjectState getGameObjectStates() {
         GameObjectState gameObjectState = new GameObjectState();
-        HashSet<Integer> gameObjectIDs = new HashSet<>();
+        gameObjectState.existingObjects = new HashSet<>();
 
         for (GameObject gameObject : gameObjects) {
             if (!updatedGameObjects.contains(gameObject.getId())) {
@@ -32,16 +32,15 @@ public class UpdateManager {
             } else if (!(gameObject instanceof Wall)) {
                 gameObjectState.updated.add(gameObject);
             }
-            gameObjectIDs.add(gameObject.getId());
+            gameObjectState.existingObjects.add(gameObject.getId());
             updatedGameObjects.add(gameObject.getId());
         }
 
         Iterator<Integer> iterator = updatedGameObjects.iterator();
         while (iterator.hasNext()) {
             Integer id = iterator.next();
-            if (!gameObjectIDs.contains(id)) {
-                gameObjectState.removed.add(id);
-                updatedTrailPoints.remove(id);
+            if (!gameObjectState.existingObjects.contains(id)) {
+                updatedWallPoints.remove(id);
                 iterator.remove();
             }
         }
@@ -62,8 +61,8 @@ public class UpdateManager {
                 wallState.color = wall.getColor();
                 wallState.borderColor = wall.getBorderColor();
 
-                if (updatedTrailPoints.containsKey(id)) {
-                    Collection<Point> clientPoints = updatedTrailPoints.get(id);
+                if (updatedWallPoints.containsKey(id)) {
+                    Collection<Point> clientPoints = updatedWallPoints.get(id);
 
                     // Remove already sent trailpoints
                     for (Point point : clientPoints) {
@@ -73,7 +72,7 @@ public class UpdateManager {
                     }
                     clientPoints.removeAll(wallState.removedPoints);
 
-                    // Add new trailpoints
+                    // Add new wallpoints
                     for (Point point : wall.getGridPoints()) {
                         if (!clientPoints.contains(point)) {
                             wallState.addedPoints.add(point);
@@ -81,9 +80,9 @@ public class UpdateManager {
                     }
                     clientPoints.addAll(wallState.addedPoints);
                 } else {
-                    // Add new trailpoints for a new trail
+                    // Add new wallpoints for a new Wall
                     HashSet<Point> initialPoints = new HashSet<>(wall.getGridPoints());
-                    updatedTrailPoints.put(id, initialPoints);
+                    updatedWallPoints.put(id, initialPoints);
                     wallState.addedPoints.addAll(initialPoints);
                 }
                 result.add(wallState);

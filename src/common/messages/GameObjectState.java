@@ -10,7 +10,7 @@ import java.util.HashSet;
  * @author Johannes Blüml
  */
 public class GameObjectState implements Serializable {
-    public Collection<Integer> removed = new HashSet<>();
+    public Collection<Integer> existingObjects = new HashSet<>();
     public Collection<GameObject> added = new HashSet<>();
     public Collection<GameObject> updated = new HashSet<>();
 }

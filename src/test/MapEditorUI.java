@@ -1,7 +1,6 @@
 package test;
 
 import common.*;
-import gameclient.Game;
 import gameclient.Resources;
 import gameclient.interfaces.UserInterface;
 import gameclient.interfaces.gamescreen.GamePanel;
@@ -310,11 +309,7 @@ public class MapEditorUI {
 
         Wall startingPositionsMarker = new Wall(Color.RED, Color.WHITE);
         startingPositionsMarker.setId(ID.getNext());
-        for (Point point : startingPositionsToSave) {
-            Rectangle startingPosition = new Rectangle(Utility.convertFromGrid(point));
-            startingPosition.setSize(new Dimension(Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE));
-            startingPositionsMarker.add(startingPosition);
-        }
+        startingPositionsMarker.addGridPoints(startingPositionsToSave);
         gameObjects.add(startingPositionsMarker);
 
         gamePanel.updateGameObjects(gameObjects);
@@ -376,14 +371,11 @@ public class MapEditorUI {
                 Point endPoint = Utility.convertFromGrid(endGridPoint);
 
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
-                    int width = Game.GRID_PIXEL_SIZE + endPoint.x - startPoint.x;
-                    int height = Game.GRID_PIXEL_SIZE + endPoint.y - startPoint.y;
-                    Rectangle rectangle = new Rectangle(startPoint.x, startPoint.y, width, height);
                     Wall wall = (Wall) selectedObject.getGameObject();
                     if (paintMode == PaintMode.DrawWall) {
-                        wall.add(rectangle);
+                        wall.addGridPoint(endGridPoint);
                     } else if (paintMode == PaintMode.EraseWall) {
-                        wall.remove(rectangle);
+                        wall.removeGridPoint(endGridPoint);
                     }
                 } else if (paintMode == PaintMode.AddStartPosition) {
                     startingPositionsToSave.add(endGridPoint);

@@ -82,7 +82,7 @@ public class GamePanel extends JComponent {
     public void updateGameObjectStates(GameObjectState gameObjectState, Collection<WallState> wallStates) {
         synchronized (lock) {
             gameObjects.removeIf(gameObject ->
-                    gameObjectState.updated.contains(gameObject) || gameObjectState.removed.contains(gameObject.getId()));
+                    gameObjectState.updated.contains(gameObject) || !gameObjectState.existingObjects.contains(gameObject.getId()));
 
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Wall) {
