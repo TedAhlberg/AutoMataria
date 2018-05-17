@@ -1,7 +1,10 @@
 package mainserver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+
+import gameserver.MainServerClient;
 
 public class HighScoreList {
     private ArrayList<HighScore2> highscoreList;
@@ -53,12 +56,12 @@ public class HighScoreList {
         return highscoreList;
     }
     
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        HighScoreList hsl = new HighScoreList();
-        HighScore2 highscore1 = new HighScore2("Henko", 200);
-        HighScore2 highscore2 = new HighScore2("Henkomannen", 250);
-        HighScore2 highscore3 = new HighScore2("erik", 400);
-        HighScore2 highscore4 = new HighScore2("Ted", 3000);
+//        HighScore2 highscore1 = new HighScore2("Henko", 200);
+//        HighScore2 highscore2 = new HighScore2("Henkomannen", 250);
+//        HighScore2 highscore3 = new HighScore2("erik", 400);
+//        HighScore2 highscore4 = new HighScore2("Ted", 3000);
         
 //        hsl.addAndReplace(highscore1);
 //        hsl.addAndReplace(highscore2);
@@ -71,6 +74,16 @@ public class HighScoreList {
 //            System.out.println(hs2.toString());
 //        }
 //        
-    }
+//    }
+
+    public static void main(String[] args) {
+        HashMap<String, Integer> scores = new HashMap<>();
+        scores.put("asd", 3213);
+        scores.put("BRUM", 123);
+        new MainServerClient().sendGameScore(scores);
+
+        ArrayList<HighScore2> highscores = new gameclient.interfaces.highscorescreen.MainServerClient().getHighscores();
+        System.out.println(highscores);
+}
 
 }
