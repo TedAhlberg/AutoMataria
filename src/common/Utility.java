@@ -17,12 +17,50 @@ import java.util.Random;
 public class Utility {
     private static Random random = new Random();
 
+    /**
+     * Finds a gameobject in the provided collection with the provided ID
+     *
+     * @param id          ID of gameobject to find
+     * @param gameObjects Collection of gameobjects to search in
+     * @return The found gameobject or null if not found
+     */
+    public static GameObject getById(int id, Collection<GameObject> gameObjects) {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject.getId() == id) {
+                return gameObject;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a convinient name for a specific GRID Dimension
+     *
+     * @param grid Dimension of the grid
+     * @return The pretty name for the grid size
+     */
     public static String getGridSizeName(Dimension grid) {
         if (grid.height != grid.width) return "Unknown";
         if (grid.width == 50) return "Large";
         if (grid.width == 75) return "Normal";
         if (grid.width == 100) return "Small";
         return "Unknown";
+    }
+
+    /**
+     * Returns the GRID Dimension for a specific name
+     *
+     * @param gridName Large Small or Normal
+     * @return A Dimension that corresponds to the provided GRID name
+     */
+    public static Dimension getGridFromName(String gridName) {
+        switch (gridName) {
+            case "Large":
+                return new Dimension(50, 50);
+            case "Small":
+                return new Dimension(100, 100);
+        }
+        return new Dimension(75, 75);
     }
 
     /**

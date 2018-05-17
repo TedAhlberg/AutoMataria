@@ -3,7 +3,6 @@ package gameclient.interfaces.gamescreen;
 import common.GameState;
 import common.Utility;
 import common.messages.GameServerUpdate;
-import common.messages.WallState;
 import gameclient.Game;
 import gameclient.Resources;
 import gameobjects.*;
@@ -69,8 +68,8 @@ public class GamePanel extends JComponent {
      */
     public void updateGameObjects(Collection<GameObject> updatedGameObjects) {
         synchronized (lock) {
+            gameObjects.clear();
             for (GameObject updated : updatedGameObjects) {
-                gameObjects.remove(updated);
                 gameObjects.add(updated);
                 if (updated instanceof Player && interpolateMovement) {
                     interpolation.addTarget((Player) updated);
@@ -84,20 +83,6 @@ public class GamePanel extends JComponent {
             gameObjects.removeIf(gameObject ->
                     message.updated.contains(gameObject) || !message.existingObjects.contains(gameObject.getId()));
 
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Wall) {
-                    Wall wall = (Wall) gameObject;
-                    for (WallState wallState : message.wallStates) {
-                        if (wallState.id == wall.getId()) {
-                            wall.setColor(wallState.color);
-                            wall.setBorderColor(wallState.borderColor);
-                            wall.addGridPoints(wallState.addedPoints);
-                            wall.removeGridPoints(wallState.removedPoints);
-                        }
-                    }
-                }
-            }
-
             gameObjects.addAll(message.added);
 
             for (GameObject updated : message.updated) {
@@ -106,6 +91,16 @@ public class GamePanel extends JComponent {
                     interpolation.addTarget((Player) updated);
                 }
             }
+
+            message.wallStates.forEach((id, wallState) -> {
+                Wall wall = (Wall) Utility.getById(id, gameObjects);
+                if (wall == null) return;
+                wall.setColor(wallState.color);
+                wall.setBorderColor(wallState.borderColor);
+                wall.addGridPoints(wallState.addedPoints);
+                wall.removeGridPoints(wallState.removedPoints);
+                wall.setDirection(wallState.direction);
+            });
         }
     }
 
@@ -197,9 +192,6 @@ public class GamePanel extends JComponent {
                     players.add((Player) gameObject);
                 } else {
                     gameObject.render(g2);
-                }
-                if (gameObject instanceof Trail) {
-                    System.out.println("TRAIL DIRECTION: " + gameObject.getDirection());
                 }
             }
             for (Player player : players) {

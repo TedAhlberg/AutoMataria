@@ -48,8 +48,6 @@ public class MapEditorUI {
     private PaintMode paintMode = PaintMode.AddStartPosition;
     private SpecialGameObject selectedObject;
 
-    private HashMap<String, Dimension> gridSizes;
-
     public MapEditorUI(UserInterface userInterface) {
         $$$setupUI$$$();
 
@@ -135,7 +133,7 @@ public class MapEditorUI {
         });
 
         gridSizeComboBox.addActionListener(e -> {
-            Dimension newGrid = gridSizes.get(gridSizeComboBox.getSelectedItem());
+            Dimension newGrid = Utility.getGridFromName((String) gridSizeComboBox.getSelectedItem());
             currentMap.setGrid(newGrid);
             this.gamePanel.setGrid(newGrid);
         });
@@ -263,11 +261,7 @@ public class MapEditorUI {
         backgroundImageComboBox.setSelectedItem(currentMap.getBackground());
         musicTrackComboBox.setSelectedItem(currentMap.getMusicTrack());
         playersComboBox.setSelectedItem(currentMap.getPlayers());
-        gridSizes.forEach((key, value) -> {
-            if (value.equals(currentMap.getGrid())) {
-                gridSizeComboBox.setSelectedItem(key);
-            }
-        });
+        gridSizeComboBox.setSelectedItem(Utility.getGridSizeName(currentMap.getGrid()));
         playerSpeedComboBox.setSelectedItem(currentMap.getPlayerSpeedMultiplier());
         specialGameObjectComboBox.removeAllItems();
         for (SpecialGameObject specialGameObject : specialGameObjectsToSave) {
@@ -282,7 +276,7 @@ public class MapEditorUI {
             currentMap.setMusicTrack((String) musicTrackComboBox.getSelectedItem());
             currentMap.setPlayers((int) playersComboBox.getSelectedItem());
             currentMap.setPlayerSpeedMultiplier((Double) playerSpeedComboBox.getSelectedItem());
-            currentMap.setGrid(gridSizes.get(gridSizeComboBox.getSelectedItem()));
+            currentMap.setGrid(Utility.getGridFromName((String) gridSizeComboBox.getSelectedItem()));
             currentMap.setStartingPositions(startingPositionsToSave.toArray(new Point[0]));
             currentMap.setGameMapObjects(specialGameObjectsToSave.toArray(new SpecialGameObject[0]));
 
@@ -330,16 +324,8 @@ public class MapEditorUI {
         backgroundImageComboBox = new JComboBox<>(Resources.getImageList());
         musicTrackComboBox = new JComboBox<>(Resources.getMusicList());
 
-        gridSizes = new HashMap<>();
-        gridSizes.put("Huge", new Dimension(25, 25));
-        gridSizes.put("Large", new Dimension(50, 50));
-        gridSizes.put("Normal", new Dimension(75, 75));
-        gridSizes.put("Small", new Dimension(100, 100));
-        gridSizes.put("Tiny", new Dimension(150, 150));
-        gridSizeComboBox = new JComboBox<>(new String[]{
-                "Huge", "Large", "Normal", "Small", "Tiny"
-        });
-        gridSizeComboBox.setSelectedItem(currentMap.getGrid());
+        gridSizeComboBox = new JComboBox<>(new String[]{"Large", "Normal", "Small"});
+        gridSizeComboBox.setSelectedItem(Utility.getGridSizeName(currentMap.getGrid()));
 
         playersComboBox = new JComboBox<>(new Integer[]{
                 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
@@ -372,10 +358,26 @@ public class MapEditorUI {
 
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
                     Wall wall = (Wall) selectedObject.getGameObject();
+
+                    LinkedList<Point> points = new LinkedList<>();
+                    if (startGridPoint.x == endGridPoint.x) {
+                        // vertical line
+                        for (int i = startGridPoint.y; i <= endGridPoint.y; i++) {
+                            points.add(new Point(startGridPoint.x, i));
+                        }
+                    } else if (startGridPoint.y == endGridPoint.y) {
+                        // horizontal line
+                        for (int i = startGridPoint.x; i <= endGridPoint.x; i++) {
+                            points.add(new Point(i, startGridPoint.y));
+                        }
+                    } else {
+                        // diagonal line
+                    }
+
                     if (paintMode == PaintMode.DrawWall) {
-                        wall.addGridPoint(endGridPoint);
+                        wall.addGridPoints(points);
                     } else if (paintMode == PaintMode.EraseWall) {
-                        wall.removeGridPoint(endGridPoint);
+                        wall.removeGridPoints(points);
                     }
                 } else if (paintMode == PaintMode.AddStartPosition) {
                     startingPositionsToSave.add(endGridPoint);

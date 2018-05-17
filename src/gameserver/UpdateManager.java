@@ -1,7 +1,7 @@
 package gameserver;
 
 import common.messages.GameServerUpdate;
-import common.messages.WallState;
+import common.messages.WallUpdate;
 import gameobjects.GameObject;
 import gameobjects.Wall;
 
@@ -44,49 +44,50 @@ public class UpdateManager {
             }
         }
 
-        message.wallStates.addAll(getWallStates());
+        message.wallStates.putAll(getWallStates());
 
         return message;
     }
 
-    private Collection<WallState> getWallStates() {
-        ArrayList<WallState> result = new ArrayList<>();
+    private Map<Integer, WallUpdate> getWallStates() {
+        HashMap<Integer, WallUpdate> result = new HashMap<>();
 
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Wall) {
                 Wall wall = (Wall) gameObject;
                 int id = wall.getId();
 
-                WallState wallState = new WallState();
-                wallState.id = wall.getId();
-                wallState.color = wall.getColor();
-                wallState.borderColor = wall.getBorderColor();
+                WallUpdate wallUpdate = new WallUpdate();
+                wallUpdate.id = wall.getId();
+                wallUpdate.color = wall.getColor();
+                wallUpdate.borderColor = wall.getBorderColor();
+                wallUpdate.direction = wall.getDirection();
 
                 if (updatedWallPoints.containsKey(id)) {
                     Collection<Point> clientPoints = updatedWallPoints.get(id);
 
-                    // Remove already sent trailpoints
+                    // Remove already sent wallpoints
                     for (Point point : clientPoints) {
                         if (!wall.getGridPoints().contains(point)) {
-                            wallState.removedPoints.add(point);
+                            wallUpdate.removedPoints.add(point);
                         }
                     }
-                    clientPoints.removeAll(wallState.removedPoints);
+                    clientPoints.removeAll(wallUpdate.removedPoints);
 
                     // Add new wallpoints
                     for (Point point : wall.getGridPoints()) {
                         if (!clientPoints.contains(point)) {
-                            wallState.addedPoints.add(point);
+                            wallUpdate.addedPoints.add(point);
                         }
                     }
-                    clientPoints.addAll(wallState.addedPoints);
+                    clientPoints.addAll(wallUpdate.addedPoints);
                 } else {
                     // Add new wallpoints for a new Wall
                     HashSet<Point> initialPoints = new HashSet<>(wall.getGridPoints());
                     updatedWallPoints.put(id, initialPoints);
-                    wallState.addedPoints.addAll(initialPoints);
+                    wallUpdate.addedPoints.addAll(initialPoints);
                 }
-                result.add(wallState);
+                result.put(id, wallUpdate);
             }
         }
 

@@ -4,6 +4,7 @@ import common.Utility;
 import gameclient.Game;
 
 import java.awt.*;
+import java.util.LinkedList;
 
 /**
  * @author Johannes Blüml
@@ -23,13 +24,18 @@ public class Trail extends Wall {
     public void tick() {}
 
     public void render(Graphics2D g) {
-        int size = gridPoints.size();
-        for (Point gridPoint : gridPoints) {
+        LinkedList<Point> points = new LinkedList<>(gridPoints);
+        if (gridPoints.size() > 4) {
+            switch (direction) {
+                case Left:
+                case Up:
+                    points.removeLast();
+            }
+        }
+        for (Point gridPoint : points) {
             Point point = Utility.convertFromGrid(gridPoint);
             g.setColor(color);
             g.fillRect(point.x, point.y, width, height);
-            size -= 1;
-            if (size < 2) break;
         }
 /*
         if (gridPoints.size() < 2) return;
@@ -44,6 +50,7 @@ public class Trail extends Wall {
     }
 
     public void grow() {
+        setDirection(player.getDirection());
         Point playerPoint = player.getPoint();
 
         Point newPoint = Utility.convertToGrid(playerPoint);
@@ -72,21 +79,5 @@ public class Trail extends Wall {
 
     public boolean equals(Object obj) {
         return super.equals(obj) && player.equals(((Trail) obj).getPlayer());
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
     }
 }
