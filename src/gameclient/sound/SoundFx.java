@@ -53,6 +53,10 @@ public class SoundFx {
         }
     }
 
+    public void SelfGhostPickup() {
+        play("Ghost.mp3");
+    }
+
     public void menuSelect() {
         play("Menu_Select.mp3");
     }
