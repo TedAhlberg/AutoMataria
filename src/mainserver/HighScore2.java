@@ -23,6 +23,17 @@ public class HighScore2 {
         this.highscore = highscore;
     }
     
+    public boolean equals(Object obj) {
+        return obj instanceof HighScore2 &&
+                (((HighScore2)obj).getPlayerName().equals(playerName));
+    }
+
+    public String toString() {
+        return "HighScore2 [playerName=" + playerName + ", highscore=" + highscore + "]";
+    }
+    
+    
+    
 
     
     
