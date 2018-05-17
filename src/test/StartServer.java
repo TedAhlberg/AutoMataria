@@ -1,6 +1,7 @@
 package test;
 
 import common.GameServerSettings;
+import common.Maps;
 import gameserver.GameServer;
 
 /**
@@ -8,8 +9,8 @@ import gameserver.GameServer;
  */
 public class StartServer {
     public static void main(String[] args) {
-        if (args.length < 6) {
-            System.out.println("Required parameters: <Server Name> <Server Port> <TickRate> <Amount of updates per tick> <Player speed> <Map name>");
+        if (args.length < 5) {
+            System.out.println("Required parameters: <Server Name> <Server Port> <TickRate> <Amount of updates per tick> <Player speed> [<Map name>]");
             System.exit(1);
         }
 
@@ -19,7 +20,16 @@ public class StartServer {
         settings.tickRate = Integer.parseInt(args[2]);
         settings.amountOfTickBetweenUpdates = Integer.parseInt(args[3]);
         settings.playerSpeed = Integer.parseInt(args[4]);
-        settings.mapPool = new String[]{args[5]};
+        if (args.length == 6) settings.mapPool = new String[]{args[5]};
+        else settings.mapPool = Maps.getInstance().getMapList();
+
+        settings.roundLimit = 10;
+        settings.scoreLimit = 0;
+
+        settings.forceMovePlayerCountdown = 1000;
+        settings.gameOverCountdown = 15000;
+        settings.roundOverCountdown = 5000;
+        settings.newGameCountdown = 5000;
 
         GameServer server = new GameServer(settings);
         server.start();
