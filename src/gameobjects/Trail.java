@@ -4,6 +4,8 @@ import common.Utility;
 import gameclient.Game;
 
 import java.awt.*;
+import java.awt.geom.Area;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -14,8 +16,6 @@ public class Trail extends Wall {
     transient private Player player;
 
     public Trail(Player player) {
-        color = new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50);
-        borderColor = new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 125);
         this.player = player;
         width = Game.GRID_PIXEL_SIZE;
         height = Game.GRID_PIXEL_SIZE;
@@ -24,29 +24,28 @@ public class Trail extends Wall {
     public void tick() {}
 
     public void render(Graphics2D g) {
-        LinkedList<Point> points = new LinkedList<>(gridPoints);
-        if (gridPoints.size() > 4) {
+        if (area == null) {
+            area = new Area();
+            pointsInArea = new HashSet<>();
+        }
+        LinkedList<Point> remainingPoints = new LinkedList<>(gridPoints);
+        if (remainingPoints.size() > 1) {
             switch (direction) {
                 case Left:
                 case Up:
-                    points.removeLast();
+                    remainingPoints.removeLast(); // Prevents trail from being i front of player
             }
         }
-        for (Point gridPoint : points) {
+        remainingPoints.removeAll(pointsInArea);
+        for (Point gridPoint : remainingPoints) {
             Point point = Utility.convertFromGrid(gridPoint);
-            g.setColor(color);
-            g.fillRect(point.x, point.y, width, height);
+            area.add(new Area(new Rectangle(point.x, point.y, width, height)));
+            pointsInArea.add(gridPoint);
         }
-/*
-        if (gridPoints.size() < 2) return;
-
-        Point lastTrail = Utility.convertFromGrid(gridPoints.get(gridPoints.size() - 2));
-        Point playerPoint = player.getPoint();
-        g.setColor(Color.RED);
-        g.fillRect(lastTrail.x, lastTrail.y, width, height);
-
-        System.out.println("TRAIL RENDER PLAYER: " + player);
-        */
+        g.setColor(color);
+        g.fill(area);
+        g.setColor(borderColor);
+        g.draw(area);
     }
 
     public void grow() {
@@ -71,13 +70,5 @@ public class Trail extends Wall {
 
     public void clear() {
         gridPoints.clear();
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public boolean equals(Object obj) {
-        return super.equals(obj) && player.equals(((Trail) obj).getPlayer());
     }
 }

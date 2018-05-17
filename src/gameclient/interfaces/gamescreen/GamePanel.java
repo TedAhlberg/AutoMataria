@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class GamePanel extends JComponent {
     private final Object lock = new Object();
-    private final LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private final HashSet<GameObject> gameObjects = new HashSet<>();
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
@@ -98,7 +98,9 @@ public class GamePanel extends JComponent {
                 wall.setColor(wallState.color);
                 wall.setBorderColor(wallState.borderColor);
                 wall.addGridPoints(wallState.addedPoints);
-                wall.removeGridPoints(wallState.removedPoints);
+                if (!wallState.removedPoints.isEmpty()) {
+                    wall.removeGridPoints(wallState.removedPoints);
+                }
                 wall.setDirection(wallState.direction);
             });
         }

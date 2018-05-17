@@ -26,13 +26,14 @@ public class UpdateManager {
         GameServerUpdate message = new GameServerUpdate();
 
         for (GameObject gameObject : gameObjects) {
-            if (!updatedGameObjects.contains(gameObject.getId())) {
+            int id = gameObject.getId();
+            if (!updatedGameObjects.contains(id)) {
                 message.added.add(gameObject);
             } else if (!(gameObject instanceof Wall)) {
                 message.updated.add(gameObject);
             }
-            message.existingObjects.add(gameObject.getId());
-            updatedGameObjects.add(gameObject.getId());
+            message.existingObjects.add(id);
+            updatedGameObjects.add(id);
         }
 
         Iterator<Integer> iterator = updatedGameObjects.iterator();
@@ -87,6 +88,7 @@ public class UpdateManager {
                     updatedWallPoints.put(id, initialPoints);
                     wallUpdate.addedPoints.addAll(initialPoints);
                 }
+
                 result.put(id, wallUpdate);
             }
         }

@@ -32,12 +32,12 @@ public class Player extends GameObject {
         this.name = name;
         this.gameObjects = gameObjects;
         this.currentMap = currentMap;
-        color = Color.LIGHT_GRAY;
         width = Game.GRID_PIXEL_SIZE;
         height = Game.GRID_PIXEL_SIZE;
         previousDirection = direction;
         trail = new Trail(this);
         trail.setId(ID.getNext());
+        setColor(Color.LIGHT_GRAY);
     }
 
     /**

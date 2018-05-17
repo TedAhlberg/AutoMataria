@@ -4,8 +4,8 @@ import common.Utility;
 import gameclient.Game;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.awt.geom.Area;
+import java.util.*;
 
 /**
  * A Wall is GameObject that has a shape that can be changed into any shape by adding or removing Rectangles
@@ -17,6 +17,8 @@ public class Wall extends GameObject {
 
     protected Color color, borderColor;
     protected LinkedList<Point> gridPoints = new LinkedList<>();
+    transient protected Area area;
+    transient protected HashSet<Point> pointsInArea;
 
     public Wall() {
         this(Color.CYAN.darker().darker(), null);
@@ -34,6 +36,8 @@ public class Wall extends GameObject {
     public Wall(Color color, Color borderColor) {
         this.color = color;
         this.borderColor = borderColor;
+        this.width = Game.GRID_PIXEL_SIZE;
+        this.height = Game.GRID_PIXEL_SIZE;
     }
 
     /**
@@ -76,11 +80,23 @@ public class Wall extends GameObject {
      * @param g Graphics2D object to paint on
      */
     public void render(Graphics2D g) {
-        for (Point gridPoint : gridPoints) {
-            Point point = Utility.convertFromGrid(gridPoint);
-            g.setColor(color);
-            g.fillRect(point.x, point.y, Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
+        if (area == null) {
+            area = new Area();
+            pointsInArea = new HashSet<>();
         }
+        LinkedList<Point> remainingPoints = new LinkedList<>(gridPoints);
+        remainingPoints.removeAll(pointsInArea);
+        if (remainingPoints.size() > 0) {
+            for (Point gridPoint : remainingPoints) {
+                Point point = Utility.convertFromGrid(gridPoint);
+                area.add(new Area(new Rectangle(point.x, point.y, width, height)));
+                pointsInArea.add(gridPoint);
+            }
+        }
+        g.setColor(color);
+        g.fill(area);
+        g.setColor(borderColor);
+        g.draw(area);
     }
 
     public Color getColor() {
@@ -105,6 +121,7 @@ public class Wall extends GameObject {
 
     public void removeGridPoints(Collection<Point> removedPoints) {
         this.gridPoints.removeAll(removedPoints);
+        area = null;
     }
 
     public void addGridPoint(Point gridPoint) {
@@ -113,6 +130,7 @@ public class Wall extends GameObject {
 
     public void removeGridPoint(Point gridPoint) {
         gridPoints.remove(gridPoint);
+        area = null;
     }
 
     public Collection<Point> getGridPoints() {
