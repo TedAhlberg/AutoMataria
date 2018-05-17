@@ -1,6 +1,5 @@
 package mainserver;
 
-import gameobjects.Player;
 
 public class HighScore2 {
     private String playerName;

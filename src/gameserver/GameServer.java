@@ -2,6 +2,7 @@ package gameserver;
 
 import common.*;
 import common.messages.*;
+import gameclient.Game;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
@@ -28,6 +29,7 @@ public class GameServer implements ConnectionListener, MessageListener {
     private boolean running;
     private GameState state;
     private GameMap currentMap;
+    private MainServerClient mainServerClient;
 
     /**
      * A Controller that connects together the serverConnection part of Auto-Mataria.
@@ -42,6 +44,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         playerManager.addListener(this);
         serverConnection = new ServerConnection(settings.port);
         serverConnection.addListener(this);
+        mainServerClient = new MainServerClient();
         serverInformationSender = new ServerInformationSender(this);
         gameObjectSpawner = new GameObjectSpawner(gameObjects, currentMap, settings.tickRate);
         gameScore = new GameScore(this);

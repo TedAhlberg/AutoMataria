@@ -27,6 +27,9 @@ public class GameServerConnection {
         try (Socket socket = new Socket(serverIP, serverPort);
              ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
              ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
+            socket.setTcpNoDelay(true);
+            socket.setKeepAlive(true);
+            socket.setTrafficClass(0x18 | 0x08);
             this.outputStream = outputStream;
             connected = true;
             listener.onConnect();

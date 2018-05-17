@@ -11,24 +11,28 @@ import java.util.Collection;
  *
  */
 
-public class Servers implements ServerInformationListener {
+public class GameServers implements ServerInformationListener {
     private ArrayList<ServerInformation> servers = new ArrayList<>();
     
-    public Servers() {
+    public GameServers() {
         
     }
     
-    public void addServer(ServerInformation serverInformation) {
+    public synchronized void addServer(ServerInformation serverInformation) {
         servers.remove(serverInformation);
         servers.add(serverInformation);
     }
     
-    public ArrayList<ServerInformation> getAll() {
+    public synchronized ArrayList<ServerInformation> getAll() {
         return servers;
     }
 
-    public void update(Collection<ServerInformation> serverList) {
+    public synchronized void update(Collection<ServerInformation> serverList) {
         
+    }
+    
+    public ArrayList<ServerInformation> getServers(){
+        return servers;
     }
     
     

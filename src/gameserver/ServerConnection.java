@@ -26,6 +26,9 @@ public class ServerConnection implements Runnable {
             listeners.forEach(client -> client.onServerConnectionStarted());
             while (running) {
                 Socket socket = serverSocket.accept();
+                socket.setTcpNoDelay(true);
+                socket.setKeepAlive(true);
+                socket.setTrafficClass(0x18 | 0x08);
                 clients.add(new Client(socket, listeners));
             }
         } catch (IOException e) {

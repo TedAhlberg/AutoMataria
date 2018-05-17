@@ -40,6 +40,16 @@ public class Player extends GameObject {
         trail.setId(ID.getNext());
     }
 
+    /**
+     * Temporary method for debugging purposes
+     *
+     * @TODO: REMOVE THIS METHOD
+     */
+    public void setSpeed(int speed) {
+        super.setSpeed(speed);
+        listener.newMessage(new ChatMessage("My speed is now " + speed + "ppt.", this));
+    }
+
     public void setListener(MessageListener listener) {
         this.listener = listener;
     }
@@ -215,9 +225,7 @@ public class Player extends GameObject {
      * so nothing strange remains when the player spawns
      */
     public void reset() {
-        if (pickupSlot != null) {
-            pickupSlot.done();
-        }
+        if (pickupSlot != null) pickupSlot.done();
 
         inputQueue.clear();
         direction = previousDirection = Direction.Static;
@@ -268,6 +276,7 @@ public class Player extends GameObject {
             this.dead = dead;
             inputQueue.clear();
             direction = Direction.Static;
+            if (pickupSlot != null) pickupSlot.done();
             listener.newMessage(new PlayerMessage(PlayerMessage.Event.Crashed, this));
         }
     }

@@ -18,6 +18,7 @@ import java.util.*;
 public class ServerInformationSender implements Runnable {
     private boolean running;
     private GameServer gameServer;
+    //MainServerclient som skickar information till mainservern
 
     public ServerInformationSender(GameServer gameServer) {
         this.gameServer = gameServer;
