@@ -1,6 +1,6 @@
 package gameserver;
 
-import common.messages.GameObjectState;
+import common.messages.GameServerUpdate;
 import common.messages.WallState;
 import gameobjects.GameObject;
 import gameobjects.Wall;
@@ -22,33 +22,34 @@ public class UpdateManager {
         this.gameObjects = gameObjects;
     }
 
-    public GameObjectState getGameObjectStates() {
-        GameObjectState gameObjectState = new GameObjectState();
-        gameObjectState.existingObjects = new HashSet<>();
+    public GameServerUpdate getNewUpdate() {
+        GameServerUpdate message = new GameServerUpdate();
 
         for (GameObject gameObject : gameObjects) {
             if (!updatedGameObjects.contains(gameObject.getId())) {
-                gameObjectState.added.add(gameObject);
+                message.added.add(gameObject);
             } else if (!(gameObject instanceof Wall)) {
-                gameObjectState.updated.add(gameObject);
+                message.updated.add(gameObject);
             }
-            gameObjectState.existingObjects.add(gameObject.getId());
+            message.existingObjects.add(gameObject.getId());
             updatedGameObjects.add(gameObject.getId());
         }
 
         Iterator<Integer> iterator = updatedGameObjects.iterator();
         while (iterator.hasNext()) {
             Integer id = iterator.next();
-            if (!gameObjectState.existingObjects.contains(id)) {
+            if (!message.existingObjects.contains(id)) {
                 updatedWallPoints.remove(id);
                 iterator.remove();
             }
         }
 
-        return gameObjectState;
+        message.wallStates.addAll(getWallStates());
+
+        return message;
     }
 
-    public Collection<WallState> getWallStates() {
+    private Collection<WallState> getWallStates() {
         ArrayList<WallState> result = new ArrayList<>();
 
         for (GameObject gameObject : gameObjects) {

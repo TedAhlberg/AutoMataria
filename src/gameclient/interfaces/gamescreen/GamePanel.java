@@ -2,7 +2,7 @@ package gameclient.interfaces.gamescreen;
 
 import common.GameState;
 import common.Utility;
-import common.messages.GameObjectState;
+import common.messages.GameServerUpdate;
 import common.messages.WallState;
 import gameclient.Game;
 import gameclient.Resources;
@@ -79,15 +79,15 @@ public class GamePanel extends JComponent {
         }
     }
 
-    public void updateGameObjectStates(GameObjectState gameObjectState, Collection<WallState> wallStates) {
+    public void updateGameState(GameServerUpdate message) {
         synchronized (lock) {
             gameObjects.removeIf(gameObject ->
-                    gameObjectState.updated.contains(gameObject) || !gameObjectState.existingObjects.contains(gameObject.getId()));
+                    message.updated.contains(gameObject) || !message.existingObjects.contains(gameObject.getId()));
 
             for (GameObject gameObject : gameObjects) {
                 if (gameObject instanceof Wall) {
                     Wall wall = (Wall) gameObject;
-                    for (WallState wallState : wallStates) {
+                    for (WallState wallState : message.wallStates) {
                         if (wallState.id == wall.getId()) {
                             wall.setColor(wallState.color);
                             wall.setBorderColor(wallState.borderColor);
@@ -98,9 +98,9 @@ public class GamePanel extends JComponent {
                 }
             }
 
-            gameObjects.addAll(gameObjectState.added);
+            gameObjects.addAll(message.added);
 
-            for (GameObject updated : gameObjectState.updated) {
+            for (GameObject updated : message.updated) {
                 gameObjects.add(updated);
                 if (updated instanceof Player && interpolateMovement) {
                     interpolation.addTarget((Player) updated);
