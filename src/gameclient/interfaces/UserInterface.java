@@ -8,6 +8,8 @@ import gameclient.interfaces.highscorescreen.HighScoreScreen;
 import gameclient.interfaces.hostserverscreen.HostServerScreen;
 import gameclient.interfaces.serverbrowserscreen.BrowseServersScreen;
 import gameclient.keyinput.KeyInput;
+import gameclient.sound.MusicManager;
+import gameclient.sound.MusicManager.Status;
 import test.MapEditorUI;
 
 import javax.swing.*;
@@ -31,6 +33,7 @@ public class UserInterface extends JPanel {
     }
 
     public UserInterface(Dimension windowSize) {
+        MusicManager.setStatus(Status.InMenu);
         setLayout(cardLayout);
         setPreferredSize(windowSize);
         window = new Window(Game.TITLE, windowSize);

@@ -5,6 +5,7 @@ import common.GameMap;
 import common.messages.*;
 import gameclient.interfaces.*;
 import gameclient.sound.MusicManager;
+import gameclient.sound.MusicManager.Status;
 import gameclient.sound.SoundFx;
 import gameobjects.Player;
 
@@ -207,8 +208,10 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         scorePanel.removeAll();
         readyPlayersPanel.removeAll();
 
+        MusicManager.setStatus(Status.InMenu);
         MusicManager.changeTrack();
         MusicManager.getInstance().menuTrack();
+        
 
         userInterface.changeToPreviousScreen();
     }
@@ -311,6 +314,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             player = message.player;
             handleMapChange(message.currentMap);
             gamePanel.start(framesPerSecond);
+            MusicManager.setStatus(Status.InGame);
             MusicManager.changeTrack();
             MusicManager.getInstance().gameTrack1();
             gameInfoPanel.add("# Connected to server successfully", Color.GREEN);
