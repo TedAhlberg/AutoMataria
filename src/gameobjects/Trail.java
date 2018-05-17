@@ -1,101 +1,74 @@
 package gameobjects;
 
-import common.Direction;
+import common.Utility;
+import gameclient.Game;
 
 import java.awt.*;
+import java.awt.geom.Area;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * @author Johannes Blüml
  */
 public class Trail extends Wall {
     private static final long serialVersionUID = 2;
-
     transient private Player player;
-    transient private Point previousPosition = new Point();
 
-    Trail(Player player) {
-        super(new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50),
-                new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 100));
+    public Trail(Player player) {
         this.player = player;
-        width = player.getWidth();
-        height = player.getHeight();
+        width = Game.GRID_PIXEL_SIZE;
+        height = Game.GRID_PIXEL_SIZE;
     }
 
-    public void grow(Point previousPosition, Point newPosition) {
-        if (previousPosition == null) {
-            previousPosition = this.previousPosition;
+    public void tick() {}
+
+    public void render(Graphics2D g) {
+        if (area == null) {
+            area = new Area();
+            pointsInArea = new HashSet<>();
         }
-        Direction currentDirection = player.getDirection(), previousDirection = player.getPreviousDirection();
-
-        boolean sameDirection = true || previousDirection == currentDirection,
-                playerMovingLeft = currentDirection == Direction.Left && sameDirection,
-                playerMovingRight = currentDirection == Direction.Right && sameDirection,
-                playerMovingUp = currentDirection == Direction.Up && sameDirection,
-                playerMovingDown = currentDirection == Direction.Down && sameDirection;
-        /*
-         * boolean playerMovingStaticUp = previousDirection == Direction.Static &&
-         * currentDirection == Direction.Up, playerMovingStaticDown = previousDirection
-         * == Direction.Static && currentDirection == Direction.Down,
-         * playerMovingStaticLeft = previousDirection == Direction.Static &&
-         * currentDirection == Direction.Left, playerMovingStaticRight =
-         * previousDirection == Direction.Static && currentDirection == Direction.Right,
-         * playerMovingLeftUp = previousDirection == Direction.Left && currentDirection
-         * == Direction.Up, playerMovingLeftDown = previousDirection == Direction.Left
-         * && currentDirection == Direction.Down, playerMovingRightUp =
-         * previousDirection == Direction.Right && currentDirection == Direction.Up,
-         * playerMovingRightDown = previousDirection == Direction.Right &&
-         * currentDirection == Direction.Down, playerMovingUpLeft = previousDirection ==
-         * Direction.Up && currentDirection == Direction.Left, playerMovingUpRight =
-         * previousDirection == Direction.Up && currentDirection == Direction.Right,
-         * playerMovingDownLeft = previousDirection == Direction.Down &&
-         * currentDirection == Direction.Left, playerMovingDownRight = previousDirection
-         * == Direction.Down && currentDirection == Direction.Right;
-         */
-
-        if (player.isInvincible() == true) {
-            return;
-        } else if (playerMovingLeft) {
-            newPosition.x = newPosition.x + player.getWidth();
-            previousPosition.x = previousPosition.x + player.getWidth();
-            Polygon rectangle = new Polygon();
-            rectangle.addPoint(previousPosition.x, previousPosition.y);
-            rectangle.addPoint(previousPosition.x, previousPosition.y + player.getHeight());
-            rectangle.addPoint(newPosition.x, newPosition.y + player.getHeight());
-            rectangle.addPoint(newPosition.x, newPosition.y);
-            add(rectangle);
-        } else if (playerMovingRight) {
-            Polygon rectangle = new Polygon();
-            rectangle.addPoint(previousPosition.x, previousPosition.y);
-            rectangle.addPoint(previousPosition.x, previousPosition.y + player.getHeight());
-            rectangle.addPoint(newPosition.x, newPosition.y + player.getHeight());
-            rectangle.addPoint(newPosition.x, newPosition.y);
-            add(rectangle);
-        } else if (playerMovingDown) {
-            Polygon rectangle = new Polygon();
-            rectangle.addPoint(previousPosition.x, previousPosition.y);
-            rectangle.addPoint(previousPosition.x + player.getWidth(), previousPosition.y);
-            rectangle.addPoint(newPosition.x + player.getWidth(), newPosition.y);
-            rectangle.addPoint(newPosition.x, newPosition.y);
-            add(rectangle);
-        } else if (playerMovingUp) {
-            newPosition.y = newPosition.y + player.getHeight();
-            previousPosition.y = previousPosition.y + player.getHeight();
-            Polygon rectangle = new Polygon();
-            rectangle.addPoint(previousPosition.x, previousPosition.y);
-            rectangle.addPoint(previousPosition.x + player.getWidth(), previousPosition.y);
-            rectangle.addPoint(newPosition.x + player.getWidth(), newPosition.y);
-            rectangle.addPoint(newPosition.x, newPosition.y);
-            add(rectangle);
+        LinkedList<Point> remainingPoints = new LinkedList<>(gridPoints);
+        if (remainingPoints.size() > 1) {
+            switch (direction) {
+                case Left:
+                case Up:
+                    remainingPoints.removeLast(); // Prevents trail from being i front of player
+            }
         }
-
-        this.previousPosition = newPosition;
+        remainingPoints.removeAll(pointsInArea);
+        for (Point gridPoint : remainingPoints) {
+            Point point = Utility.convertFromGrid(gridPoint);
+            area.add(new Area(new Rectangle(point.x, point.y, width, height)));
+            pointsInArea.add(gridPoint);
+        }
+        g.setColor(color);
+        g.fill(area);
+        g.setColor(borderColor);
+        g.draw(area);
     }
 
-    public Player getPlayer() {
-        return player;
+    public void grow() {
+        setDirection(player.getDirection());
+        Point playerPoint = player.getPoint();
+
+        Point newPoint = Utility.convertToGrid(playerPoint);
+        if (!gridPoints.contains(newPoint)) {
+            gridPoints.add(newPoint);
+        }
     }
 
-    public boolean equals(Object obj) {
-        return super.equals(obj) && player.equals(((Trail) obj).getPlayer());
+    public boolean intersects(Point gridPoint) {
+        if (gridPoints.isEmpty()) return false;
+
+        Point playerPoint = Utility.convertToGrid(player.getPoint());
+        Point lastTrailPoint = gridPoints.getLast();
+        if (playerPoint.equals(gridPoint) && playerPoint.equals(lastTrailPoint)) return false;
+
+        return gridPoints.contains(gridPoint);
+    }
+
+    public void clear() {
+        gridPoints.clear();
     }
 }

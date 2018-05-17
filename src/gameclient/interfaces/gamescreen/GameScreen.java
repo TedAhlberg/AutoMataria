@@ -322,6 +322,7 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
             readyPlayersPanel.setServerName(message.serverName);
             scorePanel.setLimits(message.roundLimit, message.scoreLimit);
             scorePanel.setServerName(message.serverName);
+            gamePanel.updateGameObjects(message.gameObjects);
         } else {
             gamePanel.stop();
             gameInfoPanel.add("# Failed to connect to server", Color.RED);
@@ -329,9 +330,9 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
     }
 
     private void handleGameServerUpdate(GameServerUpdate message) {
-        gamePanel.updateGameObjects(message.gameObjects);
-        gamePanel.setGameState(message.state);
         player = message.player;
+        gamePanel.setGameState(message.state);
+        gamePanel.updateGameState(message);
     }
 
     private void handlePlayerPickupMessage(PlayerPickupMessage message) {

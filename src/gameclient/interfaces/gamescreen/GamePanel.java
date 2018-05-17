@@ -2,10 +2,10 @@ package gameclient.interfaces.gamescreen;
 
 import common.GameState;
 import common.Utility;
+import common.messages.GameServerUpdate;
 import gameclient.Game;
 import gameclient.Resources;
-import gameobjects.GameObject;
-import gameobjects.Player;
+import gameobjects.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class GamePanel extends JComponent {
     private final Object lock = new Object();
-    private final LinkedList<GameObject> gameObjects = new LinkedList<>();
+    private final HashSet<GameObject> gameObjects = new HashSet<>();
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
@@ -75,6 +75,34 @@ public class GamePanel extends JComponent {
                     interpolation.addTarget((Player) updated);
                 }
             }
+        }
+    }
+
+    public void updateGameState(GameServerUpdate message) {
+        synchronized (lock) {
+            gameObjects.removeIf(gameObject ->
+                    message.updated.contains(gameObject) || !message.existingObjects.contains(gameObject.getId()));
+
+            gameObjects.addAll(message.added);
+
+            for (GameObject updated : message.updated) {
+                gameObjects.add(updated);
+                if (updated instanceof Player && interpolateMovement) {
+                    interpolation.addTarget((Player) updated);
+                }
+            }
+
+            message.wallStates.forEach((id, wallState) -> {
+                Wall wall = (Wall) Utility.getById(id, gameObjects);
+                if (wall == null) return;
+                wall.setColor(wallState.color);
+                wall.setBorderColor(wallState.borderColor);
+                wall.addGridPoints(wallState.addedPoints);
+                if (!wallState.removedPoints.isEmpty()) {
+                    wall.removeGridPoints(wallState.removedPoints);
+                }
+                wall.setDirection(wallState.direction);
+            });
         }
     }
 
