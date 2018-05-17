@@ -1,7 +1,12 @@
 package mainserver;
 
+import java.io.Serializable;
 
-public class HighScore2 {
+public class HighScore2 implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String playerName;
     private int highscore;
     
