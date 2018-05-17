@@ -5,7 +5,6 @@ import common.messages.*;
 import gameobjects.GameObject;
 import gameobjects.Player;
 
-import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -148,14 +147,13 @@ public class GameServer implements ConnectionListener, MessageListener {
      * Sends all game objects to all connected clients so they can update their view of the game.
      */
     private void update() {
-        GameServerUpdate update = new GameServerUpdate(state, updateManager.getGameObjectStates(), updateManager.getTrailStates());
+        GameServerUpdate update = new GameServerUpdate(state, updateManager.getGameObjectStates(), updateManager.getWallStates());
 
         for (Client client : connectedClients.keySet()) {
             update.player = connectedClients.get(client);
             client.send(update);
         }
-
-
+/*
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 
@@ -167,7 +165,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     /**
@@ -271,7 +269,7 @@ public class GameServer implements ConnectionListener, MessageListener {
                         settings.tickRate * settings.amountOfTickBetweenUpdates,
                         settings.roundLimit,
                         settings.scoreLimit,
-                        player));
+                        player, gameObjects));
                 playerManager.updateReadyPlayers();
             } else {
                 client.send(new ConnectionMessage());

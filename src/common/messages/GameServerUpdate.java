@@ -16,11 +16,11 @@ public class GameServerUpdate extends Message {
     public GameState state;
     public GameObjectState gameObjectState;
     public Player player;
-    public Collection<TrailState> trailStates;
+    public Collection<WallState> wallStates;
 
-    public GameServerUpdate(GameState state, GameObjectState gameObjectState, Collection<TrailState> trailStates) {
+    public GameServerUpdate(GameState state, GameObjectState gameObjectState, Collection<WallState> wallStates) {
         this.state = state;
         this.gameObjectState = gameObjectState;
-        this.trailStates = trailStates;
+        this.wallStates = wallStates;
     }
 }

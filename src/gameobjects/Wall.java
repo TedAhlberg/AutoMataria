@@ -1,9 +1,11 @@
 package gameobjects;
 
+import common.Utility;
+import gameclient.Game;
+
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * A Wall is GameObject that has a shape that can be changed into any shape by adding or removing Rectangles
@@ -13,8 +15,8 @@ import java.util.Collection;
 public class Wall extends GameObject {
     private static final long serialVersionUID = 2;
 
-    private Color color, borderColor;
-    private Shape shape;
+    protected Color color, borderColor;
+    protected LinkedList<Point> gridPoints = new LinkedList<>();
 
     public Wall() {
         this(Color.CYAN.darker().darker(), null);
@@ -26,7 +28,7 @@ public class Wall extends GameObject {
 
     public Wall(Wall object) {
         this(object.getColor(), object.getBorderColor());
-        this.shape = object.getShape();
+        this.gridPoints.addAll(object.getGridPoints());
     }
 
     public Wall(Color color, Color borderColor) {
@@ -35,77 +37,35 @@ public class Wall extends GameObject {
     }
 
     /**
-     * Adds a Shape object to be part of the Wall
-     *
-     * @param shape A Shape object to add to the Wall
-     */
-    public void add(Shape shape) {
-        Area area = new Area();
-        if (this.shape != null) {
-            area.add(new Area(this.shape));
-        }
-        area.add(new Area(shape));
-        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
-    }
-
-    /**
-     * Adds a Collection of Shape objects to be part of the Wall
-     *
-     * @param shape A Collection of Shape object to add to the Wall
-     */
-    public void add(Collection<Shape> shape) {
-        Area area = new Area();
-        if (this.shape != null) {
-            area.add(new Area(this.shape));
-        }
-        for (Shape s : shape) {
-            area.add(new Area(s));
-        }
-        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
-    }
-
-    /**
-     * Removes a Shape from the wall. It is possible to poke holes in the wall using this method.
-     *
-     * @param shape Shape to remove from the Wall
-     */
-    public void remove(Shape shape) {
-        if (this.shape == null) return;
-        Area area = new Area(this.shape);
-        area.subtract(new Area(shape));
-        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
-    }
-
-    /**
-     * Removes a Collection of shapes from the wall. It is possible to poke holes in the wall using this method.
-     *
-     * @param shape Collection of Shapes to remove from the Wall
-     */
-    public void remove(Collection<Shape> shape) {
-        if (shape == null) return;
-        Area area = new Area(this.shape);
-        for (Shape s : shape) {
-            area.subtract(new Area(s));
-        }
-        this.shape = AffineTransform.getTranslateInstance(0, 0).createTransformedShape(area);
-    }
-
-    /**
      * Removes the wall completely
      */
     public void clear() {
-        shape = null;
+        gridPoints.clear();
     }
 
     /**
-     * Check if provided rectangle is inside this Wall GameObject
+     * Check if provided gridpoint collides with this Wall
      *
-     * @param rectangle Rectangle that you want to test
-     * @return true if provided recangle is partially or completely inside the Wall otherwise false
+     * @param gridPoint the point in the grid you want to chech for collisions with
+     * @return true if point collides will any points of this Wall
      */
+    public boolean intersects(Point gridPoint) {
+        if (gridPoints.isEmpty()) return false;
+        return gridPoints.contains(gridPoint);
+    }
+
     public boolean intersects(Rectangle rectangle) {
-        if (shape == null) return false;
-        return shape.intersects(rectangle);
+        Point p1 = new Point(rectangle.getLocation());
+        if (intersects(Utility.convertToGrid(p1))) return true;
+
+        Point p2 = new Point(p1.x + rectangle.width, p1.y);
+        if (intersects(Utility.convertToGrid(p2))) return true;
+
+        Point p3 = new Point(p1.x + rectangle.width, p1.y + rectangle.height);
+        if (intersects(Utility.convertToGrid(p3))) return true;
+
+        Point p4 = new Point(p1.x, p1.y + rectangle.height);
+        return intersects(Utility.convertToGrid(p4));
     }
 
     public void tick() {}
@@ -116,13 +76,10 @@ public class Wall extends GameObject {
      * @param g Graphics2D object to paint on
      */
     public void render(Graphics2D g) {
-        if (shape == null) return;
-        g.setColor(color);
-        g.fill(shape);
-
-        if (borderColor != null) {
-            g.setColor(borderColor);
-            g.draw(shape);
+        for (Point gridPoint : gridPoints) {
+            Point point = Utility.convertFromGrid(gridPoint);
+            g.setColor(color);
+            g.fillRect(point.x, point.y, Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
         }
     }
 
@@ -142,16 +99,31 @@ public class Wall extends GameObject {
         this.borderColor = borderColor;
     }
 
-    public Shape getShape() {
-        return shape;
+    public void addGridPoints(Collection<Point> gridPoints) {
+        this.gridPoints.addAll(gridPoints);
     }
 
-    @Override
+    public void removeGridPoints(Collection<Point> removedPoints) {
+        this.gridPoints.removeAll(removedPoints);
+    }
+
+    public void addGridPoint(Point gridPoint) {
+        gridPoints.add(gridPoint);
+    }
+
+    public void removeGridPoint(Point gridPoint) {
+        gridPoints.remove(gridPoint);
+    }
+
+    public Collection<Point> getGridPoints() {
+        return gridPoints;
+    }
+
     public String toString() {
         return "Wall{" +
-                "id=" + id +
-                ", color=" + color +
+                "color=" + color +
                 ", borderColor=" + borderColor +
+                ", gridPoints=" + gridPoints +
                 '}';
     }
 }

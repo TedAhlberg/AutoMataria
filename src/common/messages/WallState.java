@@ -7,7 +7,7 @@ import java.util.HashSet;
 /**
  * @author Johannes Blüml
  */
-public class TrailState implements Serializable {
+public class WallState implements Serializable {
     private static final long serialVersionUID = 1;
     public int id;
     public Color color, borderColor;

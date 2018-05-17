@@ -160,7 +160,6 @@ public class Player extends GameObject {
     }
 
     public void move(int amount) {
-        Point previousPosition = new Point(x, y);
         switch (direction) {
             case Up:
                 y -= amount;
@@ -175,19 +174,19 @@ public class Player extends GameObject {
                 x += amount;
                 break;
         }
-        boolean hasTeleported = teleportIfOutsideMap();
-        if (!hasTeleported && !invincible) {
-            Point newPosition = new Point(x, y);
-            trail.grow(previousPosition, newPosition);
+        teleportIfOutsideMap();
+        if (!invincible) {
+            trail.grow();
         }
     }
 
     private void checkCollisions() {
+
         Rectangle playerRectangle = getBounds();
         for (GameObject gameObject : gameObjects) {
             if (gameObject instanceof Wall) {
 
-                if (((Wall) gameObject).intersects(playerRectangle)) {
+                if (((Wall) gameObject).intersects(Utility.convertToGrid(getPoint()))) {
                     setDead(true);
                 }
 
@@ -259,10 +258,6 @@ public class Player extends GameObject {
         }
         inputQueue.add(direction);
 
-    }
-
-    public Direction getPreviousDirection() {
-        return previousDirection;
     }
 
     public boolean isDead() {

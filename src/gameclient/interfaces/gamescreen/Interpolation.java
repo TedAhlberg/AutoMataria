@@ -57,6 +57,7 @@ public class Interpolation {
      * @param player The Player to interpolate (Move closer to target position)
      */
     public void interpolate(Player player) {
+        System.out.println("FROM INTERPOLATION: " + player);
         if (player.getDirection() == Direction.Static) return;
         Point current = currentPositions.get(player);
         Point target = targetPositions.get(player);

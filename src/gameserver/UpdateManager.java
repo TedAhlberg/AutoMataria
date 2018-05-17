@@ -1,9 +1,9 @@
 package gameserver;
 
 import common.messages.GameObjectState;
-import common.messages.TrailState;
+import common.messages.WallState;
 import gameobjects.GameObject;
-import gameobjects.Trail;
+import gameobjects.Wall;
 
 import java.awt.*;
 import java.util.*;
@@ -29,7 +29,7 @@ public class UpdateManager {
         for (GameObject gameObject : gameObjects) {
             if (!updatedGameObjects.contains(gameObject.getId())) {
                 gameObjectState.added.add(gameObject);
-            } else if (!(gameObject instanceof Trail)) {
+            } else if (!(gameObject instanceof Wall)) {
                 gameObjectState.updated.add(gameObject);
             }
             gameObjectIDs.add(gameObject.getId());
@@ -49,45 +49,44 @@ public class UpdateManager {
         return gameObjectState;
     }
 
-    public Collection<TrailState> getTrailStates() {
-        ArrayList<TrailState> result = new ArrayList<>();
+    public Collection<WallState> getWallStates() {
+        ArrayList<WallState> result = new ArrayList<>();
 
         for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Trail) {
-                Trail trail = (Trail) gameObject;
-                int id = trail.getId();
+            if (gameObject instanceof Wall) {
+                Wall wall = (Wall) gameObject;
+                int id = wall.getId();
 
-                TrailState trailState = new TrailState();
-                trailState.id = trail.getId();
-                trailState.color = trail.getColor();
-                trailState.borderColor = trail.getBorderColor();
+                WallState wallState = new WallState();
+                wallState.id = wall.getId();
+                wallState.color = wall.getColor();
+                wallState.borderColor = wall.getBorderColor();
 
                 if (updatedTrailPoints.containsKey(id)) {
                     Collection<Point> clientPoints = updatedTrailPoints.get(id);
 
                     // Remove already sent trailpoints
                     for (Point point : clientPoints) {
-                        if (!trail.getTrailPoints().contains(point)) {
-                            trailState.removedPoints.add(point);
-                            System.out.println("ADDING POINT " + point);
+                        if (!wall.getGridPoints().contains(point)) {
+                            wallState.removedPoints.add(point);
                         }
                     }
-                    clientPoints.removeAll(trailState.removedPoints);
+                    clientPoints.removeAll(wallState.removedPoints);
 
                     // Add new trailpoints
-                    for (Point point : trail.getTrailPoints()) {
+                    for (Point point : wall.getGridPoints()) {
                         if (!clientPoints.contains(point)) {
-                            trailState.addedPoints.add(point);
+                            wallState.addedPoints.add(point);
                         }
                     }
-                    clientPoints.addAll(trailState.addedPoints);
+                    clientPoints.addAll(wallState.addedPoints);
                 } else {
                     // Add new trailpoints for a new trail
-                    HashSet<Point> initialpoints = new HashSet<>(trail.getTrailPoints());
-                    updatedTrailPoints.put(id, initialpoints);
-                    trailState.addedPoints.addAll(initialpoints);
+                    HashSet<Point> initialPoints = new HashSet<>(wall.getGridPoints());
+                    updatedTrailPoints.put(id, initialPoints);
+                    wallState.addedPoints.addAll(initialPoints);
                 }
-                result.add(trailState);
+                result.add(wallState);
             }
         }
 

@@ -4,49 +4,66 @@ import common.Utility;
 import gameclient.Game;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 /**
  * @author Johannes Blüml
  */
-public class Trail extends GameObject {
+public class Trail extends Wall {
     private static final long serialVersionUID = 2;
-    private Color color, borderColor;
-    private Player player;
-    private LinkedList<Point> trailPoints = new LinkedList<>();
+    transient private Player player;
 
     public Trail(Player player) {
         color = new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 50);
-        borderColor = new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 150);
+        borderColor = new Color(player.getColor().getRed(), player.getColor().getGreen(), player.getColor().getBlue(), 125);
         this.player = player;
-        width = player.getWidth();
-        height = player.getHeight();
+        width = Game.GRID_PIXEL_SIZE;
+        height = Game.GRID_PIXEL_SIZE;
     }
 
-    public void tick() {
-    }
+    public void tick() {}
 
     public void render(Graphics2D g) {
-        LinkedList<Point> points = new LinkedList<>();
-        points.addAll(trailPoints);
-        points.removeLast();
-        for (Point gridPoint : points) {
+        int size = gridPoints.size();
+        for (Point gridPoint : gridPoints) {
             Point point = Utility.convertFromGrid(gridPoint);
-            g.setColor(borderColor);
-            g.fillRect(point.x, point.y, Game.GRID_PIXEL_SIZE, Game.GRID_PIXEL_SIZE);
+            g.setColor(color);
+            g.fillRect(point.x, point.y, width, height);
+            size -= 1;
+            if (size < 2) break;
+        }
+/*
+        if (gridPoints.size() < 2) return;
+
+        Point lastTrail = Utility.convertFromGrid(gridPoints.get(gridPoints.size() - 2));
+        Point playerPoint = player.getPoint();
+        g.setColor(Color.RED);
+        g.fillRect(lastTrail.x, lastTrail.y, width, height);
+
+        System.out.println("TRAIL RENDER PLAYER: " + player);
+        */
+    }
+
+    public void grow() {
+        Point playerPoint = player.getPoint();
+
+        Point newPoint = Utility.convertToGrid(playerPoint);
+        if (!gridPoints.contains(newPoint)) {
+            gridPoints.add(newPoint);
         }
     }
 
-    public void grow(Point previousPosition, Point playerPosition) {
-        Point newPoint = Utility.convertToGrid(player.getPoint());
-        if (!trailPoints.contains(newPoint)) {
-            trailPoints.add(newPoint);
-        }
+    public boolean intersects(Point gridPoint) {
+        if (gridPoints.isEmpty()) return false;
+
+        Point playerPoint = Utility.convertToGrid(player.getPoint());
+        Point lastTrailPoint = gridPoints.getLast();
+        if (playerPoint.equals(gridPoint) && playerPoint.equals(lastTrailPoint)) return false;
+
+        return gridPoints.contains(gridPoint);
     }
 
     public void clear() {
-        trailPoints.clear();
+        gridPoints.clear();
     }
 
     public Player getPlayer() {
@@ -71,17 +88,5 @@ public class Trail extends GameObject {
 
     public void setBorderColor(Color borderColor) {
         this.borderColor = borderColor;
-    }
-
-    public List<Point> getTrailPoints() {
-        return trailPoints;
-    }
-
-    public void addTrailPoints(Collection<Point> trailPoints) {
-        this.trailPoints.addAll(trailPoints);
-    }
-
-    public void removeTrailPoints(Collection<Point> removedPoints) {
-        this.trailPoints.removeAll(removedPoints);
     }
 }

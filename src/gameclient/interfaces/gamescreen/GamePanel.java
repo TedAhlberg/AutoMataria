@@ -3,7 +3,7 @@ package gameclient.interfaces.gamescreen;
 import common.GameState;
 import common.Utility;
 import common.messages.GameObjectState;
-import common.messages.TrailState;
+import common.messages.WallState;
 import gameclient.Game;
 import gameclient.Resources;
 import gameobjects.*;
@@ -79,28 +79,33 @@ public class GamePanel extends JComponent {
         }
     }
 
-    public void updateGameObjectStates(GameObjectState gameObjectState, Collection<TrailState> trailStates) {
+    public void updateGameObjectStates(GameObjectState gameObjectState, Collection<WallState> wallStates) {
         synchronized (lock) {
             gameObjects.removeIf(gameObject ->
                     gameObjectState.updated.contains(gameObject) || gameObjectState.removed.contains(gameObject.getId()));
 
             for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Trail) {
-                    Trail trail = (Trail) gameObject;
-                    for (TrailState trailState : trailStates) {
-                        if (trailState.id == trail.getId()) {
-                            trail.setColor(trailState.color);
-                            trail.setBorderColor(trailState.borderColor);
-                            trail.addTrailPoints(trailState.addedPoints);
-                            trail.removeTrailPoints(trailState.removedPoints);
-                            System.out.println("TRAILPOINTS_SIZE=" + trailState.addedPoints.size());
+                if (gameObject instanceof Wall) {
+                    Wall wall = (Wall) gameObject;
+                    for (WallState wallState : wallStates) {
+                        if (wallState.id == wall.getId()) {
+                            wall.setColor(wallState.color);
+                            wall.setBorderColor(wallState.borderColor);
+                            wall.addGridPoints(wallState.addedPoints);
+                            wall.removeGridPoints(wallState.removedPoints);
                         }
                     }
                 }
             }
 
             gameObjects.addAll(gameObjectState.added);
-            gameObjects.addAll(gameObjectState.updated);
+
+            for (GameObject updated : gameObjectState.updated) {
+                gameObjects.add(updated);
+                if (updated instanceof Player && interpolateMovement) {
+                    interpolation.addTarget((Player) updated);
+                }
+            }
         }
     }
 
@@ -192,6 +197,9 @@ public class GamePanel extends JComponent {
                     players.add((Player) gameObject);
                 } else {
                     gameObject.render(g2);
+                }
+                if (gameObject instanceof Trail) {
+                    System.out.println("TRAIL DIRECTION: " + gameObject.getDirection());
                 }
             }
             for (Player player : players) {
