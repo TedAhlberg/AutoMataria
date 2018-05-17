@@ -156,6 +156,7 @@ public class GameObjectSpawner {
             return gameObject.getClass().getConstructor(gameObject.getClass()).newInstance(gameObject);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException
                 | IllegalAccessException e) {
+            e.printStackTrace();
             return null;
         }
     }

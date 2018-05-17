@@ -26,7 +26,7 @@ public class Player extends GameObject {
     private Pickup pickupSlot;
     private String image;
     private Color color;
-    private boolean dead, ready, invincible, reversed;
+    private boolean dead, ready, invincible, reversed, cheese;
 
     public Player(String name, Collection<GameObject> gameObjects, GameMap currentMap) {
         this.name = name;
@@ -176,7 +176,13 @@ public class Player extends GameObject {
         }
         teleportIfOutsideMap();
         if (!invincible) {
-            trail.grow();
+            if (cheese) {
+                if (Math.random() > .8) {
+                    trail.grow();
+                }
+            } else {
+                trail.grow();
+            }
         }
     }
 
@@ -282,6 +288,10 @@ public class Player extends GameObject {
 
     public void setReversed(boolean reversed) {
         this.reversed = reversed;
+    }
+
+    public void setCheese(boolean cheese) {
+        this.cheese = cheese;
     }
 
     public boolean isReady() {

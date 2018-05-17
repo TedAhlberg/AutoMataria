@@ -605,6 +605,7 @@ public class MapEditorUI {
         defaultComboBoxModel1.addElement("gameobjects.pickups.SpeedEnemiesPickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.InvinciblePickup");
         defaultComboBoxModel1.addElement("gameobjects.pickups.SelfGhostPickup");
+        defaultComboBoxModel1.addElement("gameobjects.pickups.SwissCheesePickup");
         gameObjectComboBox.setModel(defaultComboBoxModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
