@@ -66,7 +66,7 @@ public class Interpolation {
         Point target = targetPositions.get(player);
         if (target == null) return;
 
-        double speedPerMillisecond = player.getSpeed() / tickRate;
+        double speedPerMillisecond = player.getSpeed() / (double) tickRate;
         double interpolation = currentDeltaTime * speedPerMillisecond;
 
         Point current = currentPositions.get(player);
