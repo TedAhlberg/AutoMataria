@@ -149,7 +149,7 @@ public class GamePanel extends JComponent {
             previousTime = nowTime;
 
             if (interpolateMovement) {
-                interpolation.setCurrentDeltaTime(timeSinceLastRender / 1000000000.0);
+                interpolation.setCurrentDeltaTime(timeSinceLastRender / 1000000.0);
             }
 
             // Render the game to the panel

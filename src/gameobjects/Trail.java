@@ -29,19 +29,30 @@ public class Trail extends Wall {
             pointsInArea = new HashSet<>();
         }
         LinkedList<Point> remainingPoints = new LinkedList<>(gridPoints);
+
         if (remainingPoints.size() > 1) {
+            // Some magic calculation to hide the trail end behind the player
+            remainingPoints.removeLast();
+            Point lastPoint;
             switch (direction) {
-                case Left:
                 case Up:
-                    remainingPoints.removeLast(); // Prevents trail from being i front of player
+                    lastPoint = Utility.convertFromGrid(remainingPoints.removeLast());
+                    area.add(new Area(new Rectangle(lastPoint.x, lastPoint.y + (height / 2), width, (height / 2))));
+                    break;
+                case Left:
+                    lastPoint = Utility.convertFromGrid(remainingPoints.removeLast());
+                    area.add(new Area(new Rectangle(lastPoint.x + (width / 2), lastPoint.y, (width / 2), height)));
+                    break;
             }
         }
+
         remainingPoints.removeAll(pointsInArea);
         for (Point gridPoint : remainingPoints) {
             Point point = Utility.convertFromGrid(gridPoint);
             area.add(new Area(new Rectangle(point.x, point.y, width, height)));
             pointsInArea.add(gridPoint);
         }
+
         g.setColor(color);
         g.fill(area);
         g.setColor(borderColor);
