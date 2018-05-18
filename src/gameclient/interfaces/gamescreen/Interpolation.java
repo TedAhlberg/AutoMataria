@@ -37,7 +37,7 @@ public class Interpolation {
         double differencePlayer = difference(currentPositions.get(player), newTarget);
         double differenceBetweenUpdates = difference(previousTarget, newTarget);
 
-        if (differencePlayer > differenceBetweenUpdates * 4) {
+        if (differencePlayer > differenceBetweenUpdates * 1.5) {
             currentPositions.put(player, newTarget);
         }
     }
