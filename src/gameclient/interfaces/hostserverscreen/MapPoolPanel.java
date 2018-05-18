@@ -32,6 +32,8 @@ public class MapPoolPanel extends JPanel {
     }
 
     private void addMap(String map) {
+        GameMap gameMap = Maps.getInstance().get(map);
+
         JCheckBox checkBox = new JCheckBox();
         checkBox.addChangeListener(e -> {
             if (checkBox.isSelected()) {
@@ -40,18 +42,21 @@ public class MapPoolPanel extends JPanel {
                 selectedMaps.remove(map);
             }
         });
-        GameMap gameMap = Maps.getInstance().get(map);
-        checkBox.setText(map.toUpperCase() + "  ::  " + Utility.getGridSizeName(gameMap.getGrid()) + " GRID  ::  " + gameMap.getPlayers() + " PLAYERS");
+        checkBox.setText(map.toUpperCase());
         checkBox.setHorizontalAlignment(SwingConstants.LEFT);
         checkBox.setSelected(true);
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.weightx = 1;
-        c.fill = GridBagConstraints.BOTH;
-        c.anchor = GridBagConstraints.WEST;
-        add(checkBox, c);
         checkBoxes.add(checkBox);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.WEST;
+        add(checkBox, gbc);
+        gbc.gridx = 1;
+        add(new JLabel(gameMap.getPlayers() + " PLAYERS"), gbc);
+        gbc.gridx = 2;
+        add(new JLabel(Utility.getGridSizeName(gameMap.getGrid()).toUpperCase() + " GRIDS"), gbc);
     }
 
     public void setEnabled(boolean enabled) {
