@@ -208,15 +208,15 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
 
         panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 3));
         profileComboBox = new JComboBox<>(new String[]{
-                "CUSTOM", "LOW PERFORMANCE", "NORMAL (DEFAULT)", "HIGH PERFORMANCE", "EXTREME PERFORMANCE"});
+                "CUSTOM", "NORMAL (DEFAULT)", "HIGH PERFORMANCE"});
         panel.add(profileComboBox, getFieldConstraints(1, 3));
 
         panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 4));
-        tickRateSlider = new JSlider(10, 200, 100);
+        tickRateSlider = new JSlider(10, 200, 25);
         panel.add(createCustomSlider(tickRateSlider), getFieldConstraints(1, 4));
 
         panel.add(new JLabel("TICKS / UPDATE"), getFieldConstraints(0, 5));
-        ticksPerUpdateSlider = new JSlider(1, 10, 2);
+        ticksPerUpdateSlider = new JSlider(1, 10, 4);
         panel.add(createCustomSlider(ticksPerUpdateSlider), getFieldConstraints(1, 5));
 
         panel.add(new JLabel("PLAYER SPEED"), getFieldConstraints(0, 6));
@@ -242,25 +242,15 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
             ticksPerUpdateSlider.setEnabled(false);
 
             switch (profile) {
-                case "LOW PERFORMANCE":
-                    playerSpeedSlider.setValue(50);
-                    tickRateSlider.setValue(66);
-                    ticksPerUpdateSlider.setValue(2);
-                    break;
                 case "HIGH PERFORMANCE":
                     playerSpeedSlider.setValue(25);
-                    tickRateSlider.setValue(33);
+                    tickRateSlider.setValue(25);
                     ticksPerUpdateSlider.setValue(2);
                     break;
-                case "EXTREME PERFORMANCE":
-                    playerSpeedSlider.setValue(25);
-                    tickRateSlider.setValue(33);
-                    ticksPerUpdateSlider.setValue(1);
-                    break;
                 default:
-                    playerSpeedSlider.setValue(25);
-                    tickRateSlider.setValue(33);
-                    ticksPerUpdateSlider.setValue(3);
+                    playerSpeedSlider.setValue(50);
+                    tickRateSlider.setValue(50);
+                    ticksPerUpdateSlider.setValue(2);
             }
         });
 
