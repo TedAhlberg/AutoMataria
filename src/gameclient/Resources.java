@@ -5,8 +5,8 @@ import common.Utility;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,18 +20,17 @@ import java.util.HashMap;
  */
 public class Resources {
     public static Font defaultFont, titleFont;
-    public static Path fontPath = FileSystems.getDefault().getPath("resources", "fonts");
-    public static Path imagePath = FileSystems.getDefault().getPath("resources", "images");
-    public static Path musicPath = FileSystems.getDefault().getPath("resources", "Music");
-    public static Path buttonPath = FileSystems.getDefault().getPath("resources", "images", "Buttons");
-    public static Path sfxPath = FileSystems.getDefault().getPath("resources", "SFX");
+    public static String imagePath = "images/";
+    public static String musicPath = "Music/";
+    public static String buttonPath = "images/Buttons/";
+    public static String sfxPath = "SFX/";
     private static Resources instance;
     private static HashMap<String, BufferedImage> images = new HashMap<>();
 
     private Resources() {
         try {
-            File orbitronFile = fontPath.resolve("Orbitron Bold.ttf").toFile();
-            Font orbitronFont = Font.createFont(Font.TRUETYPE_FONT, orbitronFile);
+            InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream("fonts/Orbitron Bold.ttf");
+            Font orbitronFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             defaultFont = orbitronFont.deriveFont(Font.BOLD, 12);
             titleFont = orbitronFont.deriveFont(Font.BOLD, 30);
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(orbitronFont);
@@ -39,8 +38,6 @@ public class Resources {
             System.out.println("Failed to load font.");
             e.printStackTrace();
         }
-        loadImages(imagePath);
-        loadImages(buttonPath);
     }
 
     public static Resources getInstance() {
@@ -50,14 +47,14 @@ public class Resources {
         return instance;
     }
 
-    public static BufferedImage getImage(Path path, String name) {
+    public static BufferedImage getImage(String path, String name) {
         if (images.containsKey(name)) {
             return images.get(name);
         }
-        System.out.println("LOADING IMAGE FROM DISK: " + name);
-        Path filePath = path.resolve(name);
+        System.out.println("LOADING IMAGE FROM DISK: " + path + name);
         try {
-            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(filePath.toFile()));
+            InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(path + name);
+            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(inputStream));
             images.put(name, image);
             return image;
         } catch (IOException e) {
@@ -65,32 +62,17 @@ public class Resources {
         }
     }
 
-    private void loadImages(Path directory) {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-            for (Path path : stream) {
-                if (!Files.isDirectory(path)) {
-                    BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(path.toFile()));
-                    images.put(path.getFileName().toString(), image);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     public static BufferedImage getButtonImage(String name) {
         return getImage(buttonPath, name);
-
     }
 
     public static BufferedImage getImage(String name) {
         if (images.containsKey(name)) {
             return images.get(name);
         }
-        Path filePath = imagePath.resolve(name);
         try {
-            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(filePath.toFile()));
+            InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(imagePath + name);
+            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(inputStream));
             images.put(name, image);
             return image;
         } catch (IOException e) {
@@ -99,11 +81,17 @@ public class Resources {
     }
 
     public static String[] getImageList() {
-        return getFileList(imagePath);
+        return new String[]{
+                "Stars.png"
+        };
     }
 
     public static String[] getMusicList() {
-        return getFileList(musicPath);
+        return new String[]{
+                "AM-GameTrack.mp3",
+                "AM-MenuTrack.mp3",
+                "AM-trck1.mp3"
+        };
     }
 
     public static String[] getFileList(Path directory) {

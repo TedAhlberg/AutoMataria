@@ -3,8 +3,8 @@ package gameclient.sound;
 import gameclient.Resources;
 
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * A class for playing a sound clip.
@@ -26,17 +26,17 @@ public class Audio implements Runnable {
     private boolean stopped = false;
     private boolean paused = false;
     private int times;
-    private File file;
+    private URL filePath;
     private Thread soundThread;
 
     /**
-     * Constructs a Sound object specified by the file argument
+     * Constructs a Sound object specified by the filePath argument
      *
-     * @param file giving the location of the sound file
+     * @param file giving the location of the sound filePath
      */
-    private Audio(File file) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        this.file = file;
-        encoded = AudioSystem.getAudioInputStream(file);
+    private Audio(String file) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        this.filePath = getClass().getClassLoader().getResource(file);
+        encoded = AudioSystem.getAudioInputStream(filePath);
         encodedFormat = encoded.getFormat();
         decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, // Encoding to use
                 encodedFormat.getSampleRate(), // sample rate (same as base format)
@@ -55,7 +55,7 @@ public class Audio implements Runnable {
 
     public static Audio getTrack(String filename) {
         try {
-            return new Audio(Resources.musicPath.resolve(filename).toFile());
+            return new Audio(Resources.musicPath + filename);
         } catch (Exception e) {
             System.out.println(e);
             return null;
@@ -64,7 +64,7 @@ public class Audio implements Runnable {
 
     public static Audio getSFX(String filename) {
         try {
-            return new Audio(Resources.sfxPath.resolve(filename).toFile());
+            return new Audio(Resources.sfxPath + filename);
         } catch (Exception e) {
             System.out.println(e);
             return null;
@@ -206,7 +206,7 @@ public class Audio implements Runnable {
                     if (times >= 1) {
                         times--;
                         try {
-                            encoded = AudioSystem.getAudioInputStream(file);
+                            encoded = AudioSystem.getAudioInputStream(filePath);
                             currentDecoded = AudioSystem.getAudioInputStream(decodedFormat, encoded);
                         } catch (UnsupportedAudioFileException e) {
                             setStopped(true);

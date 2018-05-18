@@ -1,9 +1,5 @@
 package gameclient.sound;
 
-import gameclient.Resources;
-
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.HashMap;
 
 /**
@@ -34,16 +30,17 @@ public class SoundFx {
      * Loads all sound effects into a HashMap for quick access
      */
     private void loadSoundEffects() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Resources.sfxPath)) {
-            for (Path path : stream) {
-                if (!Files.isDirectory(path)) {
-                    String filename = path.getFileName().toString();
-                    effects.put(filename, Audio.getSFX(filename));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        effects.put("Crash.mp3", Audio.getSFX("Crash.mp3"));
+        effects.put("Erase.mp3", Audio.getSFX("Erase.mp3"));
+        effects.put("Ghost.mp3", Audio.getSFX("Ghost.mp3"));
+        effects.put("Invincible.mp3", Audio.getSFX("Invincible.mp3"));
+        effects.put("Menu_Select.mp3", Audio.getSFX("Menu_Select.mp3"));
+        effects.put("Movement.mp3", Audio.getSFX("Movement.mp3"));
+        effects.put("Reverse.mp3", Audio.getSFX("Reverse.mp3"));
+        effects.put("SelfSlowPickup.mp3", Audio.getSFX("SelfSlowPickup.mp3"));
+        effects.put("SelfSpeedPickup.mp3", Audio.getSFX("SelfSpeedPickup.mp3"));
+        effects.put("SlowEnemies.mp3", Audio.getSFX("SlowEnemies.mp3"));
+        effects.put("speedEnemies.mp3", Audio.getSFX("speedEnemies.mp3"));
     }
 
     public void play(String sound) {

@@ -12,7 +12,7 @@ import java.nio.file.*;
  */
 public class Maps {
     public static Maps instance = new Maps();
-    private Path directory = FileSystems.getDefault().getPath("resources", "maps");
+    private Path directory = FileSystems.getDefault().getPath("maps");
 
     private Maps() {
         if (!Files.exists(directory)) {
