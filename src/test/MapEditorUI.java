@@ -316,6 +316,10 @@ public class MapEditorUI {
         }
     }
 
+    private int linearInterpolate(double start, double end, double t) {
+        return (int) Math.round(start + t * (end - start));
+    }
+
     private void createUIComponents() {
         specialGameObjectComboBox = new JComboBox<>();
 
@@ -359,7 +363,7 @@ public class MapEditorUI {
                 if (selectedObject != null && selectedObject.getGameObject() instanceof Wall && (paintMode == PaintMode.DrawWall || paintMode == PaintMode.EraseWall)) {
                     Wall wall = (Wall) selectedObject.getGameObject();
 
-                    LinkedList<Point> points = new LinkedList<>();
+                    HashSet<Point> points = new HashSet<>();
                     if (startGridPoint.x == endGridPoint.x) {
                         // vertical line
                         for (int i = startGridPoint.y; i <= endGridPoint.y; i++) {
@@ -372,6 +376,12 @@ public class MapEditorUI {
                         }
                     } else {
                         // diagonal line
+                        for (int t = 0; t < 100; t++) {
+                            points.add(new Point(
+                                    linearInterpolate(startGridPoint.x, endGridPoint.x, t / 100.0),
+                                    linearInterpolate(startGridPoint.y, endGridPoint.y, t / 100.0)
+                            ));
+                        }
                     }
 
                     if (paintMode == PaintMode.DrawWall) {
