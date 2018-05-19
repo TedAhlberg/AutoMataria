@@ -4,7 +4,7 @@ import gameclient.Resources;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Singleton which is used to save and load GameMaps from the resources/systemMaps userMapsPath
@@ -37,8 +37,8 @@ public class Maps {
         return instance;
     }
 
-    synchronized public ArrayList<String> getMapList() {
-        ArrayList<String> maps = new ArrayList<>();
+    synchronized public Collection<String> getMapList() {
+        HashSet<String> maps = new HashSet<>();
         maps.addAll(systemMaps);
         maps.addAll(Resources.getFileList(userMapsPath));
         return maps;

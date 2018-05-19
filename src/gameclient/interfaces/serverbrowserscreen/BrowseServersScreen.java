@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class BrowseServersScreen extends JPanel implements ServerInformationListener, UserInterfaceScreen {
     private ServerInformationReceiver serverInformationReceiver;
-    private JPanel panel;
+    private JPanel contentPanel;
     private UserInterface userInterface;
 
     public BrowseServersScreen(UserInterface userInterface) {
@@ -75,14 +75,15 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         c.fill = GridBagConstraints.HORIZONTAL;
         add(topPanel, c);
 
-        panel = new JPanel(new GridBagLayout());
+        contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.add(new JLabel("Searching for servers..."));
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         c.ipady = 50;
         c.weightx = 1;
-        add(panel, c);
+        add(contentPanel, c);
     }
 
     /**
@@ -91,7 +92,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
      * @param serverList A list of servers with all important information about it
      */
     public void update(Collection<ServerInformation> serverList) {
-        panel.removeAll();
+        contentPanel.removeAll();
 
         int column = 0, row = 0;
         GridBagConstraints c;
@@ -107,7 +108,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
 
         for (JLabel label : headerLabels) {
             label.setForeground(Color.MAGENTA.darker());
-            panel.add(label, getTableConstraints(column, row));
+            contentPanel.add(label, getTableConstraints(column, row));
 
             column += 1;
         }
@@ -119,7 +120,7 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         c.gridwidth = headerLabels.length;
         c.gridy = row;
         c.fill = GridBagConstraints.BOTH;
-        panel.add(separator, c);
+        contentPanel.add(separator, c);
 
         row += 1;
 
@@ -135,13 +136,13 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
             };
 
             for (JLabel label : labels) {
-                panel.add(label, getTableConstraints(column, row));
+                contentPanel.add(label, getTableConstraints(column, row));
                 column += 1;
             }
 
             AMButton joinButton = new AMButton("JOIN");
             joinButton.addActionListener(actionEvent -> userInterface.startGame(info.getIp(), info.getServerPort()));
-            panel.add(joinButton, getTableConstraints(column, row));
+            contentPanel.add(joinButton, getTableConstraints(column, row));
 
             row += 1;
         }
@@ -168,7 +169,8 @@ public class BrowseServersScreen extends JPanel implements ServerInformationList
         if (serverInformationReceiver == null) return;
         serverInformationReceiver.close();
         serverInformationReceiver = null;
-        panel.removeAll();
+        contentPanel.removeAll();
+        contentPanel.add(new JLabel("Searching for servers..."));
         System.out.println("Stopped Server Information Receiver");
     }
 }
