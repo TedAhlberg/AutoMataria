@@ -58,11 +58,9 @@ public class Window extends JFrame {
             if (value instanceof FontUIResource) {
                 UIManager.put(key, defaultFontResource);
             }
-            /*
-            if (key.toString().startsWith("Slider")) {
+            if (key.toString().startsWith("TabbedPane")) {
                 System.out.println(key + " " + value);
             }
-            */
         }
     }
 
@@ -76,22 +74,47 @@ public class Window extends JFrame {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        ColorUIResource accentColor = new ColorUIResource(Color.MAGENTA);
-        ColorUIResource backgroundColor = new ColorUIResource(0, 0, 0);
-        ColorUIResource foregroundColor = new ColorUIResource(255, 255, 255);
+        ColorUIResource accentColor = new ColorUIResource(Color.MAGENTA.darker());
+        ColorUIResource darkColor = new ColorUIResource(0, 0, 0);
+        ColorUIResource brightColor = new ColorUIResource(255, 255, 255);
 
-        UIManager.put("ScrollPane.background", backgroundColor);
-        UIManager.put("TextPane.background", backgroundColor);
+        UIManager.put("ScrollPane.background", darkColor);
+        UIManager.put("TextPane.background", darkColor);
         UIManager.put("ScrollPane.border", "");
 
-        UIManager.put("Panel.background", backgroundColor);
-        UIManager.put("Label.foreground", new ColorUIResource(255, 255, 255));
+        UIManager.put("Panel.background", darkColor);
+        UIManager.put("Label.foreground", brightColor);
 
-        UIManager.put("ComboBox.background", new ColorUIResource(255, 255, 255));
-        UIManager.put("ComboBox.foreground", backgroundColor);
+        UIManager.put("ComboBox.background", brightColor);
+        UIManager.put("ComboBox.foreground", darkColor);
 
-        UIManager.put("ComboBox.selectionBackground", backgroundColor);
-        UIManager.put("ComboBox.selectionForeground", new ColorUIResource(255, 255, 255));
+        UIManager.put("TabbedPane.foreground", brightColor);
+        UIManager.put("TabbedPane.background", darkColor);
+        UIManager.put("TabbedPane.shadow", darkColor);
+        UIManager.put("TabbedPane.highlight", accentColor);
+        UIManager.put("TabbedPane.darkShadow", darkColor);
+        UIManager.put("TabbedPane.contentAreaColor", darkColor);
+        UIManager.put("TabbedPane.tabAreaColor", darkColor);
+        UIManager.put("TabbedPane.tabAreaBackground", darkColor);
+        UIManager.put("TabbedPane.unselectedBackground", new ColorUIResource(50, 50, 50));
+        UIManager.put("TabbedPane.borderHightlightColor", darkColor);
+        UIManager.put("TabbedPane.light", darkColor);
+        UIManager.put("TabbedPane.focus", darkColor);
+        UIManager.put("TabbedPane.selectHighlight", darkColor);
+        UIManager.put("TabbedPane.selected", darkColor);
+        UIManager.put("TabbedPane.selectedLabelShift", 0);
+        UIManager.put("TabbedPane.labelShift", 0);
+        UIManager.put("TabbedPane.textIconGap", 0);
+        UIManager.put("TabbedPane.tabRunOverlay", 0);
+
+        UIManager.put("TabbedPane.contentBorderInsets", new Insets(10, 10, 10, 10));
+        UIManager.put("TabbedPane.tabInsets", new Insets(10, 10, 10, 10));
+
+        UIManager.put("TabbedPane.selectedTabPadInsets", new Insets(0, 0, 0, 0));
+        UIManager.put("TabbedPane.tabAreaInsets", new Insets(0, 0, 0, 0));
+
+        UIManager.put("ComboBox.selectionBackground", darkColor);
+        UIManager.put("ComboBox.selectionForeground", brightColor);
 
         LinkedList gradient = new LinkedList();
         gradient.add(0.0);
@@ -101,7 +124,7 @@ public class Window extends JFrame {
         gradient.add(accentColor);
         UIManager.put("Slider.gradient", gradient);
         UIManager.put("Slider.focusGradient", gradient);
-        UIManager.put("Slider.background", backgroundColor);
+        UIManager.put("Slider.background", darkColor);
         UIManager.put("Slider.foreground", accentColor);
         UIManager.put("Slider.highlight", accentColor);
         UIManager.put("Slider.shadow", accentColor);
@@ -109,9 +132,9 @@ public class Window extends JFrame {
         UIManager.put("Slider.altTrackColor", accentColor);
         UIManager.put("Slider.tickColor", accentColor);
 
-        UIManager.put("CheckBox.background", backgroundColor);
-        UIManager.put("CheckBox.foreground", foregroundColor);
-        UIManager.put("CheckBox.focus", backgroundColor);
+        UIManager.put("CheckBox.background", darkColor);
+        UIManager.put("CheckBox.foreground", brightColor);
+        UIManager.put("CheckBox.focus", darkColor);
     }
 
     /**

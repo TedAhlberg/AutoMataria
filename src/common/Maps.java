@@ -4,20 +4,29 @@ import gameclient.Resources;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 /**
- * Singleton which is used to save and load GameMaps from the resources/maps directory
+ * Singleton which is used to save and load GameMaps from the resources/systemMaps userMapsPath
  *
  * @author Johannes Blüml
  */
 public class Maps {
-    public static Maps instance = new Maps();
-    private Path directory = FileSystems.getDefault().getPath("maps");
+    private final static Maps instance = new Maps();
+    private final String systemMapsPath = "maps/";
+    private final ArrayList<String> systemMaps = new ArrayList<>();
+    private final Path userMapsPath = FileSystems.getDefault().getPath("resources", "maps");
 
     private Maps() {
-        if (!Files.exists(directory)) {
+        systemMaps.add("BASIC ONE");
+        systemMaps.add("CLEAN");
+        systemMaps.add("LABYRINTH");
+        systemMaps.add("PICKUP MADNESS");
+        systemMaps.add("X");
+
+        if (!Files.exists(userMapsPath)) {
             try {
-                Files.createDirectories(directory);
+                Files.createDirectories(userMapsPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -28,12 +37,19 @@ public class Maps {
         return instance;
     }
 
-    synchronized public String[] getMapList() {
-        return Resources.getFileList(directory);
+    synchronized public ArrayList<String> getMapList() {
+        ArrayList<String> maps = new ArrayList<>();
+        maps.addAll(systemMaps);
+        maps.addAll(Resources.getFileList(userMapsPath));
+        return maps;
+    }
+
+    synchronized public ArrayList<String> getUserMapList() {
+        return new ArrayList<>(Resources.getFileList(userMapsPath));
     }
 
     synchronized public void remove(String name) {
-        Path filePath = directory.resolve(name);
+        Path filePath = userMapsPath.resolve(name);
         try {
             Files.delete(filePath);
         } catch (IOException e) {
@@ -43,7 +59,18 @@ public class Maps {
 
     synchronized public GameMap get(String name) {
         if (name == null) return null;
-        Path filePath = directory.resolve(name);
+
+        if (systemMaps.contains(name)) {
+            try (InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(systemMapsPath + name);
+                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
+                return (GameMap) objectInputStream.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        Path filePath = userMapsPath.resolve(name);
         try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(filePath))) {
             return (GameMap) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -53,7 +80,7 @@ public class Maps {
     }
 
     synchronized public void save(GameMap map) {
-        Path filePath = directory.resolve(map.getName());
+        Path filePath = userMapsPath.resolve(map.getName());
         try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.newOutputStream(filePath))) {
             outputStream.writeObject(map);
             outputStream.flush();

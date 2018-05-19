@@ -49,6 +49,7 @@ public class UserInterface extends JPanel {
         screens.put("HostServerScreen", new HostServerScreen(this));
         screens.put("HighScoreScreen", new HighScoreScreen(this));
         screens.put("ConnectScreen", new ConnectScreen(this));
+        //screens.put("MapEditorScreen", new MapEditorScreen(this));
         screens.put("GameScreen", gameScreen);
 
         screens.forEach((cardName, screenComponent) -> add((Component) screenComponent, cardName));

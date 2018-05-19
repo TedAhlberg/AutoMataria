@@ -51,7 +51,7 @@ public class GameServer implements ConnectionListener, MessageListener {
         state = GameState.Warmup;
 
         GameMap map = Maps.getInstance().get(settings.mapPool[0]);
-        if (map == null) map = Maps.getInstance().get(Maps.getInstance().getMapList()[0]);
+        if (map == null) map = Maps.getInstance().get(Maps.getInstance().getMapList().get(0));
         changeMap(map);
 
         playerManager.setState(state);

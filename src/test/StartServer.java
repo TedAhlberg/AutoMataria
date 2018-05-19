@@ -21,7 +21,7 @@ public class StartServer {
         settings.amountOfTickBetweenUpdates = Integer.parseInt(args[3]);
         settings.playerSpeed = Integer.parseInt(args[4]);
         if (args.length == 6) settings.mapPool = new String[]{args[5]};
-        else settings.mapPool = Maps.getInstance().getMapList();
+        else settings.mapPool = Maps.getInstance().getMapList().toArray(new String[0]);
 
         settings.roundLimit = 10;
         settings.scoreLimit = 0;

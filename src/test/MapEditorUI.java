@@ -311,7 +311,7 @@ public class MapEditorUI {
 
     private void reloadMapList() {
         mapsComboBox.removeAllItems();
-        for (String name : Maps.getInstance().getMapList()) {
+        for (String name : Maps.getInstance().getUserMapList()) {
             mapsComboBox.addItem(name);
         }
     }
@@ -323,9 +323,9 @@ public class MapEditorUI {
     private void createUIComponents() {
         specialGameObjectComboBox = new JComboBox<>();
 
-        mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
+        mapsComboBox = new JComboBox<>(Maps.getInstance().getUserMapList().toArray(new String[0]));
 
-        backgroundImageComboBox = new JComboBox<>(Resources.getImageList());
+        backgroundImageComboBox = new JComboBox<>(Resources.getBackgroundImageList());
         musicTrackComboBox = new JComboBox<>(Resources.getMusicList());
 
         gridSizeComboBox = new JComboBox<>(new String[]{"Large", "Normal", "Small"});

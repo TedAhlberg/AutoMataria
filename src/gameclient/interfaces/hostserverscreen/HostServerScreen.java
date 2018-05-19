@@ -155,7 +155,7 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 
         panel.add(new JLabel("MAP"), getFieldConstraints(0, 2));
-        mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList());
+        mapsComboBox = new JComboBox<>(Maps.getInstance().getMapList().toArray(new String[0]));
         panel.add(mapsComboBox, getFieldConstraints(1, 2));
 
         panel.add(new JLabel("ROUND LIMIT"), getFieldConstraints(0, 3));

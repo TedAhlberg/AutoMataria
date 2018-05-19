@@ -19,15 +19,15 @@ public class AMButton extends JButton implements MouseListener {
     private boolean isPressed = false;
 
     public AMButton(String text) {
-        this("Blank_Pressed.png", "Blank_Unpressed.png");
+        this("ButtonPressed.png", "Button.png");
         setText(text);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
     public AMButton(String filenamePressed, String filenameUnpressed) {
 
-        imagePressed = Resources.getButtonImage(filenamePressed);
-        imageUnpressed = Resources.getButtonImage(filenameUnpressed);
+        imagePressed = Resources.getImage(filenamePressed);
+        imageUnpressed = Resources.getImage(filenameUnpressed);
 
         setFocusPainted(false);
         setOpaque(false);

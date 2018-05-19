@@ -22,20 +22,17 @@ public class Resources {
     public static Font defaultFont, titleFont;
     public static String imagePath = "images/";
     public static String musicPath = "Music/";
-    public static String buttonPath = "images/Buttons/";
     public static String sfxPath = "SFX/";
     private static Resources instance;
     private static HashMap<String, BufferedImage> images = new HashMap<>();
 
     private Resources() {
-        try {
-            InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream("fonts/Orbitron Bold.ttf");
-            Font orbitronFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            defaultFont = orbitronFont.deriveFont(Font.BOLD, 12);
-            titleFont = orbitronFont.deriveFont(Font.BOLD, 30);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(orbitronFont);
+        try (InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream("fonts/Orbitron Bold.ttf")) {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            defaultFont = font.deriveFont(Font.BOLD, 12);
+            titleFont = font.deriveFont(Font.BOLD, 30);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
         } catch (IOException | FontFormatException e) {
-            System.out.println("Failed to load font.");
             e.printStackTrace();
         }
     }
@@ -51,36 +48,22 @@ public class Resources {
         if (images.containsKey(name)) {
             return images.get(name);
         }
-        System.out.println("LOADING IMAGE FROM DISK: " + path + name);
         try {
             InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(path + name);
+            if (inputStream == null) return null;
             BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(inputStream));
             images.put(name, image);
             return image;
         } catch (IOException e) {
             return null;
         }
-    }
-
-    public static BufferedImage getButtonImage(String name) {
-        return getImage(buttonPath, name);
     }
 
     public static BufferedImage getImage(String name) {
-        if (images.containsKey(name)) {
-            return images.get(name);
-        }
-        try {
-            InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(imagePath + name);
-            BufferedImage image = Utility.convertToCompatibleImage(ImageIO.read(inputStream));
-            images.put(name, image);
-            return image;
-        } catch (IOException e) {
-            return null;
-        }
+        return getImage(imagePath, name);
     }
 
-    public static String[] getImageList() {
+    public static String[] getBackgroundImageList() {
         return new String[]{
                 "Stars.png"
         };
@@ -94,7 +77,7 @@ public class Resources {
         };
     }
 
-    public static String[] getFileList(Path directory) {
+    public static ArrayList<String> getFileList(Path directory) {
         ArrayList<String> result = new ArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path path : stream) {
@@ -105,7 +88,7 @@ public class Resources {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return result.toArray(new String[0]);
+        return result;
     }
 
     public Font getDefaultFont() {

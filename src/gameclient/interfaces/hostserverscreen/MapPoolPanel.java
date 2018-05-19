@@ -21,8 +21,7 @@ public class MapPoolPanel extends JPanel {
 
     public void loadMaps() {
         removeAll();
-        String[] mapList = Maps.getInstance().getMapList();
-        for (String map : mapList) {
+        for (String map : Maps.getInstance().getMapList()) {
             addMap(map);
         }
     }
