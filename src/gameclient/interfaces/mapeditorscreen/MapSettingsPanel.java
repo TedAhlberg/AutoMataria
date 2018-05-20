@@ -18,6 +18,7 @@ class MapSettingsPanel extends JComponent {
     private JComboBox<String> backgroundImageComboBox, gridSizeComboBox, musicTrackComboBox;
     private JComboBox<Integer> playersComboBox;
     private JComboBox<Double> playerSpeedComboBox;
+    private JCheckBox generatePositionsCheckBox;
 
     MapSettingsPanel(MapEditorScreen mapEditorScreen) {
         this.mapEditorScreen = mapEditorScreen;
@@ -60,6 +61,17 @@ class MapSettingsPanel extends JComponent {
         playerSpeedComboBox.setSelectedItem(1.0);
         playerSpeedComboBox.addActionListener(e ->
                 mapEditorScreen.setMapPlayerSpeedMultiplier((double) playerSpeedComboBox.getSelectedItem()));
+
+        generatePositionsCheckBox = new JCheckBox();
+        generatePositionsCheckBox.addChangeListener(e -> {
+            if (generatePositionsCheckBox.isSelected()) {
+                generatePositionsCheckBox.setText("GENERATE DURING MATCH");
+                mapEditorScreen.disableStartingPositions();
+            } else {
+                generatePositionsCheckBox.setText("PAINT ON MAP");
+                mapEditorScreen.enableStartingPositions();
+            }
+        });
     }
 
     private void createLayout() {
@@ -71,6 +83,7 @@ class MapSettingsPanel extends JComponent {
         addTableRow("SPEED MULTIPLIER", playerSpeedComboBox);
         addTableRow("BACKGROUND", backgroundImageComboBox);
         addTableRow("MUSIC TRACK", musicTrackComboBox);
+        addTableRow("STARTING POSITIONS", generatePositionsCheckBox);
         addSpacer();
     }
 
@@ -109,5 +122,6 @@ class MapSettingsPanel extends JComponent {
         playerSpeedComboBox.setSelectedItem(map.getPlayerSpeedMultiplier());
         backgroundImageComboBox.setSelectedItem(map.getBackground());
         musicTrackComboBox.setSelectedItem(map.getMusicTrack());
+        generatePositionsCheckBox.setSelected(map.getStartingPositions() == null || map.getStartingPositions().length == 0);
     }
 }

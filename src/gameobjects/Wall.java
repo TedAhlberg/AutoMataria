@@ -80,6 +80,9 @@ public class Wall extends GameObject {
      * @param g Graphics2D object to paint on
      */
     public void render(Graphics2D g) {
+        if (color.equals(Color.RED)) {
+            System.out.println(gridPoints);
+        }
         if (area == null) {
             area = new Area();
             pointsInArea = new HashSet<>();

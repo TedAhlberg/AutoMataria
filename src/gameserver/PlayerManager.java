@@ -101,7 +101,7 @@ public class PlayerManager implements MessageListener {
     public void resetGame() {
         gameObjects.clear();
 
-        if (currentMap.getStartingPositions() != null) {
+        if (currentMap.getStartingPositions().length >= currentMap.getPlayers()) {
             startingPositions.set(currentMap.getStartingPositions());
         } else {
             startingPositions.generate(currentMap.getGrid(), currentMap.getPlayers());

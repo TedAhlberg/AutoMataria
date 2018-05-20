@@ -26,6 +26,7 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
     private final UserInterface userInterface;
     private final ArrayList<SpecialGameObject> specialGameObjects = new ArrayList<>();
     private final ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private Wall startPositionMarker;
     private JTabbedPane sidePanel;
     private GameMap currentMap;
 
@@ -37,9 +38,10 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
         mapListPanel = new MapListPanel(this::changeMap, this::deleteMap);
         mapSettingsPanel = new MapSettingsPanel(this);
         objectSettingsPanel = new ObjectSettingsPanel(this);
+
         createLayout();
         startGamePanelListener();
-        changeMap("");
+        changeMap(null);
     }
 
     private void deleteMap(String mapName) {
@@ -62,6 +64,8 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
 
         mapSettingsPanel.setCurrentMap(currentMap);
         mapTopBarPanel.setMapName(currentMap.getName());
+        gamePanel.setBackground(currentMap.getBackground());
+        gamePanel.setGrid(currentMap.getGrid());
         objectSettingsPanel.clear();
 
         gameObjects.clear();
@@ -75,12 +79,17 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
             gameObjects.add(gameObject);
         });
 
+        if (currentMap.getStartingPositions().length > 0) {
+            enableStartingPositions();
+        } else {
+            disableStartingPositions();
+        }
+
+        sidePanel.setSelectedComponent(mapSettingsPanel);
         updateGamePanel();
     }
 
     private void updateGamePanel() {
-        gamePanel.setBackground(currentMap.getBackground());
-        gamePanel.setGrid(currentMap.getGrid());
         gamePanel.updateGameObjects(gameObjects);
     }
 
@@ -125,53 +134,6 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
 
     public void onScreenInactive() {
         gamePanel.stop();
-    }
-
-    void setMapName(String name) {
-        currentMap.setName(name);
-        mapTopBarPanel.setMapName(name);
-    }
-
-    void setMapGrid(String gridName) {
-        Dimension grid = Utility.getGridFromName(gridName);
-        currentMap.setGrid(grid);
-        gamePanel.setGrid(grid);
-    }
-
-    void setMapPlayers(int players) {
-        currentMap.setPlayers(players);
-    }
-
-    void setMapPlayerSpeedMultiplier(double playerSpeedMultiplier) {
-        currentMap.setPlayerSpeedMultiplier(playerSpeedMultiplier);
-    }
-
-    void setMapBackgroundImage(String image) {
-        currentMap.setBackground(image);
-        gamePanel.setBackground(image);
-    }
-
-    void setMapMusicTrack(String musicTrack) {
-        currentMap.setMusicTrack(musicTrack);
-    }
-
-    void saveMap() {
-        try {
-            currentMap.setGameMapObjects(specialGameObjects.toArray(new SpecialGameObject[0]));
-            Maps.getInstance().save(currentMap);
-            mapListPanel.reload();
-        } catch (Exception error) {
-            error.printStackTrace();
-            JOptionPane.showMessageDialog(this, "There was an error. The map has NOT been saved. Please try again.");
-        }
-    }
-
-    void newMap() {
-        changeMap(null);
-    }
-
-    void exit() {
-        userInterface.changeToPreviousScreen();
     }
 
     private void startGamePanelListener() {
@@ -227,6 +189,7 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     new String[]{"Wall",
+                            "StartingPosition",
                             "EraserPickup",
                             "ReversePickup",
                             "SelfSlowPickup",
@@ -239,6 +202,14 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
                     "Wall");
             if (selected != null && selected.length() > 0) {
                 try {
+                    if (selected.equals("StartingPosition")) {
+                        if (startPositionMarker == null) {
+                            JOptionPane.showMessageDialog(null, "CAN'T ADD STARTING POSITIONS BECAUSE THEY ARE SET TO AUTOMATICALLY BE GENERATED DURING MATCH.");
+                        } else {
+                            startPositionMarker.addGridPoint(endGridPoint);
+                        }
+                        return;
+                    }
                     selected = selected.contains("Pickup")
                             ? "gameobjects.pickups." + selected
                             : "gameobjects." + selected;
@@ -326,10 +297,86 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
         else wall.removeGridPoints(points);
     }
 
-    public void deleteObject(SpecialGameObject specialGameObject) {
+    void deleteObject(SpecialGameObject specialGameObject) {
         specialGameObjects.remove(specialGameObject);
         gameObjects.remove(specialGameObject.getGameObject());
         objectSettingsPanel.clear();
+        updateGamePanel();
+    }
+
+    void setMapName(String name) {
+        currentMap.setName(name);
+        mapTopBarPanel.setMapName(name);
+    }
+
+    void setMapGrid(String gridName) {
+        Dimension grid = Utility.getGridFromName(gridName);
+        currentMap.setGrid(grid);
+        gamePanel.setGrid(grid);
+    }
+
+    void setMapPlayers(int players) {
+        currentMap.setPlayers(players);
+    }
+
+    void setMapPlayerSpeedMultiplier(double playerSpeedMultiplier) {
+        currentMap.setPlayerSpeedMultiplier(playerSpeedMultiplier);
+    }
+
+    void setMapBackgroundImage(String image) {
+        currentMap.setBackground(image);
+        gamePanel.setBackground(image);
+    }
+
+    void setMapMusicTrack(String musicTrack) {
+        currentMap.setMusicTrack(musicTrack);
+    }
+
+    void saveMap() {
+        try {
+            if (startPositionMarker == null || startPositionMarker.getGridPoints().size() == 0) {
+                currentMap.setStartingPositions(null);
+            } else {
+                currentMap.setStartingPositions(startPositionMarker.getGridPoints().toArray(new Point[0]));
+                if (startPositionMarker.getGridPoints().size() < currentMap.getPlayers()) {
+                    JOptionPane.showMessageDialog(this, "NOTE: YOU HAVE NOT SET STARTING POSITION FOR ALL PLAYERS\nMAP WILL BE SAVED ANYWAY");
+                }
+            }
+            currentMap.setGameMapObjects(specialGameObjects.toArray(new SpecialGameObject[0]));
+            Maps.getInstance().save(currentMap);
+            mapListPanel.reload();
+        } catch (Exception error) {
+            error.printStackTrace();
+            JOptionPane.showMessageDialog(this, "There was an error. The map has NOT been saved. Please try again.");
+        }
+    }
+
+    void newMap() {
+        changeMap(null);
+    }
+
+    void exit() {
+        userInterface.changeToPreviousScreen();
+    }
+
+    void disableStartingPositions() {
+        if (startPositionMarker == null) return;
+        gameObjects.remove(startPositionMarker);
+        startPositionMarker.clear();
+        startPositionMarker = null;
+        updateGamePanel();
+    }
+
+    void enableStartingPositions() {
+        if (startPositionMarker != null) {
+            gameObjects.remove(startPositionMarker);
+            startPositionMarker.clear();
+            startPositionMarker = null;
+        }
+        startPositionMarker = new Wall(Color.RED, Color.WHITE);
+        startPositionMarker.setId(ID.getNext());
+        startPositionMarker.addGridPoints(Arrays.asList(currentMap.getStartingPositions()));
+        gameObjects.add(startPositionMarker);
         updateGamePanel();
     }
 }
