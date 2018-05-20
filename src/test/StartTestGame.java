@@ -13,7 +13,7 @@ import javax.swing.*;
  */
 public class StartTestGame {
     public static void main(String[] args) {
-        GameMap map = Maps.getInstance().get("Normal Map 1");
+        GameMap map = Maps.getInstance().get("CLEAN");
         // Change GameObjects on the map
         SpecialGameObject[] gameMapObjects = {
                 new SpecialGameObject(new SlowEnemiesPickup(200, 200, 4000), 10000, 0, true, 15000),
@@ -29,9 +29,9 @@ public class StartTestGame {
         GameServerSettings settings = new GameServerSettings();
         settings.name = "StartTestGameServer";
         settings.port = 32000;
-        settings.tickRate = 33;
-        settings.amountOfTickBetweenUpdates = 3;
-        settings.playerSpeed = Game.GRID_PIXEL_SIZE / 4;
+        settings.tickRate = 50;
+        settings.amountOfTickBetweenUpdates = 2;
+        settings.playerSpeed = Game.GRID_PIXEL_SIZE / 2;
         settings.mapPool = new String[]{map.getName()};
 
         GameServer server = new GameServer(settings);

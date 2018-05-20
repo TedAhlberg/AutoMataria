@@ -1,8 +1,7 @@
-package test;
+package gameserver;
 
 import common.GameServerSettings;
 import common.Maps;
-import gameserver.GameServer;
 
 /**
  * @author Johannes Blüml
