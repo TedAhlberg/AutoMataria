@@ -2,9 +2,8 @@ package gameclient;
 
 import gameclient.interfaces.UserInterface;
 
-import java.net.InetSocketAddress;
-
 import javax.swing.*;
+import java.net.InetSocketAddress;
 
 /**
  * Starts the Auto-Mataria Game
@@ -18,7 +17,8 @@ public class Game {
     private UserInterface userInterface;
     public static final InetSocketAddress MAIN_SERVER = new InetSocketAddress("127.0.0.1", 2000);
 
-    public Game() {
+    public Game(String screenScale) {
+        System.setProperty("sun.java2d.uiScale", screenScale);
         System.setProperty("sun.java2d.opengl", "True");
         System.setProperty("awt.useSystemAAFontSettings", "on");
 
@@ -26,8 +26,15 @@ public class Game {
             userInterface = new UserInterface();
         });
     }
+    public Game() {
+        this("1.0");
+    }
 
     public static void main(String[] args) {
-        new Game();
+        if (args.length == 1) {
+            new Game(args[0]);
+        } else {
+            new Game();
+        }
     }
 }
