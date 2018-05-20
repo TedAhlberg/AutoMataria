@@ -6,11 +6,11 @@ import gameclient.Resources;
 import gameclient.interfaces.gamescreen.GameScreen;
 import gameclient.interfaces.highscorescreen.HighScoreScreen;
 import gameclient.interfaces.hostserverscreen.HostServerScreen;
+import gameclient.interfaces.mapeditorscreen.MapEditorScreen;
 import gameclient.interfaces.serverbrowserscreen.BrowseServersScreen;
 import gameclient.keyinput.KeyInput;
 import gameclient.sound.MusicManager;
 import gameclient.sound.MusicManager.Status;
-import test.MapEditorUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,12 +49,10 @@ public class UserInterface extends JPanel {
         screens.put("HostServerScreen", new HostServerScreen(this));
         screens.put("HighScoreScreen", new HighScoreScreen(this));
         screens.put("ConnectScreen", new ConnectScreen(this));
-        //screens.put("MapEditorScreen", new MapEditorScreen(this));
+        screens.put("MapEditorScreen", new MapEditorScreen(this));
         screens.put("GameScreen", gameScreen);
 
         screens.forEach((cardName, screenComponent) -> add((Component) screenComponent, cardName));
-
-        add(new MapEditorUI(this).container, "MapEditorScreen");
 
         // Show startscreen on startup
         changeScreen("StartScreen");

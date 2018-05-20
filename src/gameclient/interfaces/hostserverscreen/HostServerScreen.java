@@ -113,7 +113,6 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;
         c.ipadx = 10;
-        c.ipady = 10;
         c.insets = new Insets(10, 10, 10, 10);
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -151,7 +150,6 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
 
         panel.add(new JLabel("SERVER NAME"), getFieldConstraints(0, 1));
         serverNameTextField = new JTextField(userInterface.getSettingsScreen().getUsername() + " SERVER");
-        serverNameTextField.setMargin(new Insets(4, 6, 0, 0));
         panel.add(serverNameTextField, getFieldConstraints(1, 1));
 
         panel.add(new JLabel("MAP"), getFieldConstraints(0, 2));

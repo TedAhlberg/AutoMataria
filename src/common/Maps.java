@@ -60,6 +60,16 @@ public class Maps {
     synchronized public GameMap get(String name) {
         if (name == null) return null;
 
+        Path filePath = userMapsPath.resolve(name);
+        if (Files.exists(filePath)) {
+            try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(filePath))) {
+                return (GameMap) inputStream.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
         if (systemMaps.contains(name)) {
             try (InputStream inputStream = Resources.class.getClassLoader().getResourceAsStream(systemMapsPath + name);
                  ObjectInputStream objectInputStream = new ObjectInputStream(inputStream)) {
@@ -70,13 +80,7 @@ public class Maps {
             }
         }
 
-        Path filePath = userMapsPath.resolve(name);
-        try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(filePath))) {
-            return (GameMap) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 
     synchronized public void save(GameMap map) {

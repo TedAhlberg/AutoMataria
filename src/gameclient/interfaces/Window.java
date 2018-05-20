@@ -3,6 +3,7 @@ package gameclient.interfaces;
 import gameclient.Resources;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -58,7 +59,7 @@ public class Window extends JFrame {
             if (value instanceof FontUIResource) {
                 UIManager.put(key, defaultFontResource);
             }
-            if (key.toString().startsWith("TabbedPane")) {
+            if (key.toString().startsWith("List")) {
                 System.out.println(key + " " + value);
             }
         }
@@ -74,7 +75,7 @@ public class Window extends JFrame {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        ColorUIResource accentColor = new ColorUIResource(Color.MAGENTA.darker());
+        ColorUIResource accentColor = new ColorUIResource(new Color(0x8e44ad));
         ColorUIResource darkColor = new ColorUIResource(0, 0, 0);
         ColorUIResource brightColor = new ColorUIResource(255, 255, 255);
 
@@ -119,9 +120,9 @@ public class Window extends JFrame {
         LinkedList gradient = new LinkedList();
         gradient.add(0.0);
         gradient.add(0.0);
-        gradient.add(accentColor);
-        gradient.add(accentColor);
-        gradient.add(accentColor);
+        gradient.add(new Color(0x9b59b6));
+        gradient.add(new Color(0x9b59b6));
+        gradient.add(new Color(0x8e44ad));
         UIManager.put("Slider.gradient", gradient);
         UIManager.put("Slider.focusGradient", gradient);
         UIManager.put("Slider.background", darkColor);
@@ -135,6 +136,30 @@ public class Window extends JFrame {
         UIManager.put("CheckBox.background", darkColor);
         UIManager.put("CheckBox.foreground", brightColor);
         UIManager.put("CheckBox.focus", darkColor);
+
+        UIManager.put("RadioButton.background", darkColor);
+        UIManager.put("RadioButton.foreground", brightColor);
+        UIManager.put("RadioButton.focus", darkColor);
+
+        UIManager.put("OptionPane.messageForeground", brightColor);
+        UIManager.put("OptionPane.informationIcon", new ImageIcon());
+        UIManager.put("OptionPane.messageAreaBorder", new MatteBorder(20, 20, 20, 20, darkColor));
+        UIManager.put("OptionPane.border", new MatteBorder(5, 5, 5, 5, accentColor));
+
+        darkColor = new ColorUIResource(40, 40, 40);
+        UIManager.put("Button.background", darkColor);
+        UIManager.put("Button.foreground", brightColor);
+        UIManager.put("Button.gradient", gradient);
+        UIManager.put("Button.focusGradient", gradient);
+        UIManager.put("Button.highlight", darkColor);
+        UIManager.put("Button.shadow", darkColor);
+        UIManager.put("Button.focus", new Color(0, 0, 0, 0));
+        UIManager.put("Button.select", darkColor);
+        UIManager.put("Button.margin", new Insets(10, 10, 10, 10));
+        UIManager.put("Button.border", new CompoundBorder(new MatteBorder(1, 1, 1, 1, darkColor), new EmptyBorder(8, 15, 6, 15)));
+
+        UIManager.put("TextField.border", new CompoundBorder(new MatteBorder(1, 1, 1, 1, darkColor), new EmptyBorder(7, 7, 5, 7)));
+        UIManager.put("TextField.margin", new Insets(0, 0, 0, 0));
     }
 
     /**

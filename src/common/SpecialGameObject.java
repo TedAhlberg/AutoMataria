@@ -3,6 +3,7 @@ package common;
 import gameobjects.GameObject;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Contains a GameObject and adds extra settings for it.
@@ -30,6 +31,26 @@ public class SpecialGameObject implements Serializable {
         this.spawnInterval = spawnInterval;
         this.spawnLimit = spawnLimit;
         this.spawnRandom = spawnRandom;
+        this.visibleTime = visibleTime;
+    }
+
+    public void setGameObject(GameObject gameObject) {
+        this.gameObject = gameObject;
+    }
+
+    public void setSpawnInterval(int spawnInterval) {
+        this.spawnInterval = spawnInterval;
+    }
+
+    public void setSpawnLimit(int spawnLimit) {
+        this.spawnLimit = spawnLimit;
+    }
+
+    public void setSpawnRandom(boolean spawnRandom) {
+        this.spawnRandom = spawnRandom;
+    }
+
+    public void setVisibleTime(int visibleTime) {
         this.visibleTime = visibleTime;
     }
 
@@ -76,5 +97,16 @@ public class SpecialGameObject implements Serializable {
     public void reset() {
         timesSpawned = 0;
         timer = 0;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SpecialGameObject that = (SpecialGameObject) o;
+        return Objects.equals(gameObject, that.gameObject);
+    }
+
+    public int hashCode() {
+        return Objects.hash(gameObject);
     }
 }

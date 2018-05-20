@@ -65,7 +65,8 @@ public class Resources {
 
     public static String[] getBackgroundImageList() {
         return new String[]{
-                "Stars.png"
+                "Stars.png",
+                "Auto-Mataria.png"
         };
     }
 
