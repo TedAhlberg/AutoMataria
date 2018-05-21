@@ -234,7 +234,7 @@ public class Player extends GameObject {
 
         inputQueue.clear();
         direction = previousDirection = Direction.Static;
-        dead = invincible = reversed = false;
+        dead = invincible = reversed = cheese = false;
 
         trail.clear();
     }
