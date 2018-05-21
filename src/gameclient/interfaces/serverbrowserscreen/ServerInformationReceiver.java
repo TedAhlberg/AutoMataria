@@ -147,7 +147,6 @@ public class ServerInformationReceiver extends Thread {
     
     public void stopMainServerThread() {
     	mainserverThread = null;
-    	
     }
     
    private class MainServerThread extends Thread {
@@ -161,7 +160,9 @@ public class ServerInformationReceiver extends Thread {
 		   while(running) {
 		   try(Socket socket = new Socket(mainServerAddress.getAddress(), mainServerAddress.getPort());
 				ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-				   ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())){
+				   ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+			   
+			   outputStream.writeObject("GET_SERVERS");
 			   
 			   Object object = inputStream.readObject();
 			   if(object instanceof GameServers) {
