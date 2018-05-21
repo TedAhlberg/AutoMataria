@@ -1,12 +1,19 @@
 package gameclient.interfaces.serverbrowserscreen;
 
-import common.ServerInformation;
-import gameclient.Game;
-
 import java.io.IOException;
-import java.net.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import common.ServerInformation;
+import gameclient.Game;
+import mainserver.GameServers;
 
 /**
  * Denna klassen ska ta emot UDP packet ifrån lokala nätverket
@@ -19,6 +26,7 @@ public class ServerInformationReceiver extends Thread {
     private HashSet<ServerInformation> serverList = new HashSet<>();
     private HashSet<ServerInformationListener> listeners = new HashSet<>();
     private DatagramSocket socket;
+    private MainServerThread mainserverThread = null;
 
     public ServerInformationReceiver() {
         setName("ServerInformationReceiver");
@@ -39,6 +47,7 @@ public class ServerInformationReceiver extends Thread {
     public void run() {
         running = true;
         runTimeThread();
+        startMainServerThread();
 
         while (running) {
             try (DatagramSocket socket = new DatagramSocket(null)) {
@@ -130,4 +139,49 @@ public class ServerInformationReceiver extends Thread {
             }
         }
     }
+    
+    public void startMainServerThread() {
+    	mainserverThread = new MainServerThread();
+    	mainserverThread.start();
+    }
+    
+    public void stopMainServerThread() {
+    	mainserverThread = null;
+    	
+    }
+    
+   private class MainServerThread extends Thread {
+	   InetSocketAddress mainServerAddress;
+	   
+	   public MainServerThread() {
+		   this.mainServerAddress = Game.MAIN_SERVER;
+	   }
+	   
+	   public void run() {
+		   while(running) {
+		   try(Socket socket = new Socket(mainServerAddress.getAddress(), mainServerAddress.getPort());
+				ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+				   ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())){
+			   
+			   Object object = inputStream.readObject();
+			   if(object instanceof GameServers) {
+				   System.out.println("True: MainServerThread in ServerInformationReceiver");
+				   GameServers gameServers = (GameServers) object;
+				   ArrayList<ServerInformation> gameServerList = gameServers.getServers();
+				   for(ServerInformation info : gameServerList) {
+					   serverList.add(info);
+				   }
+				   
+				   for(ServerInformationListener listener : listeners) {
+					   listener.update(serverList);
+				   }
+			   }
+			   
+		   } catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		   
+	   }
+	   }
+   }
 }
