@@ -30,7 +30,11 @@ public class StartServer {
         settings.roundOverCountdown = 5000;
         settings.newGameCountdown = 5000;
 
-        GameServer server = new GameServer(settings);
+        GameServer server = new GameServer(settings, event -> {
+            if (event == GameServer.Event.Stopped) {
+                System.exit(0);
+            }
+        });
         server.start();
     }
 }

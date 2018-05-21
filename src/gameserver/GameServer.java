@@ -7,6 +7,7 @@ import gameobjects.Player;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 
 /**
  * A Controller that connects together the serverConnection part of Auto-Mataria.
@@ -23,6 +24,7 @@ public class GameServer implements ConnectionListener, MessageListener {
     private final ServerInformationSender serverInformationSender;
     private final GameScore gameScore;
     private final GameServerSettings settings;
+    private final Consumer<Event> listener;
     private final PlayerManager playerManager;
     private final UpdateManager updateManager;
     private int currentCountdown, currentMapPoolIndex;
@@ -36,8 +38,9 @@ public class GameServer implements ConnectionListener, MessageListener {
      *
      * @param settings Object containing all settings for this server
      */
-    public GameServer(GameServerSettings settings) {
+    public GameServer(GameServerSettings settings, Consumer<Event> listener) {
         this.settings = settings;
+        this.listener = listener;
 
         updateManager = new UpdateManager(gameObjects);
         playerManager = new PlayerManager(gameObjects);
@@ -227,10 +230,12 @@ public class GameServer implements ConnectionListener, MessageListener {
 
     public void onServerConnectionStarted() {
         System.out.println("Server Connection started");
+        listener.accept(Event.Started);
     }
 
     public void onServerConnectionStopped() {
         System.out.println("Server Connection ended");
+        listener.accept(Event.Stopped);
         stop();
     }
 
@@ -293,5 +298,9 @@ public class GameServer implements ConnectionListener, MessageListener {
             if (readyMessage.getReadyPlayerCount() < 2) return;
             if (readyMessage.getReadyPlayerCount() == readyMessage.getPlayerCount()) setState(GameState.Countdown);
         }
+    }
+
+    public enum Event {
+        Started, Stopped
     }
 }

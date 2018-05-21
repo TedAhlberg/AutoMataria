@@ -4,8 +4,7 @@ import common.ServerInformation;
 import gameclient.Game;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.net.*;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -42,7 +41,9 @@ public class ServerInformationReceiver extends Thread {
         runTimeThread();
 
         while (running) {
-            try (DatagramSocket socket = new DatagramSocket(Game.LOCAL_UDP_PORT)) {
+            try (DatagramSocket socket = new DatagramSocket(null)) {
+                socket.setReuseAddress(true);
+                socket.bind(new InetSocketAddress(Game.LOCAL_UDP_PORT));
                 this.socket = socket;
 
                 while (running) {

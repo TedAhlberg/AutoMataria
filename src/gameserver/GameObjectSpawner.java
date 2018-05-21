@@ -7,7 +7,9 @@ import gameobjects.Pickup;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Spawns game objects from the map into the gameObjects collection.
@@ -16,7 +18,7 @@ import java.util.*;
  * @author Johannes Blüml
  */
 public class GameObjectSpawner {
-    private final HashMap<SpecialGameObject, GameObject> spawnedObjects = new HashMap<>();
+    private final ConcurrentHashMap<SpecialGameObject, GameObject> spawnedObjects = new ConcurrentHashMap<>();
     private final Collection<GameObject> gameObjects;
     private final int tickRate;
     private GameMap currentMap;

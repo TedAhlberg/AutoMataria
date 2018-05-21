@@ -260,46 +260,45 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
 
         startButton.addActionListener(e -> {
             if (server != null) return;
-            try {
-                GameServerSettings settings = new GameServerSettings();
-                settings.name = serverNameTextField.getText();
-                settings.port = portSlider.getValue();
-                settings.tickRate = tickRateSlider.getValue();
-                settings.amountOfTickBetweenUpdates = ticksPerUpdateSlider.getValue();
-                settings.playerSpeed = playerSpeedSlider.getValue();
-                settings.mapPool = mapPoolPanel.getSelectedMaps();
-                settings.roundLimit = roundLimitSlider.getValue();
-                settings.scoreLimit = scoreLimitSlider.getValue();
+            GameServerSettings settings = new GameServerSettings();
+            settings.name = serverNameTextField.getText();
+            settings.port = portSlider.getValue();
+            settings.tickRate = tickRateSlider.getValue();
+            settings.amountOfTickBetweenUpdates = ticksPerUpdateSlider.getValue();
+            settings.playerSpeed = playerSpeedSlider.getValue();
+            settings.mapPool = mapPoolPanel.getSelectedMaps();
+            settings.roundLimit = roundLimitSlider.getValue();
+            settings.scoreLimit = scoreLimitSlider.getValue();
 
-                server = new GameServer(settings);
-                server.start();
-                server.changeMap(Maps.getInstance().get((String) mapsComboBox.getSelectedItem()));
-                serverStatusLabel.setText("ONLINE");
-                serverStatusLabel.setForeground(Color.GREEN);
-                startButton.setEnabled(false);
-                stopButton.setEnabled(true);
-                joinGameButton.setVisible(true);
-                setAllEnabled(false);
-            } catch (Exception error) {
-                serverStatusLabel.setText("OFFLINE");
-                serverStatusLabel.setForeground(Color.RED);
-                startButton.setEnabled(true);
-                stopButton.setEnabled(false);
-                joinGameButton.setVisible(false);
-                setAllEnabled(true);
-            }
+            server = new GameServer(settings, event -> {
+                if (event == GameServer.Event.Stopped) {
+                    serverStatusLabel.setText("OFFLINE");
+                    serverStatusLabel.setForeground(Color.RED);
+                    startButton.setEnabled(true);
+                    stopButton.setEnabled(false);
+                    joinGameButton.setVisible(false);
+                    setAllEnabled(true);
+                    server = null;
+                } else if (event == GameServer.Event.Started) {
+                    server.changeMap(Maps.getInstance().get((String) mapsComboBox.getSelectedItem()));
+                    serverStatusLabel.setText("ONLINE");
+                    serverStatusLabel.setForeground(Color.GREEN);
+                    startButton.setEnabled(false);
+                    stopButton.setEnabled(true);
+                    joinGameButton.setVisible(true);
+                    setAllEnabled(false);
+                    int result = JOptionPane.showConfirmDialog(this, "SERVER STARTED.\nDO YOU WANT TO JOIN IT?");
+                    if (result == 0) {
+                        userInterface.startGame("127.0.0.1", portSlider.getValue());
+                    }
+                }
+            });
+            server.start();
         });
 
         stopButton.addActionListener(e -> {
             if (server == null) return;
             server.stop();
-            server = null;
-            serverStatusLabel.setText("OFFLINE");
-            serverStatusLabel.setForeground(Color.RED);
-            startButton.setEnabled(true);
-            stopButton.setEnabled(false);
-            joinGameButton.setVisible(false);
-            setAllEnabled(true);
         });
 
         backButton.addActionListener(e -> {
