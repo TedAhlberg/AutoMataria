@@ -140,14 +140,30 @@ public class ServerInformationReceiver extends Thread {
         }
     }
     
+    /*
+     * Initializes a new Mainserver thread and starts it.
+     */
+    
     public void startMainServerThread() {
     	mainserverThread = new MainServerThread();
     	mainserverThread.start();
     }
     
+    /*
+     * Stops the Mainserver Thread by making it null.
+     */
+    
     public void stopMainServerThread() {
     	mainserverThread = null;
     }
+    
+    /**
+     * 
+     * @author Henrik Olofsson
+     * A thread that will use TCP to request the mainserver about serverinformation.
+     * After getting the information it will be added to the serverlist.
+     *
+     */
     
    private class MainServerThread extends Thread {
 	   InetSocketAddress mainServerAddress;
@@ -165,6 +181,8 @@ public class ServerInformationReceiver extends Thread {
 			   outputStream.writeObject("GET_SERVERS");
 			   
 			   Object object = inputStream.readObject();
+			   System.out.println(object.toString());
+			   
 			   if(object instanceof GameServers) {
 				   System.out.println("True: MainServerThread in ServerInformationReceiver");
 				   GameServers gameServers = (GameServers) object;
