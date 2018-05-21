@@ -1,5 +1,6 @@
 package gameserver;
 
+import common.MainServerClient;
 import common.ServerInformation;
 import gameclient.Game;
 

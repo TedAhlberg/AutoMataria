@@ -11,6 +11,10 @@ import gameclient.Game;
 import mainserver.HighScore2;
 
 public class MainServerClient {
+	
+	private MainServerClient() {
+		
+	}
 
     public static void sendServerInformation(ServerInformation serverInformation) {
         try (Socket socket = new Socket()) {

@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 import common.ServerInformation;
 import gameclient.Game;
-import mainserver.GameServers;
 
 /**
  * Denna klassen ska ta emot UDP packet ifrån lokala nätverket
@@ -143,65 +142,66 @@ public class ServerInformationReceiver extends Thread {
     /*
      * Initializes a new Mainserver thread and starts it.
      */
-    
-    public void startMainServerThread() {
-    	mainserverThread = new MainServerThread();
-    	mainserverThread.start();
-    }
-    
-    /**
-     * 
-     * @author Henrik Olofsson
-     * A thread that will use TCP to request the mainserver about serverinformation.
-     * After getting the information it will be added to the serverlist.
-     *
-     */
-    
-   private class MainServerThread extends Thread {
-	   InetSocketAddress mainServerAddress;
-	   
-	   public MainServerThread() {
-		   this.mainServerAddress = Game.MAIN_SERVER;
-	   }
-	   
-	   public void run() {
-		   while(running) {
-			   System.out.println(mainServerAddress.getAddress().getHostAddress() + " " + mainServerAddress.getPort());
-		   try(Socket socket = new Socket(mainServerAddress.getAddress().getHostAddress(), mainServerAddress.getPort());
-				ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-				   ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
-			   
-			   outputStream.writeObject("GET_SERVERS");
-			   
-			   Object object = inputStream.readObject();
-			   System.out.println(object.toString());
-			   
-			   if(object instanceof ArrayList) {
-				   System.out.println("True: MainServerThread in ServerInformationReceiver");
-				   ArrayList<ServerInformation> gameServerList = (ArrayList<ServerInformation>) object;
-				   System.out.println(gameServerList.toString());
-				   for(ServerInformation info : gameServerList) {
-					   serverList.add(info);
-					   System.out.println(info.toString());
-				   }
-				   
-				   for(ServerInformationListener listener : listeners) {
-					   listener.update(serverList);
-				   }
-			   }
-			   
-			   try {
-				   Thread.sleep(1000);
-			   } catch (InterruptedException e) {
-				   e.printStackTrace();
-				   System.out.println("Thread sleeps in mainserverthread...");
-			   }
-			   
-		   } catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
+
+	public void startMainServerThread() {
+		mainserverThread = new MainServerThread();
+		mainserverThread.start();
+	}
+
+	/**
+	 * 
+	 * @author Henrik Olofsson A thread that will use TCP to request the mainserver
+	 *         about serverinformation. After getting the information it will be
+	 *         added to the serverlist.
+	 *
+	 */
+
+	private class MainServerThread extends Thread {
+		InetSocketAddress mainServerAddress;
+
+		public MainServerThread() {
+			this.mainServerAddress = Game.MAIN_SERVER;
 		}
-		   
-	   }
-	   }
-   }
+
+		public void run() {
+			while (running) {
+				System.out.println(mainServerAddress.getAddress().getHostAddress() + " " + mainServerAddress.getPort());
+				try (Socket socket = new Socket(mainServerAddress.getAddress().getHostAddress(),
+						mainServerAddress.getPort());
+						ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+						ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+
+					outputStream.writeObject("GET_SERVERS");
+
+					Object object = inputStream.readObject();
+					System.out.println(object.toString());
+
+					if (object instanceof ArrayList) {
+						System.out.println("True: MainServerThread in ServerInformationReceiver");
+						ArrayList<ServerInformation> gameServerList = (ArrayList<ServerInformation>) object;
+						System.out.println(gameServerList.toString());
+						for (ServerInformation info : gameServerList) {
+							serverList.add(info);
+							System.out.println(info.toString());
+						}
+
+						for (ServerInformationListener listener : listeners) {
+							listener.update(serverList);
+						}
+					}
+
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						System.out.println("Thread sleeps in mainserverthread...");
+					}
+
+				} catch (IOException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
 }

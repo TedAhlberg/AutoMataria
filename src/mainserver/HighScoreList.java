@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import gameserver.MainServerClient;
-
 public class HighScoreList {
     private ArrayList<HighScore2> highscoreList;
     
@@ -76,14 +74,14 @@ public class HighScoreList {
 //        
 //    }
 
-    public static void main(String[] args) {
-        HashMap<String, Integer> scores = new HashMap<>();
-        scores.put("asd", 3213);
-        scores.put("BRUM", 123);
-        new MainServerClient().sendGameScore(scores);
-
-        ArrayList<HighScore2> highscores = new gameclient.interfaces.highscorescreen.MainServerClient().getHighscores();
-        System.out.println(highscores);
-}
+//    public static void main(String[] args) {
+//        HashMap<String, Integer> scores = new HashMap<>();
+//        scores.put("asd", 3213);
+//        scores.put("BRUM", 123);
+//        new MainServerClient().sendGameScore(scores);
+//
+//        ArrayList<HighScore2> highscores = new gameclient.interfaces.highscorescreen.MainServerClient().getHighscores();
+//        System.out.println(highscores);
+//}
 
 }

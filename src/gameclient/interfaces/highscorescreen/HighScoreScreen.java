@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
+
+import common.MainServerClient;
 import gameclient.Resources;
 import gameclient.interfaces.AMButton;
 import gameclient.interfaces.UserInterface;

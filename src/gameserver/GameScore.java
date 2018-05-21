@@ -1,5 +1,6 @@
 package gameserver;
 
+import common.MainServerClient;
 import common.messages.MessageListener;
 import common.messages.ScoreUpdateMessage;
 import gameobjects.Player;
