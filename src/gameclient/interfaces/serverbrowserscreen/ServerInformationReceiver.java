@@ -186,14 +186,23 @@ public class ServerInformationReceiver extends Thread {
 			   if(object instanceof GameServers) {
 				   System.out.println("True: MainServerThread in ServerInformationReceiver");
 				   GameServers gameServers = (GameServers) object;
+				   System.out.println(gameServers.toString());
 				   ArrayList<ServerInformation> gameServerList = gameServers.getServers();
 				   for(ServerInformation info : gameServerList) {
 					   serverList.add(info);
+					   System.out.println(info.toString());
 				   }
 				   
 				   for(ServerInformationListener listener : listeners) {
 					   listener.update(serverList);
 				   }
+			   }
+			   
+			   try {
+				   Thread.sleep(1000);
+			   } catch (InterruptedException e) {
+				   e.printStackTrace();
+				   System.out.println("Thread sleeps in mainserverthread...");
 			   }
 			   
 		   } catch (IOException | ClassNotFoundException e) {

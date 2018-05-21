@@ -9,10 +9,6 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class MainServerClient {
-    private Socket socket;
-    private String ip;
-    private int port;
-    private boolean connected = false;
 
     public void sendServerInformation(ServerInformation serverInformation) {
         try (Socket socket = new Socket()) {
