@@ -149,14 +149,6 @@ public class ServerInformationReceiver extends Thread {
     	mainserverThread.start();
     }
     
-    /*
-     * Stops the Mainserver Thread by making it null.
-     */
-    
-    public void stopMainServerThread() {
-    	mainserverThread = null;
-    }
-    
     /**
      * 
      * @author Henrik Olofsson
@@ -174,7 +166,8 @@ public class ServerInformationReceiver extends Thread {
 	   
 	   public void run() {
 		   while(running) {
-		   try(Socket socket = new Socket(mainServerAddress.getAddress(), mainServerAddress.getPort());
+			   System.out.println(mainServerAddress.getAddress().getHostAddress() + " " + mainServerAddress.getPort());
+		   try(Socket socket = new Socket(mainServerAddress.getAddress().getHostAddress(), mainServerAddress.getPort());
 				ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
 				   ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 			   
@@ -183,11 +176,10 @@ public class ServerInformationReceiver extends Thread {
 			   Object object = inputStream.readObject();
 			   System.out.println(object.toString());
 			   
-			   if(object instanceof GameServers) {
+			   if(object instanceof ArrayList) {
 				   System.out.println("True: MainServerThread in ServerInformationReceiver");
-				   GameServers gameServers = (GameServers) object;
-				   System.out.println(gameServers.toString());
-				   ArrayList<ServerInformation> gameServerList = gameServers.getServers();
+				   ArrayList<ServerInformation> gameServerList = (ArrayList<ServerInformation>) object;
+				   System.out.println(gameServerList.toString());
 				   for(ServerInformation info : gameServerList) {
 					   serverList.add(info);
 					   System.out.println(info.toString());
