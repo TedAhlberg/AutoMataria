@@ -32,7 +32,7 @@ public class ServerInformationSender implements Runnable {
 
         while (running) {
             ServerInformation serverInformation = gameServer.getServerInformation();
-            new MainServerClient().sendServerInformation(serverInformation);
+            MainServerClient.sendServerInformation(serverInformation);
             byte[] data = serverInformation.toByteArray();
 
             try (DatagramSocket socket = new DatagramSocket()) {

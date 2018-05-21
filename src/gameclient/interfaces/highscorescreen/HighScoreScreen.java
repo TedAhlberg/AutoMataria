@@ -21,7 +21,6 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     private UserInterface userInterface;
     private JPanel panel;
     private ArrayList<HighScore2> highscoreList;
-    private MainServerClient mainServerClient = new MainServerClient();
 	
 	public HighScoreScreen(UserInterface userInterface) {
         this.userInterface = userInterface;
@@ -154,7 +153,7 @@ public class HighScoreScreen extends JPanel implements UserInterfaceScreen {
     }
 
     public void onScreenActive() {
-        highscoreList = mainServerClient.getHighscores();
+        highscoreList = MainServerClient.getHighscores();
         System.out.println(highscoreList);
         if(highscoreList != null) {
             update(highscoreList);

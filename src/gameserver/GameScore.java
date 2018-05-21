@@ -72,7 +72,7 @@ public class GameScore {
         if (gameOver) {
             HashMap<String, Integer> newScores = new HashMap<>();
             scores.forEach((player, score) -> newScores.put(player.getName(), score));
-            new MainServerClient().sendGameScore(newScores);
+            MainServerClient.sendGameScore(newScores);
         }
     }
 
