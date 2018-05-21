@@ -5,7 +5,6 @@ import gameclient.Resources;
 import gameobjects.*;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
 
 /**
@@ -25,12 +24,6 @@ public class ObjectSettingsPanel extends JComponent {
         this.mapEditorScreen = mapEditorScreen;
 
         colorChooser = new JColorChooser();
-        //colorChooser.setPreviewPanel(new JPanel());
-        for (AbstractColorChooserPanel chooserPanel : colorChooser.getChooserPanels()) {
-            if (!chooserPanel.getDisplayName().equals("RGB")) {
-                //colorChooser.removeChooserPanel(chooserPanel);
-            }
-        }
     }
 
     GameObject getGameObject() {
@@ -206,6 +199,13 @@ public class ObjectSettingsPanel extends JComponent {
         specialGameObject = null;
         gameObject = null;
         removeAll();
+
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.ipady = 30;
+        add(new JLabel("Choose an object on the map to change its settings."), gbc);
+        add(new JLabel("To create a new object you can right-click on the map."), gbc);
         invalidate();
         repaint();
     }
