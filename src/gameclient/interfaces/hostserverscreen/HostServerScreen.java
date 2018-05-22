@@ -204,7 +204,7 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
 
         panel.add(new JLabel("SERVER PROFILE"), getFieldConstraints(0, 3));
         profileComboBox = new JComboBox<>(new String[]{
-                "CUSTOM", "NORMAL (DEFAULT)", "HIGH PERFORMANCE"});
+                "CUSTOM", "HIGH (LAN)", "NORMAL (WIFI)"});
         panel.add(profileComboBox, getFieldConstraints(1, 3));
 
         panel.add(new JLabel("TICK RATE"), getFieldConstraints(0, 4));
@@ -238,15 +238,16 @@ public class HostServerScreen extends JPanel implements UserInterfaceScreen {
             ticksPerUpdateSlider.setEnabled(false);
 
             switch (profile) {
-                case "HIGH PERFORMANCE":
+                case "HIGH (LAN)":
                     playerSpeedSlider.setValue(25);
                     tickRateSlider.setValue(25);
                     ticksPerUpdateSlider.setValue(2);
                     break;
-                default:
+                case "NORMAL (WIFI)":
                     playerSpeedSlider.setValue(50);
                     tickRateSlider.setValue(50);
                     ticksPerUpdateSlider.setValue(2);
+                    break;
             }
         });
 
