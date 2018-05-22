@@ -1,11 +1,13 @@
 package common;
 
+import java.io.Serializable;
+
 /**
  * Represents information from a GameServer
  *
  * @author Henrik Olofsson
  */
-public class ServerInformation {
+public class ServerInformation implements Serializable {
     private String ip;
     private String serverName;
     private String mapName;

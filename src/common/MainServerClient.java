@@ -22,7 +22,7 @@ public class MainServerClient {
                 outputStream.writeObject(serverInformation);
             }
         } catch (IOException e) {
-            e.getStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -35,7 +35,7 @@ public class MainServerClient {
                 outputStream.writeObject(scores);
             }
         } catch (IOException e) {
-            e.getStackTrace();
+            e.printStackTrace();
         }
     }
 
