@@ -35,6 +35,11 @@ public class GamePanel extends JComponent {
     private boolean interpolateMovement = true, showFPS = false;
     private GamePanelText gamePanelText = new GamePanelText();
 
+    public GamePanel() {
+        setIgnoreRepaint(true);
+        setDoubleBuffered(true);
+    }
+
     /**
      * Starts the game loop with the provided maximum FPS
      *
