@@ -1,7 +1,7 @@
 package gameobjects;
 
+import common.Game;
 import common.Utility;
-import gameclient.Game;
 
 import java.awt.*;
 import java.awt.geom.Area;

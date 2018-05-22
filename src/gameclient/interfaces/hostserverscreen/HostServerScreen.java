@@ -1,8 +1,6 @@
 package gameclient.interfaces.hostserverscreen;
 
-import common.GameServerSettings;
-import common.Maps;
-import gameclient.Game;
+import common.*;
 import gameclient.Resources;
 import gameclient.interfaces.*;
 import gameserver.GameServer;

@@ -2,7 +2,6 @@ package gameobjects;
 
 import common.*;
 import common.messages.*;
-import gameclient.Game;
 import gameclient.Resources;
 
 import java.awt.*;

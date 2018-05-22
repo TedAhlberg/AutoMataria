@@ -1,7 +1,6 @@
 package gameclient.interfaces.mapeditorscreen;
 
 import common.*;
-import gameclient.Game;
 import gameclient.interfaces.UserInterface;
 import gameclient.interfaces.UserInterfaceScreen;
 import gameclient.interfaces.gamescreen.GamePanel;

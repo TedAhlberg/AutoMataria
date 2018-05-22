@@ -1,18 +1,11 @@
 package gameclient.interfaces.serverbrowserscreen;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-
+import common.Game;
 import common.ServerInformation;
-import gameclient.Game;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * Denna klassen ska ta emot UDP packet ifrån lokala nätverket

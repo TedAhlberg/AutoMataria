@@ -1,14 +1,11 @@
 package common;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import mainserver.HighScore2;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import gameclient.Game;
-import mainserver.HighScore2;
 
 public class MainServerClient {
 	

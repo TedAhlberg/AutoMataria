@@ -1,7 +1,6 @@
 package test;
 
 import common.*;
-import gameclient.Game;
 import gameclient.interfaces.UserInterface;
 import gameobjects.pickups.*;
 import gameserver.GameServer;

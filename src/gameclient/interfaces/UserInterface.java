@@ -1,7 +1,7 @@
 package gameclient.interfaces;
 
 import common.Action;
-import gameclient.Game;
+import common.Game;
 import gameclient.Resources;
 import gameclient.interfaces.gamescreen.GameScreen;
 import gameclient.interfaces.highscorescreen.HighScoreScreen;

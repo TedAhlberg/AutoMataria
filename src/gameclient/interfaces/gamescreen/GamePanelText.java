@@ -1,6 +1,6 @@
 package gameclient.interfaces.gamescreen;
 
-import gameclient.Game;
+import common.Game;
 import gameclient.Resources;
 
 import java.awt.*;

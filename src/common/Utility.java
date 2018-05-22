@@ -1,6 +1,5 @@
 package common;
 
-import gameclient.Game;
 import gameobjects.GameObject;
 import gameobjects.Wall;
 

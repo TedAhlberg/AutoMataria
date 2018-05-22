@@ -1,8 +1,6 @@
 package gameserver;
 
-import common.MainServerClient;
-import common.ServerInformation;
-import gameclient.Game;
+import common.*;
 
 import java.io.IOException;
 import java.net.*;

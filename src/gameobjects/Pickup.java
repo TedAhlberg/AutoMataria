@@ -1,7 +1,7 @@
 package gameobjects;
 
+import common.Game;
 import common.PickupState;
-import gameclient.Game;
 import gameclient.Resources;
 
 import java.awt.*;
