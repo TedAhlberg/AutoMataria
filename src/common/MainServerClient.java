@@ -55,8 +55,8 @@ public class MainServerClient {
 
     public static ArrayList<ServerInformation> getServers() {
         try (Socket socket = new Socket();
-             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
             socket.connect(Game.MAIN_SERVER, 500);
             outputStream.writeObject("GET_SERVERS");
             return (ArrayList<ServerInformation>) inputStream.readObject();
