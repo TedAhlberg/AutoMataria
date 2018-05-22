@@ -26,6 +26,7 @@ public class GamePanel extends JComponent {
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
+    private volatile boolean isRendering;
     private BufferedImage background, gridBuffer;
     private GameState gameState = GameState.Warmup;
     private Color backgroundColor = Color.DARK_GRAY;
@@ -156,6 +157,7 @@ public class GamePanel extends JComponent {
             }
 
             // Render the game to the panel
+            isRendering = true;
             repaint();
 
             // Update FPS counter each second
@@ -167,12 +169,8 @@ public class GamePanel extends JComponent {
             }
 
             // Wait until timeBetweenRenders nanoseconds have elapsed since the render began
-            while (nowTime - previousTime < timeBetweenRenders) {
+            while (isRendering || nowTime - previousTime < timeBetweenRenders) {
                 Thread.yield();
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                }
                 nowTime = System.nanoTime();
             }
         }
@@ -180,9 +178,10 @@ public class GamePanel extends JComponent {
 
     /**
      * Renders the game to this component
-     * This method is called in the gameLoop() method with paintImmediately()
+     * This method is called in the gameLoop() method with repaint()
      */
     protected void paintComponent(Graphics g) {
+        isRendering = true;
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
         drawGridBuffer(g2);
@@ -226,6 +225,7 @@ public class GamePanel extends JComponent {
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
         frameCounter += 1;
+        isRendering = false;
     }
 
     /**
