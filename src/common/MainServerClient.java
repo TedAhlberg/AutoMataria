@@ -58,7 +58,7 @@ public class MainServerClient {
             socket.connect(Game.MAIN_SERVER, 500);
             try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
                  ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
-                outputStream.writeObject("GET_SERVERS");
+                outputStream.writeObject("GET_GAMESERVERS");
                 return (ArrayList<ServerInformation>) inputStream.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
