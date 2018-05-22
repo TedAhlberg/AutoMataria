@@ -54,12 +54,13 @@ public class MainServerClient {
     }
 
     public static ArrayList<ServerInformation> getServers() {
-        try (Socket socket = new Socket();
-             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+        try (Socket socket = new Socket()) {
             socket.connect(Game.MAIN_SERVER, 500);
-            outputStream.writeObject("GET_SERVERS");
-            return (ArrayList<ServerInformation>) inputStream.readObject();
+            try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+                outputStream.writeObject("GET_SERVERS");
+                return (ArrayList<ServerInformation>) inputStream.readObject();
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
