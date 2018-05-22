@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @author Henrik Olofsson
  */
 public class ServerInformation implements Serializable {
+    public static final long serialVersionUID = 1L;
     private String ip;
     private String serverName;
     private String mapName;
@@ -59,6 +60,10 @@ public class ServerInformation implements Serializable {
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public int hashCode() {
