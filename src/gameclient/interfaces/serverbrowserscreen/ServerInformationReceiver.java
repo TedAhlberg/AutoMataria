@@ -183,17 +183,16 @@ public class ServerInformationReceiver extends Thread {
 						}
 					}
 
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						System.out.println("Thread sleeps in mainserverthread...");
-					}
-
 				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-
+				
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    System.out.println("Thread sleeps in mainserverthread...");
+                }
 			}
 		}
 	}
