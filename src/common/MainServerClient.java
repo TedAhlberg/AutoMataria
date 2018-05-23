@@ -1,7 +1,5 @@
 package common;
 
-import mainserver.HighScore2;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -39,13 +37,13 @@ public class MainServerClient {
         }
     }
 
-    public static ArrayList<HighScore2> getHighscores() {
+    public static ArrayList<Highscore> getHighscores() {
         try (Socket socket = new Socket()) {
             socket.connect(Game.MAIN_SERVER, 500);
             try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
                  ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
                 outputStream.writeObject("GET_HIGHSCORES");
-                return (ArrayList<HighScore2>) inputStream.readObject();
+                return (ArrayList<Highscore>) inputStream.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

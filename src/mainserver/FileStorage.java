@@ -1,5 +1,7 @@
 package mainserver;
 
+import common.Highscore;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -11,8 +13,8 @@ import java.util.ArrayList;
 
 public class FileStorage {
     String fileName = "resources/HighScores/HighScore.ser";
-    
-    public synchronized void save(ArrayList<HighScore2> highscores) {
+
+    public synchronized void save(ArrayList<Highscore> highscores) {
             try (ObjectOutputStream writer = new ObjectOutputStream(
                     new BufferedOutputStream(
                             new FileOutputStream(fileName)))){
@@ -23,12 +25,12 @@ public class FileStorage {
             }
         }
 
-    public synchronized ArrayList<HighScore2> read() {
+    public synchronized ArrayList<Highscore> read() {
             try (ObjectInputStream reader = new ObjectInputStream(
                     new BufferedInputStream(
                             new FileInputStream(fileName)))){
                 Object object = reader.readObject();
-                return (ArrayList<HighScore2>) object;
+                return (ArrayList<Highscore>) object;
             } catch (IOException e) {
                 e.getStackTrace();
             } catch (ClassNotFoundException e) {

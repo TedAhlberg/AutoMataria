@@ -339,15 +339,16 @@ public class GameScreen extends JPanel implements GameServerListener, UserInterf
         if (message.getEvent() == PlayerPickupMessage.Event.PickupUsed) {
             try {
                 String pickupClassName = message.getPickup().getClass().getSimpleName();
-                gameInfoPanel.add(message.getPlayer().getName() + " used " + pickupClassName + " it will be active for " + message.getPickup().getActiveTime() / 1000.0 + "s", message.getPlayer().getColor());
+                //gameInfoPanel.add(message.getPlayer().getName() + " used " + pickupClassName + " it will be active for " + message.getPickup().getActiveTime() / 1000.0 + "s", message.getPlayer().getColor());
                 Method method = SoundFx.class.getMethod(pickupClassName);
                 method.invoke(SoundFx.getInstance());
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         } else if (message.getEvent() == PlayerPickupMessage.Event.PickupTaken) {
-            String pickupClassName = message.getPickup().getClass().getSimpleName();
-            gameInfoPanel.add(message.getPlayer().getName() + " picked up " + pickupClassName, message.getPlayer().getColor());
+            SoundFx.getInstance().movement();
+            //String pickupClassName = message.getPickup().getClass().getSimpleName();
+            //gameInfoPanel.add(message.getPlayer().getName() + " picked up " + pickupClassName, message.getPlayer().getColor());
         }
     }
 

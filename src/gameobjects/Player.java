@@ -39,16 +39,6 @@ public class Player extends GameObject {
         setColor(Color.LIGHT_GRAY);
     }
 
-    /**
-     * Temporary method for debugging purposes
-     *
-     * @TODO: REMOVE THIS METHOD
-     */
-    public void setSpeed(int speed) {
-        super.setSpeed(speed);
-        listener.newMessage(new ChatMessage("My speed is now " + speed + "ppt.", this));
-    }
-
     public void setListener(MessageListener listener) {
         this.listener = listener;
     }
