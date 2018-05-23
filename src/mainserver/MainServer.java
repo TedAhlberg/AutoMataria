@@ -88,7 +88,11 @@ public class MainServer {
                         Object object = inputStream.readObject();
                         if (object instanceof ServerInformation) {
                             ServerInformation information = (ServerInformation) object;
-                            information.setIp(socket.getInetAddress().getHostAddress());
+                            String ip = socket.getInetAddress().getHostAddress();
+                            if (ip.equals("127.0.0.1")) {
+                                ip = Game.MAIN_SERVER.getHostName();
+                            }
+                            information.setIp(ip);
                             gameServerList.addServer(information);
                         }
                     } else if (messageType.equals("CHANGE_USERNAME")) {
