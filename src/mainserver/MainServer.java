@@ -2,11 +2,13 @@ package mainserver;
 
 import common.Game;
 import common.ServerInformation;
+import gameclient.interfaces.serverbrowserscreen.ServerInformationListener;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -52,6 +54,18 @@ public class MainServer {
         return servers;
 
     }
+    
+    private synchronized void cleanServerList() {
+        int offlineServerLimit = 11000;
+        Iterator<ServerInformation> iter = servers.getServers().iterator();
+        while (iter.hasNext()) {
+            long elapsedTime = System.currentTimeMillis() - iter.next().getUpdateTime();
+
+            if (elapsedTime > offlineServerLimit) {
+                iter.remove();
+            }
+        }
+    }
 
     private class HighScoreServer extends Thread {
         private ServerSocket serverSocket;
@@ -88,6 +102,8 @@ public class MainServer {
                         fileStorage.save(highscoreList.getSortedList());
                     } else if (messageType.equals("GET_GAMESERVERS")) {
                         outputStream.writeObject(servers.getServers());
+                        System.out.println(servers.getServers().size());
+                        cleanServerList();
                     } else if (messageType.equals("SET_GAMESERVER")) {
                         Object object = inputStream.readObject();
                         if (object instanceof ServerInformation) {

@@ -9,8 +9,8 @@ import java.net.*;
 import java.util.*;
 
 /**
- * Denna klassen ska ta emot UDP packet ifrån lokala nätverket
- * Sedan spara dem i en lista och uppdatera lyssnare om att listan har ändrats
+ * Denna klassen ska ta emot UDP packet ifrån lokala nätverket Sedan spara dem i
+ * en lista och uppdatera lyssnare om att listan har ändrats
  *
  * @author Henrik Olofsson
  */
@@ -34,7 +34,8 @@ public class ServerInformationReceiver extends Thread {
      */
     public void close() {
         running = false;
-        if (socket != null) socket.close();
+        if (socket != null)
+            socket.close();
     }
 
     public void run() {
@@ -72,20 +73,17 @@ public class ServerInformationReceiver extends Thread {
     /**
      * Adds new or updates existing server in the serverList with the provided data
      *
-     * @param ip   IP address or hostname of the server
-     * @param data String with serverinformation data sent from ServerInformationSender on any gameserver
+     * @param ip
+     *            IP address or hostname of the server
+     * @param data
+     *            String with serverinformation data sent from
+     *            ServerInformationSender on any gameserver
      * @see gameserver.ServerInformationSender
      */
     private synchronized void updateServerInfo(String ip, String data) {
         String[] parts = data.split("\n");
-        ServerInformation serverInfo = new ServerInformation(
-                ip,
-                parts[0],
-                parts[1],
-                parts[2],
-                Integer.parseInt(parts[3]),
-                Integer.parseInt(parts[4]),
-                Integer.parseInt(parts[5].trim()));
+        ServerInformation serverInfo = new ServerInformation(ip, parts[0], parts[1], parts[2],
+                Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5].trim()));
 
         serverList.remove(serverInfo);
         serverList.add(serverInfo);
@@ -116,7 +114,8 @@ public class ServerInformationReceiver extends Thread {
     }
 
     /**
-     * Removes servers from the serverList if they have not been updated in the last 11 seconds
+     * Removes servers from the serverList if they have not been updated in the last
+     * 11 seconds
      */
     private synchronized void cleanServerList() {
         int offlineServerLimit = 11000;
@@ -132,52 +131,54 @@ public class ServerInformationReceiver extends Thread {
             }
         }
     }
-    
+
     /*
      * Initializes a new Mainserver thread and starts it.
      */
 
-	public void startMainServerThread() {
-		mainserverThread = new MainServerThread();
-		mainserverThread.start();
-	}
+    public void startMainServerThread() {
+        mainserverThread = new MainServerThread();
+        mainserverThread.start();
+    }
 
-	/**
-	 * 
-	 * @author Henrik Olofsson A thread that will use TCP to request the mainserver
-	 *         about serverinformation. After getting the information it will be
-	 *         added to the serverlist.
-	 *
-	 */
+    /**
+     * 
+     * @author Henrik Olofsson A thread that will use TCP to request the mainserver
+     *         about serverinformation. After getting the information it will be
+     *         added to the serverlist.
+     *
+     */
 
-	private class MainServerThread extends Thread {
-		InetSocketAddress mainServerAddress;
+    private class MainServerThread extends Thread {
+        InetSocketAddress mainServerAddress;
 
-		public MainServerThread() {
-			this.mainServerAddress = Game.MAIN_SERVER;
-		}
+        public MainServerThread() {
+            this.mainServerAddress = Game.MAIN_SERVER;
+        }
 
-		public void run() {
-			while (running) {
-						ArrayList<ServerInformation> gameServerList = MainServerClient.getServers();
-						System.out.println(gameServerList.toString());
-						for (ServerInformation info : gameServerList) {
-						    serverList.remove(info);
-							serverList.add(info);
-							System.out.println(info.toString());
-						}
+        public void run() {
+            while (running) {
+                ArrayList<ServerInformation> gameServerList = MainServerClient.getServers();
+                if (gameServerList != null) {
+                    System.out.println(gameServerList.toString());
+                    for (ServerInformation info : gameServerList) {
+                        serverList.remove(info);
+                        serverList.add(info);
+                        System.out.println(info.toString());
+                    }
 
-						for (ServerInformationListener listener : listeners) {
-							listener.update(serverList);
-						}
-				
+                    for (ServerInformationListener listener : listeners) {
+                        listener.update(serverList);
+                    }
+                }
+
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     System.out.println("Thread sleeps in mainserverthread...");
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }
