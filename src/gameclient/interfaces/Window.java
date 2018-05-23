@@ -1,15 +1,26 @@
 package gameclient.interfaces;
 
-import gameclient.Resources;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Insets;
+import java.util.Enumeration;
+import java.util.LinkedList;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.*;
-import java.util.Enumeration;
-import java.util.LinkedList;
+
+import gameclient.Resources;
 
 /**
  * Window is a customized JFrame that has some extra features.
@@ -41,7 +52,7 @@ public class Window extends JFrame {
         setBackground(Color.BLACK);
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setIconImage(Resources.getImage("AM-Icon.png"));
         changeDefaultFont();
         modifyLookAndFeel();
     }
