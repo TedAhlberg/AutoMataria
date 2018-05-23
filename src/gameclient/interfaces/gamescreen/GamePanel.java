@@ -48,7 +48,7 @@ public class GamePanel extends JComponent {
      * @param maxFPS Maximum frames per second to render each second
      */
     public void start(int maxFPS) {
-        timeBetweenRenders = (1000 / maxFPS) * 1000000;
+        timeBetweenRenders = Math.round((1000.0 / maxFPS) * 1000000.0);
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop(), "ClientGameLoop");
         gameLoopThread.setPriority(Thread.MAX_PRIORITY - 1);
@@ -159,7 +159,7 @@ public class GamePanel extends JComponent {
 
             // Render the game to the panel
             isRendering = true;
-            repaint();
+            paintImmediately(new Rectangle(getSize()));
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
