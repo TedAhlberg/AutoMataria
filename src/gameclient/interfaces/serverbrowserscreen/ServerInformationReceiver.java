@@ -1,6 +1,7 @@
 package gameclient.interfaces.serverbrowserscreen;
 
 import common.Game;
+import common.MainServerClient;
 import common.ServerInformation;
 
 import java.io.*;
@@ -158,22 +159,10 @@ public class ServerInformationReceiver extends Thread {
 
 		public void run() {
 			while (running) {
-				System.out.println(mainServerAddress.getAddress().getHostAddress() + " " + mainServerAddress.getPort());
-				try (Socket socket = new Socket(mainServerAddress.getAddress().getHostAddress(),
-						mainServerAddress.getPort());
-						ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-						ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
-
-					outputStream.writeObject("GET_SERVERS");
-
-					Object object = inputStream.readObject();
-					System.out.println(object.toString());
-
-					if (object instanceof ArrayList) {
-						System.out.println("True: MainServerThread in ServerInformationReceiver");
-						ArrayList<ServerInformation> gameServerList = (ArrayList<ServerInformation>) object;
+						ArrayList<ServerInformation> gameServerList = MainServerClient.getServers();
 						System.out.println(gameServerList.toString());
 						for (ServerInformation info : gameServerList) {
+						    serverList.remove(info);
 							serverList.add(info);
 							System.out.println(info.toString());
 						}
@@ -181,11 +170,6 @@ public class ServerInformationReceiver extends Thread {
 						for (ServerInformationListener listener : listeners) {
 							listener.update(serverList);
 						}
-					}
-
-				} catch (IOException | ClassNotFoundException e) {
-					e.printStackTrace();
-				}
 				
                 try {
                     Thread.sleep(10000);

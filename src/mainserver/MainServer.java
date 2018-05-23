@@ -92,6 +92,8 @@ public class MainServer {
                         Object object = inputStream.readObject();
                         if (object instanceof ServerInformation) {
                             ServerInformation information = (ServerInformation) object;
+                            information.setIp(socket.getInetAddress().getHostAddress());
+                            System.out.println(information.toString());
                             servers.addServer(information);
                         }
                     } else if (messageType.equals("CHANGE_USERNAME")) {
