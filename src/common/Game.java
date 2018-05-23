@@ -11,5 +11,5 @@ public class Game {
     public static final String TITLE = "Auto-Mataria";
     public static final int GRID_PIXEL_SIZE = 100;
     public static final int LOCAL_UDP_PORT = 63211;
-    public static final InetSocketAddress MAIN_SERVER = new InetSocketAddress("127.0.0.1", 2000);
+    public static final InetSocketAddress MAIN_SERVER = new InetSocketAddress("johannes.bluml.se", 30000);
 }
