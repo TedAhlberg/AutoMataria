@@ -2,7 +2,6 @@ package mainserver;
 
 import common.Game;
 import common.ServerInformation;
-import gameclient.interfaces.serverbrowserscreen.ServerInformationListener;
 
 import java.io.*;
 import java.net.ServerSocket;
