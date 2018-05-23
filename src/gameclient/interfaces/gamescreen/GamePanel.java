@@ -27,7 +27,8 @@ public class GamePanel extends JComponent {
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
     private volatile boolean isRendering;
-    private BufferedImage background, gridBuffer;
+    private BufferedImage background;
+    private String backgroundImage;
     private GameState gameState = GameState.Warmup;
     private Color backgroundColor = Color.DARK_GRAY;
     private double scale = 1.0;
@@ -61,7 +62,6 @@ public class GamePanel extends JComponent {
         gameLoopRunning = false;
         gameLoopThread = null;
         background = null;
-        gridBuffer = null;
     }
 
     /**
@@ -125,8 +125,9 @@ public class GamePanel extends JComponent {
 
         Dimension scaledSize = new Dimension((int) Math.round(width * scale), (int) Math.round(height * scale));
 
-        gridBuffer = Utility.createCompatibleImage(scaledSize);
-        Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
+        background = Utility.createCompatibleImage(scaledSize, Transparency.OPAQUE);
+        Graphics2D g2 = (Graphics2D) background.getGraphics();
+        g2.drawImage(Resources.getImage(backgroundImage), 0, 0, scaledSize.width, scaledSize.height, null);
         g2.scale(scale, scale);
         g2.setPaint(new Color(1, 1, 1, 0.05f));
 
@@ -184,7 +185,6 @@ public class GamePanel extends JComponent {
         isRendering = true;
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
-        drawGridBuffer(g2);
 
         g2.scale(scale, scale);
 
@@ -234,22 +234,11 @@ public class GamePanel extends JComponent {
      * @param g2 Graphics2D object to draw on
      */
     private void drawBackground(Graphics2D g2) {
-        if (background != null && gridBuffer != null) {
-            g2.drawImage(background, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
+        if (background != null) {
+            g2.drawImage(background, 0, 0, background.getWidth(), background.getHeight(), null);
         } else {
             g2.setColor(backgroundColor);
             g2.fillRect(0, 0, getWidth(), getHeight());
-        }
-    }
-
-    /**
-     * Draws the BufferedImage that contains the grid created in setGrid() method
-     *
-     * @param g2 Graphics2D object to draw on
-     */
-    private void drawGridBuffer(Graphics2D g2) {
-        if (gridBuffer != null) {
-            g2.drawImage(gridBuffer, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
         }
     }
 
@@ -258,7 +247,7 @@ public class GamePanel extends JComponent {
     }
 
     public void setBackground(String file) {
-        background = Resources.getImage(file);
+        backgroundImage = file;
     }
 
     public void toggleInterpolation() {

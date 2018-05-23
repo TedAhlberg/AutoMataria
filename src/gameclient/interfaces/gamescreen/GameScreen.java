@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  * But also panels on the sides to display information about the game.
  */
 public class GameScreen extends JPanel implements GameServerListener, UserInterfaceScreen {
-    private int framesPerSecond = 40;
+    private int framesPerSecond = 50;
     private final JPanel leftPanel, rightPanel;
     private GameInfoPanel gameInfoPanel;
     private GamePanel gamePanel;
