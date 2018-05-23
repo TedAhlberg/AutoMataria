@@ -101,7 +101,7 @@ public class MainServer {
                         fileStorage.save(highscoreList.getSortedList());
                     }
                 } catch (IOException e) {
-                    e.getStackTrace();
+                    e.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }

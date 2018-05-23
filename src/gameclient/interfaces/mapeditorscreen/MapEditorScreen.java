@@ -336,8 +336,9 @@ public class MapEditorScreen extends JComponent implements UserInterfaceScreen {
             if (startPositionMarker == null || startPositionMarker.getGridPoints().size() == 0) {
                 currentMap.setStartingPositions(null);
             } else {
-                currentMap.setStartingPositions(startPositionMarker.getGridPoints().toArray(new Point[0]));
-                if (startPositionMarker.getGridPoints().size() < currentMap.getPlayers()) {
+                HashSet<Point> startingPositions = new HashSet<>(startPositionMarker.getGridPoints());
+                currentMap.setStartingPositions(startingPositions.toArray(new Point[0]));
+                if (startingPositions.size() < currentMap.getPlayers()) {
                     JOptionPane.showMessageDialog(this, "NOTE: YOU HAVE NOT SET STARTING POSITION FOR ALL PLAYERS\nMAP WILL BE SAVED ANYWAY");
                 }
             }

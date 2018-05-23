@@ -56,11 +56,10 @@ public class PlayerManager implements MessageListener {
         return player;
     }
 
-    public void controlPlayer(Player player, Object value) {
-        if (!(value instanceof Action)) return;
+    public void controlPlayer(Player player, Action value) {
         if (state == GameState.Countdown || state == GameState.GameOver) return;
 
-        switch ((Action) value) {
+        switch (value) {
             case GoUp:
                 player.setNextDirection(Direction.Up);
                 break;

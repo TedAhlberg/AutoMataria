@@ -26,7 +26,9 @@ public class GamePanel extends JComponent {
     private Interpolation interpolation = new Interpolation();
     private Thread gameLoopThread;
     private boolean gameLoopRunning;
-    private BufferedImage background, gridBuffer;
+    private volatile boolean isRendering;
+    private BufferedImage background;
+    private String backgroundImage;
     private GameState gameState = GameState.Warmup;
     private Color backgroundColor = Color.DARK_GRAY;
     private double scale = 1.0;
@@ -35,13 +37,18 @@ public class GamePanel extends JComponent {
     private boolean interpolateMovement = true, showFPS = false;
     private GamePanelText gamePanelText = new GamePanelText();
 
+    public GamePanel() {
+        setIgnoreRepaint(true);
+        setDoubleBuffered(true);
+    }
+
     /**
      * Starts the game loop with the provided maximum FPS
      *
      * @param maxFPS Maximum frames per second to render each second
      */
     public void start(int maxFPS) {
-        timeBetweenRenders = (1000 / maxFPS) * 1000000;
+        timeBetweenRenders = Math.round((1000.0 / maxFPS) * 1000000.0);
         gameLoopRunning = true;
         gameLoopThread = new Thread(() -> gameLoop(), "ClientGameLoop");
         gameLoopThread.setPriority(Thread.MAX_PRIORITY - 1);
@@ -55,7 +62,6 @@ public class GamePanel extends JComponent {
         gameLoopRunning = false;
         gameLoopThread = null;
         background = null;
-        gridBuffer = null;
     }
 
     /**
@@ -119,8 +125,9 @@ public class GamePanel extends JComponent {
 
         Dimension scaledSize = new Dimension((int) Math.round(width * scale), (int) Math.round(height * scale));
 
-        gridBuffer = Utility.createCompatibleImage(scaledSize);
-        Graphics2D g2 = (Graphics2D) gridBuffer.getGraphics();
+        background = Utility.createCompatibleImage(scaledSize, Transparency.OPAQUE);
+        Graphics2D g2 = (Graphics2D) background.getGraphics();
+        g2.drawImage(Resources.getImage(backgroundImage), 0, 0, scaledSize.width, scaledSize.height, null);
         g2.scale(scale, scale);
         g2.setPaint(new Color(1, 1, 1, 0.05f));
 
@@ -151,7 +158,8 @@ public class GamePanel extends JComponent {
             }
 
             // Render the game to the panel
-            repaint();
+            isRendering = true;
+            paintImmediately(new Rectangle(getSize()));
 
             // Update FPS counter each second
             int thisSecond = (int) (previousTime / 1000000000);
@@ -162,12 +170,8 @@ public class GamePanel extends JComponent {
             }
 
             // Wait until timeBetweenRenders nanoseconds have elapsed since the render began
-            while (nowTime - previousTime < timeBetweenRenders) {
+            while (isRendering || nowTime - previousTime < timeBetweenRenders) {
                 Thread.yield();
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                }
                 nowTime = System.nanoTime();
             }
         }
@@ -175,12 +179,12 @@ public class GamePanel extends JComponent {
 
     /**
      * Renders the game to this component
-     * This method is called in the gameLoop() method with paintImmediately()
+     * This method is called in the gameLoop() method with repaint()
      */
     protected void paintComponent(Graphics g) {
+        isRendering = true;
         Graphics2D g2 = (Graphics2D) g;
         drawBackground(g2);
-        drawGridBuffer(g2);
 
         g2.scale(scale, scale);
 
@@ -221,6 +225,7 @@ public class GamePanel extends JComponent {
         g2.dispose();
         Toolkit.getDefaultToolkit().sync();
         frameCounter += 1;
+        isRendering = false;
     }
 
     /**
@@ -229,22 +234,11 @@ public class GamePanel extends JComponent {
      * @param g2 Graphics2D object to draw on
      */
     private void drawBackground(Graphics2D g2) {
-        if (background != null && gridBuffer != null) {
-            g2.drawImage(background, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
+        if (background != null) {
+            g2.drawImage(background, 0, 0, background.getWidth(), background.getHeight(), null);
         } else {
             g2.setColor(backgroundColor);
             g2.fillRect(0, 0, getWidth(), getHeight());
-        }
-    }
-
-    /**
-     * Draws the BufferedImage that contains the grid created in setGrid() method
-     *
-     * @param g2 Graphics2D object to draw on
-     */
-    private void drawGridBuffer(Graphics2D g2) {
-        if (gridBuffer != null) {
-            g2.drawImage(gridBuffer, 0, 0, gridBuffer.getWidth(), gridBuffer.getHeight(), null);
         }
     }
 
@@ -253,7 +247,7 @@ public class GamePanel extends JComponent {
     }
 
     public void setBackground(String file) {
-        background = Resources.getImage(file);
+        backgroundImage = file;
     }
 
     public void toggleInterpolation() {

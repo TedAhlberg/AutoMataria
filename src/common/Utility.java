@@ -219,15 +219,27 @@ public class Utility {
 
     /**
      * Creates a compatible BufferedImage that can be used to paint on
+     * this one is transparent by default
      *
      * @param size Dimension of the BufferedImage that is created
      * @return A BufferedImage
      */
     public static BufferedImage createCompatibleImage(Dimension size) {
+        return createCompatibleImage(size, Transparency.TRANSLUCENT);
+    }
+
+    /**
+     * Creates a compatible BufferedImage that can be used to paint on
+     * it is created with the provided Transparency
+     *
+     * @param size Dimension of the BufferedImage that is created
+     * @return A BufferedImage
+     */
+    public static BufferedImage createCompatibleImage(Dimension size, int transparency) {
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = env.getDefaultScreenDevice();
         GraphicsConfiguration config = device.getDefaultConfiguration();
-        return config.createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
+        return config.createCompatibleImage(size.width, size.height, transparency);
     }
 
     /**

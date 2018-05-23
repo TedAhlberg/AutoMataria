@@ -34,9 +34,10 @@ public class Interpolation {
         currentPositions.putIfAbsent(player, previousTarget);
         targetPositions.put(player, newTarget);
 
+        // If this player is 1.5 times or more behind the difference between
+        // server updates the player will be forced to the server position
         double differencePlayer = difference(currentPositions.get(player), newTarget);
         double differenceBetweenUpdates = difference(previousTarget, newTarget);
-
         if (differencePlayer > differenceBetweenUpdates * 1.5) {
             currentPositions.put(player, newTarget);
         }
@@ -70,8 +71,8 @@ public class Interpolation {
         double interpolation = currentDeltaTime * speedPerMillisecond;
 
         Point current = currentPositions.get(player);
-        current.x = (int) Math.round(approach(current.x, target.x, interpolation));
-        current.y = (int) Math.round(approach(current.y, target.y, interpolation));
+        current.x = (int) Math.ceil(approach(current.x, target.x, interpolation));
+        current.y = (int) Math.ceil(approach(current.y, target.y, interpolation));
         player.setPoint(current);
     }
 
