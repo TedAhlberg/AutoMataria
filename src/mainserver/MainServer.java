@@ -1,12 +1,6 @@
 package mainserver;
 
-<<<<<<< HEAD
-import common.Game;
-import common.ServerInformation;
-=======
 import common.*;
->>>>>>> 0a2263a7a1878fbc09bace97b7f74fc1b0fbcf82
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
