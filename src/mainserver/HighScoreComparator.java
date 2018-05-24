@@ -1,11 +1,12 @@
 package mainserver;
 
+import common.Highscore;
+
 import java.util.Comparator;
 
-public class HighScoreComparator implements Comparator<HighScore2> {
+public class HighscoreComparator implements Comparator<Highscore> {
 
-    public int compare(HighScore2 highscore, HighScore2 highscore2) {
+    public int compare(Highscore highscore, Highscore highscore2) {
         return highscore.getHighscore() - highscore2.getHighscore();
     }
-
 }

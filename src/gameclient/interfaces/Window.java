@@ -41,7 +41,7 @@ public class Window extends JFrame {
         setBackground(Color.BLACK);
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setIconImage(Resources.getImage("AM-Icon.png"));
         changeDefaultFont();
         modifyLookAndFeel();
     }
@@ -59,9 +59,11 @@ public class Window extends JFrame {
             if (value instanceof FontUIResource) {
                 UIManager.put(key, defaultFontResource);
             }
+            /*
             if (key.toString().startsWith("List")) {
                 System.out.println(key + " " + value);
             }
+            */
         }
     }
 

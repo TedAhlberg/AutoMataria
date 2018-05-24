@@ -57,7 +57,7 @@ public class Audio implements Runnable {
         try {
             return new Audio(Resources.musicPath + filename);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -66,7 +66,7 @@ public class Audio implements Runnable {
         try {
             return new Audio(Resources.sfxPath + filename);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
     }
